@@ -14,7 +14,7 @@ namespace MercanciaSegura.DOM.Helper
         /// <returns>La cadena de conexión a la base de datos.</returns>
         public static string GetConnectionString(IConfiguration configuration)
         {
-            //return "Server=.;Database=WalletService02;User Id=sa;Password=123;TrustServerCertificate=True;";
+            return "Server=www.winsefweb.net;Database=Mercancia_Segura;User Id=sa;Password=winsef2015web;TrustServerCertificate=True;";
             // Intenta obtener la cadena de conexión de la configuración (Secrets de usuario o appsettings).
             var configConnectionString = configuration["dbConnectionString"] ??
                                          configuration.GetConnectionString("DefaultConnectionString");

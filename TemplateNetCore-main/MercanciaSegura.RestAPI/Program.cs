@@ -123,15 +123,18 @@ namespace MercanciaSegura.RestAPI
 
 
             var app = builder.Build();
-            
-			app.UseExceptionHandler("/Error");
+
+            // Indica que la API está bajo /MercanciaSegura/API
+            app.UsePathBase("/MercanciaSegura/API");
+
+            app.UseExceptionHandler("/Error");
 			app.UseRouting();
+
             app.UseAuthentication();
-            app.UseAuthorization();
+
+			app.UseAuthentication();
 
             app.MapOpenApi();
-			app.UseAuthentication();
-			app.UseAuthorization();
 
 			app.UseMiddleware<NotFoundMiddleware>();
 
@@ -146,14 +149,14 @@ namespace MercanciaSegura.RestAPI
 							// You can set the Url from the default http request data or by hard coding it
 							// Url = $"{httpReq.Scheme}://{httpReq.Host.Value}",
 							Url = $"https://{httpReq.Host.Value}",
-							Description = "Local Tecom Net"
-						},
+							Description = "Local Mercancia Segura"
+                        },
 						// You can add as many OpenApiServer instances as you want by creating them like below
 						new() {
 							// You can set the Url from the default http request data or by hard coding it
 							// Url = $"{httpReq.Scheme}://{httpReq.Host.Value}",
-							Url = $"https://{httpReq.Host.Value}/api/templateservice",
-							Description = "Deployed Tecom Net"
+							Url = $"https://{httpReq.Host.Value}/MercanciaSegura/API",
+							Description = "Deployed Mercancia Segura"
 						}
 					];
 				});
@@ -165,8 +168,8 @@ namespace MercanciaSegura.RestAPI
 				foreach (var description in provider.ApiVersionDescriptions)
 				{
 					// TODO Change the name parameter with information of this service
-					c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json"
-						, "TemplateService " + description.ApiVersion);
+					c.SwaggerEndpoint($"/MercanciaSegura/API/swagger/{description.GroupName}/swagger.json"
+						, "MercanciaSegura" + description.ApiVersion);
 				}
 			});
 
@@ -182,7 +185,7 @@ namespace MercanciaSegura.RestAPI
 
 			app.MapScalarApiReference(opt =>
 			{
-				opt.Title = "Template Service";
+				opt.Title = "Mercancia Segura";
 				opt.Theme = ScalarTheme.Saturn;
 				opt.DefaultHttpClient = new(ScalarTarget.CSharp, ScalarClient.HttpClient);
 				opt.OpenApiRoutePattern = "/swagger/{documentName}/swagger.json";

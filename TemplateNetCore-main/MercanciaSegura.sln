@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36811.4 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercanciaSegura.DOM", "MercanciaSegura.DOM\MercanciaSegura.DOM.csproj", "{63122997-3659-4EA6-A7D0-6FF481BB8824}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercanciaSegura.Funcionalidad", "MercanciaSegura.Funcionalidad\MercanciaSegura.Funcionalidad.csproj", "{A1835235-6840-4CA3-81E9-773684501BB7}"
@@ -7,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercanciaSegura.UnitTest", "MercanciaSegura.UnitTest\MercanciaSegura.UnitTest.csproj", "{5B681B69-DF5E-4EA0-91EF-E7F9E57C849E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercanciaSegura.RestAPI", "MercanciaSegura.RestAPI\MercanciaSegura.RestAPI.csproj", "{D5D05178-6CF1-4C49-8A11-212C99F6CA66}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "WebAdmin", "WebAdmin\WebAdmin.vbproj", "{BD4C0996-9D67-41EE-B017-35CF75E48E5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +35,12 @@ Global
 		{D5D05178-6CF1-4C49-8A11-212C99F6CA66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5D05178-6CF1-4C49-8A11-212C99F6CA66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5D05178-6CF1-4C49-8A11-212C99F6CA66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD4C0996-9D67-41EE-B017-35CF75E48E5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD4C0996-9D67-41EE-B017-35CF75E48E5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD4C0996-9D67-41EE-B017-35CF75E48E5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD4C0996-9D67-41EE-B017-35CF75E48E5F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

@@ -10,6 +10,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Net.NetworkInformation;
 using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json;
@@ -26,10 +27,26 @@ namespace MercanciaSegura.RestAPI.Models
         /// Gets or Sets User
         /// </summary>
         [Required]
+        [StringLength(50, MinimumLength = 1)]
+        [DataMember(Name = "Usuario")]
+        public string usuario { get; set; }
 
-        [StringLength(100, MinimumLength=1)]
-        [DataMember(Name="user")]
-        public string User { get; set; }
+        [Required]
+        [StringLength(255, MinimumLength = 6)]
+        [DataMember(Name = "password")]
+        public string password { get; set; }
+
+
+        [Required]
+        [EmailAddress]
+        [StringLength(200)]
+        [DataMember(Name = "correo")]
+        public string correo { get; set; }
+
+
+        [DataMember(Name = "estatus")]
+        public bool estatus { get; set; } = true;
+
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -39,10 +56,14 @@ namespace MercanciaSegura.RestAPI.Models
         {
             var sb = new StringBuilder();
             sb.Append("class UserRequest {\n");
-            sb.Append("  User: ").Append(User).Append("\n");
+            sb.Append("  Usuario: ").Append(usuario).Append("\n");
+            sb.Append("  Password: ").Append("******").Append("\n");
+            sb.Append("  Correo: ").Append(correo).Append("\n");
+            sb.Append("  Estatus: ").Append(estatus).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
+
 
         /// <summary>
         /// Returns the JSON string presentation of the object
@@ -75,12 +96,12 @@ namespace MercanciaSegura.RestAPI.Models
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
-                (
-                    User == other.User ||
-                    User != null &&
-                    User.Equals(other.User)
-                );
+            return
+    (usuario == other.usuario || (usuario != null && usuario.Equals(other.usuario))) &&
+    (password == other.password || (password != null && password.Equals(other.password))) &&
+    (correo == other.correo || (correo != null && correo.Equals(other.correo))) &&
+    estatus == other.estatus;
+
         }
 
         /// <summary>
@@ -89,18 +110,20 @@ namespace MercanciaSegura.RestAPI.Models
         /// <returns>Hash code</returns>
         public override int GetHashCode()
         {
-            unchecked // Overflow is fine, just wrap
+            unchecked
             {
                 var hashCode = 41;
-                // Suitable nullity checks etc, of course :)
-                    if (User != null)
-                    hashCode = hashCode * 59 + User.GetHashCode();
+                if (usuario != null) hashCode = hashCode * 59 + usuario.GetHashCode();
+                if (password != null) hashCode = hashCode * 59 + password.GetHashCode();
+                if (correo != null) hashCode = hashCode * 59 + correo.GetHashCode();
+                hashCode = hashCode * 59 + estatus.GetHashCode();
                 return hashCode;
             }
+
         }
 
         #region Operators
-        #pragma warning disable 1591
+#pragma warning disable 1591
 
         public static bool operator ==(UserRequest left, UserRequest right)
         {

@@ -13,7 +13,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
     public class AuthApi : Controllers.AuthApi
     {
         private readonly AuthService _authService;
-        private readonly string _jwtKey = "EstaEsMiClaveSuperSecreta123!";
+        private readonly string _jwtKey = "MercanciaSegura_Super_Secret_Key_2026_!@#_JWT!";
 
         public AuthApi(AuthService authService)
         {
@@ -54,9 +54,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             return Ok(new
             {
-                token = tokenHandler.WriteToken(token),
-                usuarioId = user.UsuarioId,
-                usuarioNombre = user.UsuarioNombre
+                token = tokenHandler.WriteToken(token)
             });
         }
     }

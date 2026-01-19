@@ -1,0 +1,192 @@
+﻿<%@ Master Language="VB" AutoEventWireup="false" CodeBehind="Default.master.vb" Inherits="WebAdmin._Default" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <style>
+        :root {
+            --sidebar-width: 250px;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        #sidebar {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            max-width: var(--sidebar-width);
+            height: 100vh;
+            background-color: #fff;
+            color: #000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+            #sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+
+        #content {
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            position: relative;
+        }
+
+            #content.expanded {
+                margin-left: 0;
+                width: 100%;
+            }
+
+        #toggle-btn {
+            cursor: pointer;
+        }
+
+        .nav-link.active {
+            background-color: #0d6efd;
+            color: #fff !important;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+    </style>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div id="sidebar" class="vh-100 position-fixed">
+            <div class="p-3">
+                <img src="<%= ResolveUrl("~/Resources/Image/logo_MS.png") %>" alt="Logo" class="img-fluid mb-3 d-block mx-auto" style="max-width: 150px" />
+                <ul class="nav flex-column">
+
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlHome" runat="server" NavigateUrl="~/Views/General/Inicio.aspx" CssClass="nav-link text-dark">
+                    <i class="bi bi-house-door me-2"></i> Inicio
+                        </asp:HyperLink>
+                    </li>
+
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlVendedores" runat="server" NavigateUrl="~/Views/General/AdminVendedor.aspx" CssClass="nav-link text-dark">
+                    <i class="bi bi-people me-2"></i> Vendedores
+                        </asp:HyperLink>
+                    </li>
+
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlClientes" runat="server" NavigateUrl="~/Views/General/AdminCliente.aspx" CssClass="nav-link text-dark">
+                    <i class="bi bi-person-vcard me-2"></i> Clientes
+                        </asp:HyperLink>
+                    </li>
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlPolizas" runat="server" NavigateUrl="~/Views/General/AdminGestionPolizas.aspx" CssClass="nav-link text-dark">
+                    <i class="bi bi-file-earmark-text me-2"></i> Polizas
+                        </asp:HyperLink>
+                    </li>
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlCotizaciones" runat="server" NavigateUrl="~/Views/General/AdminCotizaciones.aspx" CssClass="nav-link text-dark">
+                    <i class="bi bi-file-earmark-ruled me-2"></i> Cotizaciones
+                        </asp:HyperLink>
+                    </li>
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlSiniestros" runat="server" NavigateUrl="~/Views/General/AdminSiniestros.aspx" CssClass="nav-link text-dark">
+                    <i class="bi-exclamation-triangle"></i> Siniestros
+                        </asp:HyperLink>
+                    </li>
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlVentas" runat="server" NavigateUrl="~/Views/General/AdminSIMs.aspx" CssClass="nav-link text-dark">
+                    <i class="bi bi-cart-check me-2"></i> Certificados
+                        </asp:HyperLink>
+                    </li>
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlEndosos" runat="server" NavigateUrl="~/Views/General/AdminEndosos.aspx" CssClass="nav-link text-dark">
+                    <i class="bi bi-clipboard-check me-2"></i> Endosos
+                        </asp:HyperLink>
+                    </li>
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlCobranza" runat="server" NavigateUrl="~/Views/General/AdminPortabilidad.aspx" CssClass="nav-link text-dark">
+                   <i class="bi bi-cash-coin me-2"></i>Cobranza
+                        </asp:HyperLink>
+                    </li>
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlPlantillas" runat="server" NavigateUrl="~/Views/General/AdminPortabilidad.aspx" CssClass="nav-link text-dark">
+                   <i class="bi bi-files me-2"></i>Plantillas
+                        </asp:HyperLink>
+                    </li>
+                    <li class="nav-item">
+                        <asp:HyperLink ID="hlReportes" runat="server" NavigateUrl="~/Views/General/AdminPortabilidad.aspx" CssClass="nav-link text-dark">
+                   <i class="bi bi-bar-chart-line me-2"></i>Reportes
+                        </asp:HyperLink>
+                    </li>
+                    <li class="nav-item">
+                        <asp:HyperLink
+                            ID="hlLogout"
+                            runat="server"
+                            NavigateUrl="~/Views/Account/login.aspx"
+                            CssClass="nav-link text-dark"
+                            OnClientClick="return confirm('¿Estás seguro que deseas salir?');">
+        <i class="bi bi-box-arrow-left me-2"></i> Salir
+                        </asp:HyperLink>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="content">
+            <span id="toggle-btn" class="p-2">
+                <i class="bi bi-list fs-3"></i>
+            </span>
+            <div class="p-3">
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+            </div>
+        </div>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const toggleBtn = document.getElementById('toggle-btn');
+        const sidebar = document.getElementById('sidebar');
+        const content = document.getElementById('content');
+
+        toggleBtn.addEventListener('click', () => {
+            const collapsed = sidebar.classList.toggle('collapsed');
+            if (collapsed) {
+                content.classList.add('expanded');
+            } else {
+                content.classList.remove('expanded');
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoutLink = document.getElementById('<%= hlLogout.ClientID %>');
+            logoutLink.addEventListener('click', function (event) {
+                if (!confirm('¿Estás seguro que deseas salir?')) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentUrl = window.location.pathname.toLowerCase();
+            const links = document.querySelectorAll("#sidebar .nav-link");
+
+            links.forEach(link => {
+                const href = link.getAttribute("href").toLowerCase();
+
+                if (currentUrl.includes(href)) {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
