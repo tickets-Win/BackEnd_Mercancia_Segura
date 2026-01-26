@@ -96,9 +96,10 @@
     <Import Include="System.Web.UI.HtmlControls" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Global.asax" />
     <Content Include="Resources\Image\logo_MS.png" />
-    <Content Include="Views\Account\forgotPassword.aspx" />
     <Content Include="Views\Account\login.aspx" />
+    <Content Include="Views\General\AdminCertificados.aspx" />
     <Content Include="Views\General\AdminCliente.aspx" />
     <Content Include="Views\General\AdminCotizaciones.aspx" />
     <Content Include="Views\General\AdminEndosos.aspx" />
@@ -117,6 +118,14 @@
       <DependentUpon>Default.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Global.asax.vb">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Modelos\Cliente.vb" />
+    <Compile Include="Modelos\TipoPersona.vb" />
+    <Compile Include="Modelos\TipoVendedor.vb" />
+    <Compile Include="Modelos\Usuario.vb" />
+    <Compile Include="Modelos\Vendedor.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -136,18 +145,18 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Views\Account\forgotPassword.aspx.designer.vb">
-      <DependentUpon>forgotPassword.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Account\forgotPassword.aspx.vb">
-      <DependentUpon>forgotPassword.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
     <Compile Include="Views\Account\login.aspx.designer.vb">
       <DependentUpon>login.aspx</DependentUpon>
     </Compile>
     <Compile Include="Views\Account\login.aspx.vb">
       <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\General\AdminCertificados.aspx.designer.vb">
+      <DependentUpon>AdminCertificados.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\General\AdminCertificados.aspx.vb">
+      <DependentUpon>AdminCertificados.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Views\General\AdminCliente.aspx.designer.vb">
@@ -236,6 +245,7 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

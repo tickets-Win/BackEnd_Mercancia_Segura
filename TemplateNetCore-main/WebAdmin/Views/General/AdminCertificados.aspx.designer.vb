@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class AdminCotizaciones
+Partial Public Class AdminCertificados
 
     '''<summary>
     '''Control pnlEncabezado.
@@ -23,13 +23,13 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents pnlEncabezado As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''Control btnAgregarCotizacion.
+    '''Control btnAgregarCertificado.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents btnAgregarCotizacion As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents btnAgregarCertificado As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
     '''Control txtBuscarCotizacion.

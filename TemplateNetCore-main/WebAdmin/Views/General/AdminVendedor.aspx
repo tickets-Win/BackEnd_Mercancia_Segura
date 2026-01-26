@@ -14,6 +14,10 @@
             .icon-btn:hover {
                 color: #555;
             }
+
+        .action-icon {
+            text-decoration: none !important;
+        }
     </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -29,111 +33,52 @@
         </div>
     </asp:Panel>
     <asp:Panel ID="PnlTabla" runat="server">
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col">Clave</th>
-                    <th scope="col">Estatus</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Télefono</th>
-                    <th scope="col">Fecha Registro</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row">F-01</th>
-                    <td>Activo</td>
-                    <td>Carlos López</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-02</th>
-                    <td>Suspendido</td>
-                    <td>Ana García</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-03</th>
-                    <td>Activo</td>
-                    <td>Roberto Pérez</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-04</th>
-                    <td>Moroso</td>
-                    <td>Sofía Martínez</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-05</th>
-                    <td>Suspendido</td>
-                    <td>Carlos López</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-06</th>
-                    <td>Activo</td>
-                    <td>Javier Ruiz</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-07</th>
-                    <td>Activo</td>
-                    <td>Elena Sánchez</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="card card-shadow p-4 mb-4">
+            <div style="overflow-x: auto; width: 100%;">
+                <asp:GridView ID="gvVendedores" runat="server"
+                    CssClass="table table-hover align-middle"
+                    AutoGenerateColumns="False"
+                    HeaderStyle-CssClass="table-light"
+                    DataKeyNames="VendedorId"
+                    AllowPaging="True"
+                    PageSize="10"
+                    OnPageIndexChanging="gvVendedores_PageIndexChanging">
+                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                    <Columns>
+                        <asp:BoundField DataField="Clave" HeaderText="Clave" />
+                        <asp:BoundField DataField="Estatus" HeaderText="Estatus" />
+                        <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
+                        <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
+                        <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
+
+                        <asp:TemplateField HeaderText="Acciones">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lnkVer" runat="server" CommandName="Ver" CommandArgument='<%# Eval("VendedorId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Ver">
+                                <i class="bi bi-eye"></i>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("VendedorId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Editar">
+                                <i class="bi bi-pencil"></i>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("VendedorId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                    OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
+                                <i class="bi bi-trash"></i>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("VendedorId") %>'
+                                    CssClass="icon-btn" ToolTip="Enviar correo">
+                                <i class="bi bi-envelope"></i>
+                                </asp:LinkButton>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
     </asp:Panel>
 
     <!-- FORMULARIO DE REGISTRO / EDICIÓN DE VENDEDOR -->
@@ -146,7 +91,7 @@
 
             <div>
                 <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" />
-                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" />
+                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClick="btnGuardar_Click" />
             </div>
         </div>
 
@@ -157,46 +102,47 @@
 
             <div class="col-md-4">
                 <label class="form-label">Tipo de persona</label>
-                <asp:DropDownList ID="ddlTipoPersona" CssClass="form-select" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoPersona_SelectedIndexChanged" >
-                    <asp:ListItem Text="Fisica" Value="F"></asp:ListItem>
-                    <asp:ListItem Text="Moral" Value="M"></asp:ListItem>
+                <asp:DropDownList ID="ddlTipoPersona" CssClass="form-select" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoPersona_SelectedIndexChanged">
+                    <asp:ListItem Text="Fisica" Value="Fisica"></asp:ListItem>
+                    <asp:ListItem Text="Moral" Value="Moral"></asp:ListItem>
                 </asp:DropDownList>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Estatus</label>
                 <asp:DropDownList ID="ddlEstatus" CssClass="form-select" runat="server">
-                    <asp:ListItem>Activo</asp:ListItem>
-                    <asp:ListItem>Suspendido</asp:ListItem>
+                    <asp:ListItem Text="Activo" Value="Activo"></asp:ListItem>
+                    <asp:ListItem Text="Suspendido" Value="Suspendido"></asp:ListItem>
                 </asp:DropDownList>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Tipo Vendedor</label>
                 <asp:DropDownList ID="ddlTipoVendedor" CssClass="form-select" runat="server">
-                    <asp:ListItem>Interno</asp:ListItem>
-                    <asp:ListItem>Socio</asp:ListItem>
-                    <asp:ListItem>Intermediario</asp:ListItem>
                 </asp:DropDownList>
             </div>
             <asp:Panel ID="pnlDatosFisica" runat="server">
-                 <div class="row g-3 mt-2">
-            <div class="col-md-4">
-                <label class="form-label">Apellido paterno</label>
-                <asp:TextBox ID="txtApellidoP" runat="server" CssClass="form-control"></asp:TextBox>
-            </div>
+                <div class="row g-3 mt-2">
+                    <div class="col-md-4">
+                        <label class="form-label">Apellido paterno</label>
+                        <asp:TextBox ID="txtApellidoP" runat="server" CssClass="form-control" oninput="llenarNombreCompleto()"></asp:TextBox>
+                    </div>
 
-            <div class="col-md-4">
-                <label class="form-label">Apellido materno</label>
-                <asp:TextBox ID="txtApellidoM" runat="server" CssClass="form-control"></asp:TextBox>
-            </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Apellido materno</label>
+                        <asp:TextBox ID="txtApellidoM" runat="server" CssClass="form-control" oninput="llenarNombreCompleto()"></asp:TextBox>
+                    </div>
 
-            <div class="col-md-4">
-                <label class="form-label">Nombre</label>
-                <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control"></asp:TextBox>
-            </div>
-                     </div>
-                </asp:Panel>
+                    <div class="col-md-4">
+                        <label class="form-label">Nombre</label>
+                        <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" oninput="llenarNombreCompleto()"></asp:TextBox>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="pnlNombreCompleto" runat="server" CssClass="col-md-4">
+                <label class="form-label">Nombre Completo</label>
+                <asp:TextBox ID="txtNombreCompleto" runat="server" CssClass="form-control"></asp:TextBox>
+            </asp:Panel>
             <div class="col-md-4">
                 <label class="form-label">Clave</label>
                 <asp:TextBox ID="txtClave" runat="server" CssClass="form-control"></asp:TextBox>
@@ -209,12 +155,12 @@
 
             <div class="col-md-4">
                 <label class="form-label">Fecha registro</label>
-                <asp:TextBox ID="txtFechaRegistro" TextMode="Date" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtFechaRegistro" TextMode="Date" runat="server" CssClass="form-control" ReadOnly="True"></asp:TextBox>
             </div>
             <asp:Panel ID="pnlRazonSocial" runat="server" CssClass="col-md-4">
                 <label class="form-label">Razón / Denominación social</label>
                 <asp:TextBox ID="txtRazonSocial" runat="server" CssClass="form-control"></asp:TextBox>
-                </asp:Panel>
+            </asp:Panel>
 
             <div class="col-md-4">
                 <label class="form-label">Observaciones</label>
@@ -241,8 +187,8 @@
             <div class="col-md-4">
                 <label class="form-label">Género</label>
                 <asp:DropDownList ID="ddlGenero" runat="server" CssClass="form-select">
-                    <asp:ListItem>Masculino</asp:ListItem>
-                    <asp:ListItem>Femenino</asp:ListItem>
+                    <asp:ListItem Text="Masculino" Value="M"></asp:ListItem>
+                    <asp:ListItem Text="Femenino" Value="F"></asp:ListItem>
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -274,5 +220,15 @@
         </div>
 
     </asp:Panel>
+    <script type="text/javascript">
+        function llenarNombreCompleto() {
+            var nombre = document.getElementById('<%= txtNombre.ClientID %>').value;
+            var apellidoP = document.getElementById('<%= txtApellidoP.ClientID %>').value;
+            var apellidoM = document.getElementById('<%= txtApellidoM.ClientID %>').value;
+
+            var nombreCompleto = nombre + ' ' + apellidoP + ' ' + apellidoM;
+            document.getElementById('<%= txtNombreCompleto.ClientID %>').value = nombreCompleto.trim();
+        }
+    </script>
 
 </asp:Content>

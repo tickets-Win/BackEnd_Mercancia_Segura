@@ -21,11 +21,15 @@
             pnlNombreInternoPoliza.Visible = False
             pnlMercancia.Visible = True
             pnlContenedor.Visible = False
+            pnlMediosTransporte.Visible = False
+
 
         ElseIf ddlProducto.SelectedValue = "Contenedor" Then
             pnlNombreInternoPoliza.Visible = True
             pnlContenedor.Visible = True
             pnlMercancia.Visible = False
+            pnlMediosTransporte.Visible = True
+
         End If
     End Sub
 End Class
