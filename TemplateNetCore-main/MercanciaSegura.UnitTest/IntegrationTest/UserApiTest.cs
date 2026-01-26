@@ -228,7 +228,7 @@ public class UserApiTest : DatabaseTestFixture
     private void AssertProperties(UserRequest body, UserResult result)
     {
         // Assert key value config properties 
-        Assert.Equal(expected: body.User, actual: result.User);
+        Assert.Equal(expected: body.usuario, actual: result.User);
     }
 
     /// <summary>

@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260123180101_InitialCreate_v2.1")]
+    partial class InitialCreate_v21
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace MercanciaSegura.DOM.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.BeneficiarioPreferente", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.BeneficiarioPreferente", b =>
                 {
                     b.Property<int>("BeneficiarioPreferenteId")
                         .ValueGeneratedOnAdd()
@@ -57,7 +60,7 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Beneficiario_Preferente");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.Cliente", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente", b =>
                 {
                     b.Property<int>("ClienteId")
                         .ValueGeneratedOnAdd()
@@ -228,7 +231,7 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Cliente");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.OrigenCliente", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.OrigenCliente", b =>
                 {
                     b.Property<int>("OrigenClienteId")
                         .ValueGeneratedOnAdd()
@@ -247,7 +250,7 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Origen_Cliente");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.RegimenFiscal", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.RegimenFiscal", b =>
                 {
                     b.Property<int>("RegimenFiscalId")
                         .ValueGeneratedOnAdd()
@@ -278,7 +281,7 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Regimen_Fiscal");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.RfcGenerico", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.RfcGenerico", b =>
                 {
                     b.Property<int>("RfcGenericoId")
                         .ValueGeneratedOnAdd()
@@ -297,7 +300,7 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("RfcGenerico");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.TipoCuenta", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.TipoCuenta", b =>
                 {
                     b.Property<int>("TipoCuentaId")
                         .ValueGeneratedOnAdd()
@@ -316,26 +319,45 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Tipo_Cuenta");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.TipoEstatus", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.TipoEstatus", b =>
                 {
-                    b.Property<int>("EstatusId")
+                    b.Property<int>("EstatusID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("Tipo_Estatus_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstatusId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstatusID"));
 
                     b.Property<string>("Tipo")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("Tipo");
 
-                    b.HasKey("EstatusId");
+                    b.HasKey("EstatusID");
 
                     b.ToTable("Tipo_Estatus");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.TipoSector", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.TipoPersona", b =>
+                {
+                    b.Property<int>("TipoPersonaID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Tipo_Persona_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TipoPersonaID"));
+
+                    b.Property<string>("Tipo")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Tipo");
+
+                    b.HasKey("TipoPersonaID");
+
+                    b.ToTable("Tipo_Persona");
+                });
+
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.TipoSector", b =>
                 {
                     b.Property<int>("TipoSectorId")
                         .ValueGeneratedOnAdd()
@@ -354,7 +376,7 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Tipo_Sector");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.TipoSeguro", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.TipoSeguro", b =>
                 {
                     b.Property<int>("TipoSeguroId")
                         .ValueGeneratedOnAdd()
@@ -373,238 +395,23 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Tipo_Seguro");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Aseguradora", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.TipoVendedor", b =>
                 {
-                    b.Property<int>("AseguradoraId")
+                    b.Property<int>("TipoVendedorId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("Aseguradora_ID");
+                        .HasColumnName("Tipo_Vendedor_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AseguradoraId"));
-
-                    b.Property<string>("Nombre")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Nombre");
-
-                    b.HasKey("AseguradoraId");
-
-                    b.ToTable("Aseguradora");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Contratante", b =>
-                {
-                    b.Property<int>("ContratanteId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Contratante_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContratanteId"));
-
-                    b.Property<string>("Nombre")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Nombre");
-
-                    b.HasKey("ContratanteId");
-
-                    b.ToTable("Contratante");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.FormaPago", b =>
-                {
-                    b.Property<int>("FormaPagoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("FormaPago_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FormaPagoId"));
-
-                    b.Property<string>("Nombre")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Nombre");
-
-                    b.HasKey("FormaPagoId");
-
-                    b.ToTable("FormaPago");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Moneda", b =>
-                {
-                    b.Property<int>("MonedaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Moneda_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MonedaId"));
-
-                    b.Property<string>("Nombre")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Nombre");
-
-                    b.Property<decimal?>("TipoCambio")
-                        .HasMaxLength(100)
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Tipo_Cambio");
-
-                    b.Property<decimal?>("TipoCambioVentanilla")
-                        .HasMaxLength(100)
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Tipo_Cambio_Ventanilla");
-
-                    b.HasKey("MonedaId");
-
-                    b.ToTable("Moneda");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Poliza", b =>
-                {
-                    b.Property<int>("PolizaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Poliza_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PolizaId"));
-
-                    b.Property<int?>("AseguradoraId")
-                        .HasColumnType("int")
-                        .HasColumnName("Aseguradora_ID");
-
-                    b.Property<int?>("ContratanteId")
-                        .HasColumnType("int")
-                        .HasColumnName("Contratante_ID");
-
-                    b.Property<decimal?>("DerechoPoliza")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Derecho_Poliza");
-
-                    b.Property<string>("Estatus")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("Estatus");
-
-                    b.Property<int?>("FormaPagoId")
-                        .HasColumnType("int")
-                        .HasColumnName("Forma_Pago_ID");
-
-                    b.Property<decimal?>("IVA")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("IVA");
-
-                    b.Property<int?>("MonedaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Moneda_ID");
-
-                    b.Property<string>("NumeroPoliza")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)")
-                        .HasColumnName("Numero_Poliza");
-
-                    b.Property<decimal?>("Otros")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Otros");
-
-                    b.Property<string>("OtrosPoliza")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Otros_Poliza");
-
-                    b.Property<decimal?>("PrimaNeta")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Prima_Neta");
-
-                    b.Property<decimal?>("PrimaTotal")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Prima_Total");
-
-                    b.Property<int?>("ProductoId")
-                        .HasColumnType("int")
-                        .HasColumnName("Producto_ID");
-
-                    b.Property<int?>("SubRamoId")
-                        .HasColumnType("int")
-                        .HasColumnName("SubRamo_ID");
-
-                    b.Property<int>("TipoPoliza")
-                        .HasMaxLength(50)
-                        .HasColumnType("int")
-                        .HasColumnName("Tipo_Poliza");
-
-                    b.Property<DateTime?>("VigenciaDel")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Vigencia_Del");
-
-                    b.Property<DateTime?>("VigenciaHasta")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Vigencia_Hasta");
-
-                    b.HasKey("PolizaId");
-
-                    b.ToTable("Poliza");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Producto", b =>
-                {
-                    b.Property<int>("ProductoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Producto_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductoId"));
-
-                    b.Property<string>("Nombre")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Nombre");
-
-                    b.Property<string>("Pantalla")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Pantalla");
-
-                    b.HasKey("ProductoId");
-
-                    b.ToTable("Producto");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.SubRamo", b =>
-                {
-                    b.Property<int>("SubRamoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("SubRamo_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubRamoId"));
-
-                    b.Property<string>("Nombre")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Nombre");
-
-                    b.HasKey("SubRamoId");
-
-                    b.ToTable("SubRamo");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.TipoPersona", b =>
-                {
-                    b.Property<int>("TipoPersonaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Tipo_Persona_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TipoPersonaId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TipoVendedorId"));
 
                     b.Property<string>("Tipo")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("Tipo");
 
-                    b.HasKey("TipoPersonaId");
+                    b.HasKey("TipoVendedorId");
 
-                    b.ToTable("Tipo_Persona");
+                    b.ToTable("Tipo_Vendedor");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Usuario", b =>
@@ -647,26 +454,7 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Usuario");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Vendedor.TipoVendedor", b =>
-                {
-                    b.Property<int>("TipoVendedorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Tipo_Vendedor_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TipoVendedorId"));
-
-                    b.Property<string>("Tipo")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("Tipo");
-
-                    b.HasKey("TipoVendedorId");
-
-                    b.ToTable("Tipo_Vendedor");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Vendedor.Vendedor", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Vendedor", b =>
                 {
                     b.Property<int>("VendedorId")
                         .ValueGeneratedOnAdd()
@@ -778,34 +566,34 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Vendedor");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.BeneficiarioPreferente", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.BeneficiarioPreferente", b =>
                 {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.Cliente", "Cliente")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Cliente", "Cliente")
                         .WithMany("BeneficiariosPreferentes")
                         .HasForeignKey("ClienteId");
 
                     b.Navigation("Cliente");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.Cliente", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente", b =>
                 {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.TipoEstatus", "TipoEstatus")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.TipoEstatus", "TipoEstatus")
                         .WithMany()
                         .HasForeignKey("EstatusId");
 
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.OrigenCliente", "OrigenCliente")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.OrigenCliente", "OrigenCliente")
                         .WithMany()
                         .HasForeignKey("OrigenClienteId");
 
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.RegimenFiscal", "RegimenFiscal")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.RegimenFiscal", "RegimenFiscal")
                         .WithMany()
                         .HasForeignKey("RegimenFiscalId");
 
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.RfcGenerico", "RfcGenerico")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.RfcGenerico", "RfcGenerico")
                         .WithMany()
                         .HasForeignKey("RfcGenericoId");
 
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.TipoCuenta", "TipoCuenta")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.TipoCuenta", "TipoCuenta")
                         .WithMany()
                         .HasForeignKey("TipoCuentaId");
 
@@ -813,11 +601,11 @@ namespace MercanciaSegura.DOM.Migrations
                         .WithMany()
                         .HasForeignKey("TipoPersonaId");
 
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.TipoSector", "TipoSector")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.TipoSector", "TipoSector")
                         .WithMany()
                         .HasForeignKey("TipoSectorId");
 
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.TipoSeguro", "TipoSeguro")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.TipoSeguro", "TipoSeguro")
                         .WithMany()
                         .HasForeignKey("TipoSeguroId");
 
@@ -838,13 +626,13 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Navigation("TipoSeguro");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Vendedor.Vendedor", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Vendedor", b =>
                 {
                     b.HasOne("MercanciaSegura.DOM.Modelos.TipoPersona", "TipoPersona")
                         .WithMany()
                         .HasForeignKey("TipoPersonaId");
 
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Vendedor.TipoVendedor", "TipoVendedor")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.TipoVendedor", "TipoVendedor")
                         .WithMany()
                         .HasForeignKey("TipoVendedorId");
 
@@ -853,7 +641,7 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Navigation("TipoVendedor");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.Cliente", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente", b =>
                 {
                     b.Navigation("BeneficiariosPreferentes");
                 });

@@ -1,21 +1,20 @@
 ﻿using System.Threading.Tasks;
+using MercanciaSegura.RestAPI.Attributes;
 using MercanciaSegura.RestAPI.Controllers.Base;
+using MercanciaSegura.RestAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using MercanciaSegura.RestAPI.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace MercanciaSegura.RestAPI.Controllers
+namespace MercanciaSegura.RestAPI.Controllers.Catalogos
 {
     [ApiController]
-    public abstract class AuthApi : ServiceBaseController
+    public abstract class TipoSeguroApiControllerBase : ServiceBaseController
     {
-        /// <summary>
-        /// Login con credenciales
-        /// </summary>
-        [HttpPost]
-        [Route("/{version:apiVersion}/auth/login")]
-        [Consumes("application/json")]
-        [SwaggerOperation("Login")]
+        [HttpGet]
+        [Route("/{version:apiVersion}/tipoSeguro")]
+        [ValidateModelState]
+        [SwaggerOperation("GetTipoSeguroApi")]
         [SwaggerResponse(statusCode: 200, description: "OK")]
         [SwaggerResponse(statusCode: 400, type: typeof(InlineResponse400),
         description: "Response to client error satus code")]
@@ -23,11 +22,7 @@ namespace MercanciaSegura.RestAPI.Controllers
         description: "Response to client error satus code")]
         [SwaggerResponse(statusCode: 404, type: typeof(InlineResponse400),
         description: "Response to client error satus code")]
-        public abstract Task<IActionResult> Login(
-            [FromRoute]
-            string version,
-
-            [FromBody]
-            LoginRequest request);
+        public abstract Task<IActionResult> GetTipoSeguroApiAsync(
+            [FromRoute][Required] string version);
     }
 }

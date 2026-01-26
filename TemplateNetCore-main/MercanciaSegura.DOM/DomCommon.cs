@@ -5,7 +5,7 @@ namespace MercanciaSegura.DOM
 {
     public static class DomCommon
     {
-        public const string ServiceName = "TemplateService";
+        public const string ServiceName = "MercanciaSegura";
 
 
         private const string ModuleName = "DOM";

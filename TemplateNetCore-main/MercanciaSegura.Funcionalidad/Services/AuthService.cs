@@ -13,12 +13,12 @@ namespace MercanciaSegura.Funcionalidad.Services
             _context = context;
         }
 
-        public async Task<Usuario?> LoginAsync(string usuario, string password)
+        public async Task<Usuario?> LoginAsync(string correo, string password)
         {
             // Busca el usuario activo con usuario + password
             return await _context.Usuario
                 .FirstOrDefaultAsync(u =>
-                    u.UsuarioNombre == usuario &&
+                    u.Correo == correo &&
                     u.Password == password &&
                     u.Estatus);
         }
