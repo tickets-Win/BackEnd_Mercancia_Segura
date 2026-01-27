@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MercanciaSegura.DOM.Modelos
+namespace MercanciaSegura.DOM.Modelos.Cliente
 {
-    [Table("Origen_Cliente")]
-    public class OrigenCliente
+    [Table("Tipo_Seguro")]
+    public class TipoSeguro
     {
         [Key]
-        [Column("Origen_Cliente_ID")]
-        public int OrigenClienteId { get; set; }
+        [Column("Tipo_Seguro_ID")]
+        public int TipoSeguroId { get; set; }
 
         [Column("Tipo")]
         [MaxLength(100)]

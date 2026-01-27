@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MercanciaSegura.DOM.Modelos
+namespace MercanciaSegura.DOM.Modelos.Cliente
 {
     [Table("Beneficiario_Preferente")]
     public class BeneficiarioPreferente
@@ -21,5 +21,11 @@ namespace MercanciaSegura.DOM.Modelos
         [Column("RFC")]
         [MaxLength(13)]
         public string? RFC { get; set; }
+
+        [Column("Cliente_ID")]
+        public int? ClienteId { get; set; }
+
+        [ForeignKey(nameof(ClienteId))]
+        public Cliente? Cliente { get; set; }
     }
 }

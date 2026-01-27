@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MercanciaSegura.DOM.Modelos
+namespace MercanciaSegura.DOM.Modelos.Vendedor
 {
     [Table("Tipo_Vendedor")]
     public class TipoVendedor

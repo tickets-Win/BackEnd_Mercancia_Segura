@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MercanciaSegura.DOM.Modelos
+namespace MercanciaSegura.DOM.Modelos.Vendedor
 {
     [Table("Vendedor")]
     public class Vendedor
@@ -26,9 +26,8 @@ namespace MercanciaSegura.DOM.Modelos
         [MaxLength(120)]
         public string? NombreCompleto { get; set; }
 
-        [Column("Tipo_Persona")]
-        [StringLength(1)]
-        public string? TipoPersona { get; set; }
+        [Column("Tipo_Persona_ID")]
+        public int? TipoPersonaId { get; set; }
 
         [Column("Tipo_Vendedor_ID")]
         public int? TipoVendedorId { get; set; }
@@ -89,5 +88,8 @@ namespace MercanciaSegura.DOM.Modelos
         //Llaves foraneas
         [ForeignKey(nameof(TipoVendedorId))]
         public TipoVendedor? TipoVendedor { get; set; }
+
+        [ForeignKey(nameof(TipoPersonaId))]
+        public TipoPersona? TipoPersona { get; set; }
     }
 }

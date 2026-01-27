@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MercanciaSegura.DOM.Modelos
+namespace MercanciaSegura.DOM.Modelos.Cliente
 {
     [Table("Cliente")]
     public class Cliente
@@ -25,20 +25,15 @@ namespace MercanciaSegura.DOM.Modelos
         [Column("Regimen_Fiscal_ID")]
         public int? RegimenFiscalId { get; set; }
 
-        [Column("Beneficiario_Preferente_ID")]
-        public int? BeneficiarioPreferenteId { get; set; }
-
-        [Column("Tipo_Persona")]
-        [StringLength(1)]
-        public string? TipoPersona { get; set; }
+        [Column("Tipo_Persona_ID")]
+        public int? TipoPersonaId { get; set; }
 
         [Column("RFC")]
         [MaxLength(13)]
         public string? Rfc { get; set; }
 
-        [Column("RFC_Generico")]
-        [MaxLength(13)]
-        public string? RfcGenerico { get; set; }
+        [Column("RfcGenerico_ID")]
+        public int? RfcGenericoId { get; set; }
 
         [Column("Telefono")]
         [MaxLength(13)]
@@ -122,6 +117,9 @@ namespace MercanciaSegura.DOM.Modelos
         [Column("Fecha_Registro")]
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
+        [Column("Tipo_Estatus_ID")]
+        public int? EstatusId { get; set; }
+
         //Llaves foraneas
 
         [ForeignKey(nameof(TipoSeguroId))]
@@ -139,8 +137,18 @@ namespace MercanciaSegura.DOM.Modelos
         [ForeignKey(nameof(RegimenFiscalId))]
         public RegimenFiscal? RegimenFiscal { get; set; }
 
-        [ForeignKey(nameof(BeneficiarioPreferenteId))]
-        public BeneficiarioPreferente? BeneficiarioPreferente { get; set; }
+        [ForeignKey(nameof(EstatusId))]
+        public TipoEstatus? TipoEstatus { get; set; }
+
+        [ForeignKey(nameof(TipoPersonaId))]
+        public TipoPersona? TipoPersona { get; set; }
+
+        [ForeignKey(nameof(RfcGenericoId))]
+        public RfcGenerico? RfcGenerico { get; set; }
+
+        public ICollection<BeneficiarioPreferente> BeneficiariosPreferentes { get; set; }
+    = new List<BeneficiarioPreferente>();
+
 
     }
 }

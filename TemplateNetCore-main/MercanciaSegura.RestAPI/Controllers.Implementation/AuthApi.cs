@@ -28,7 +28,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 return BadRequest(ModelState);
 
             var user = await _authService.LoginAsync(
-                request.usuario,
+                request.correo,
                 request.password);
 
             if (user == null)
