@@ -40,7 +40,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 Telefono = v.Telefono,
                 CorreoElectronico = v.CorreoElectronico,
                 Observaciones = v.Observaciones,
-                Comision = v.Comision
+                Comision = v.Comision,
+                FechaRegistro = v.FechaRegistro
             };
         }
 

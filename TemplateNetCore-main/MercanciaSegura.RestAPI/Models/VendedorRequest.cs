@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace MercanciaSegura.RestAPI.Models
 {
@@ -59,5 +60,6 @@ namespace MercanciaSegura.RestAPI.Models
 
         [Range(0, 100)]
         public decimal? Comision { get; set; }
+        public DateTime FechaRegistro { get; set; }
     }
 }
