@@ -256,17 +256,32 @@
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
-                <label class="form-label">Calve Agente</label>
+                <label class="form-label">Clave Agente</label>
                 <asp:TextBox ID="txtClaveAgente" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Folio Póliza</label>
                 <asp:TextBox ID="txtFolioPoliza" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
+            <asp:Panel ID="pnlNombreInternoPoliza" runat="server" Visible="false" CssClass="col-md-8">
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre Interno Póliza</label>
+                        <asp:TextBox ID="txtNombreInternoPoliza1" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Trayectos asegurados</label>
+                        <asp:TextBox ID="txtTrayectosAsegurados" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+
+                </div>
+            </asp:Panel>
             <div class="col-md-4">
-                <asp:Panel ID="pnlNombreInternoPoliza" runat="server">
-                    <label class="form-label">Nombre Interno Póliza</label>
-                    <asp:TextBox ID="txtNombreInternoPoliza1" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:Panel ID="pnlMediosTransporte" runat="server" Visible="false">
+                    <label class="form-label">Medios de transporte</label>
+                    <asp:TextBox ID="txtMedioTransporte" runat="server" CssClass="form-control"></asp:TextBox>
                 </asp:Panel>
             </div>
         </div>
@@ -736,7 +751,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="row mt-3 gx-0">
                                         <div class="col-md-12 px-2">
                                             <div class="card shadow-sm bg-light w-100">

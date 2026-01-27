@@ -220,7 +220,6 @@
                         <asp:DropDownList ID="ddlTipoPersona" CssClass="form-select" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ddlTipoPersona_SelectedIndexChanged">
                             <asp:ListItem Text="Fisica" Value="F"></asp:ListItem>
                             <asp:ListItem Text="Moral" Value="M"></asp:ListItem>
-                            <asp:ListItem></asp:ListItem>
                         </asp:DropDownList>
                     </div>
 
@@ -234,10 +233,11 @@
                         <asp:DropDownList ID="ddlEstatus" CssClass="form-select" runat="server">
                             <asp:ListItem>Activo</asp:ListItem>
                             <asp:ListItem>Suspendido</asp:ListItem>
+                            <asp:ListItem>Moroso</asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <asp:Panel ID="pnlDatosFiscales" runat="server">
-                        <div class="row g-3 mt-2">
+                        <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label">Apellido paterno</label>
                                 <asp:TextBox ID="txtApellidoP" runat="server" CssClass="form-control"></asp:TextBox>
@@ -254,6 +254,10 @@
                             </div>
                         </div>
                     </asp:Panel>
+                    <asp:Panel ID="pnlNombreCompleto" runat="server" CssClass="col-md-4">
+                        <label class="form-label">Nombre Completo</label>
+                        <asp:TextBox ID="txtNombreCompleto" runat="server" CssClass="form-control"></asp:TextBox>
+                    </asp:Panel>
                     <div class="col-md-4">
                         <label class="form-label">Regimen Fiscal</label>
                         <asp:TextBox ID="txtRegimenFiscal" runat="server" CssClass="form-control"></asp:TextBox>
@@ -268,12 +272,10 @@
                         <label class="form-label">RFC Génerico</label>
                         <asp:TextBox ID="txtRFCGenerico" runat="server" CssClass="form-control"></asp:TextBox>
                     </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Nombre o Razón Social</label>
-                        <asp:TextBox ID="txtNombreRazonSocial" runat="server" CssClass="form-control"></asp:TextBox>
-                    </div>
-
+                    <asp:Panel ID="pnlRazonSocial" runat="server" CssClass="col-md-4" Visible="false">
+                        <label class="form-label">Razón Social</label>
+                        <asp:TextBox ID="txtRazonSocial" runat="server" CssClass="form-control"></asp:TextBox>
+                    </asp:Panel>
                     <div class="col-md-4">
                         <label class="form-label">Fecha registro</label>
                         <asp:TextBox ID="txtFechaRegistro" TextMode="Date" runat="server" CssClass="form-control"></asp:TextBox>
@@ -406,7 +408,7 @@
                         </asp:DropDownList>
                     </div>
 
-                    <h5 class="border-bottom pb-2 mt-4">Correos Adicionales</h5>
+                    <h5 class="border-bottom pb-2 mt-4"></h5>
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <h5>Correos</h5>

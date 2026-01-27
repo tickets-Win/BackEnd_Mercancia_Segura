@@ -230,6 +230,33 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtNombreInternoPoliza1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control txtTrayectosAsegurados.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtTrayectosAsegurados As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control pnlMediosTransporte.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents pnlMediosTransporte As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control txtMedioTransporte.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtMedioTransporte As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control pnlMercancia.
     '''</summary>
     '''<remarks>

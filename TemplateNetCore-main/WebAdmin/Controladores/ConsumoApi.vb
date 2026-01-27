@@ -2,57 +2,104 @@
 Imports System.Net
 Imports System.Net.Http
 Imports System.Text
-Imports Modelos
-Imports Modelos.Modelos
 Imports Newtonsoft.Json
+Imports System.Configuration
 
 Public Class ConsumoApi
-    Public Const urlPostLogin As String = "https://www.winsefweb.net/MercanciaSegura/API/0.1/auth/login"
-
 
 #Region "POST"
-
-    Public Function PostLogin(usuario As String, password As String) As MessageResult
-        Dim objectMessageResult As New MessageResult
+    Public Function Login(correo As String, password As String) As String
         Try
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
 
             Using client As New HttpClient()
+
                 Dim body = New With {
-                    .usuario = usuario,
-                    .password = password
-                }
-                Dim JsonDataKey As String = JsonConvert.SerializeObject(body)
-                Dim content = New StringContent(JsonDataKey, Encoding.UTF8, "application/json")
+                        .correo = correo,
+                        .password = password
+                    }
 
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("MiAplicacion/1.0 (VB.NET)")
+                Dim json As String = JsonConvert.SerializeObject(body)
+                Dim content As New StringContent(json, Encoding.UTF8, "application/json")
 
-                Dim response As HttpResponseMessage = client.PostAsync(urlPostLogin, content).Result
-                Dim responseContent As String = response.Content.ReadAsStringAsync().Result
+                Dim response As HttpResponseMessage =
+                        client.PostAsync(ConfigurationManager.AppSettings("Login"), content).Result
 
-                objectMessageResult.JSON = responseContent
-
-                If response.IsSuccessStatusCode Then
-                    objectMessageResult.ErrorID = Enumeraciones.TipoErroresAPI.Exito
-                ElseIf response.StatusCode = HttpStatusCode.BadRequest Then
-                    objectMessageResult.ErrorID = Enumeraciones.TipoErroresAPI.Advertencia
-                ElseIf response.StatusCode = HttpStatusCode.Unauthorized Then
-                    objectMessageResult.ErrorID = Enumeraciones.TipoErroresAPI.Errors
-                ElseIf response.StatusCode = HttpStatusCode.InternalServerError Then
-                    objectMessageResult.ErrorID = Enumeraciones.TipoErroresAPI.Errors
-                Else
-                    objectMessageResult.ErrorID = Enumeraciones.TipoErroresAPI.Errors
-                End If
-
-                Return objectMessageResult
+                Return response.Content.ReadAsStringAsync().Result
             End Using
+
         Catch ex As Exception
-            objectMessageResult.ErrorID = Enumeraciones.TipoErroresAPI.Errors
-            objectMessageResult.JSON = ex.Message
-            Return objectMessageResult
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function PostVendedor(body As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim json As String = JsonConvert.SerializeObject(body)
+                Dim content As New StringContent(body, Encoding.UTF8, "application/json")
+
+                Dim response As HttpResponseMessage =
+                        client.PostAsync(ConfigurationManager.AppSettings("Vendedor"), content).Result
+
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
         End Try
     End Function
 
 #End Region
 
+#Region "GET"
+    Public Function GetTipoPersona() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("TipoPersona")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetTipoVendedor() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("TipoVendedor")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetCargarVendedores() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("CargarVendedores")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+#End Region
 End Class
+

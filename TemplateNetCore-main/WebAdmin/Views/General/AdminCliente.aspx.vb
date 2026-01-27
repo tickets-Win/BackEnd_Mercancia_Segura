@@ -22,9 +22,13 @@
     Protected Sub ddlTipoPersona_SelectedIndexChanged(sender As Object, e As EventArgs)
         If ddlTipoPersona.SelectedValue = "F" Then
             pnlDatosFiscales.Visible = True
+            pnlRazonSocial.Visible = False
+            pnlNombreCompleto.Visible = True
 
         ElseIf ddlTipoPersona.SelectedValue = "M" Then
             pnlDatosFiscales.Visible = False
+            pnlRazonSocial.Visible = True
+            pnlNombreCompleto.Visible = False
         End If
     End Sub
 End Class

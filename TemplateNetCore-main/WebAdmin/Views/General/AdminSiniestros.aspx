@@ -187,8 +187,8 @@
         <h5 class="border-bottom pb-2">Datos del siniestro</h5>
         <div class="row g-3 mt-2">
             <div class="col-md-4">
-                <label class="form-label">Folio</label>
-                <asp:TextBox ID="txtFolio" runat="server" TextMode="Date" CssClass="form-control"></asp:TextBox>
+                <label class="form-label">N° de reporte</label>
+                <asp:TextBox ID="txtFolio" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Fecha de apertura</label>
@@ -206,7 +206,7 @@
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
-                <label class="form-label">Póliza Maestra</label>
+                <label class="form-label">Póliza maestra</label>
                 <asp:DropDownList ID="ddlPolizaMaestra" CssClass="form-select" runat="server" AutoPostBack="true">
                     <asp:ListItem Text="Póliza Maestra1" Value="PolizaMaestra1"></asp:ListItem>
                     <asp:ListItem Text="Póliza Maestra2" Value="PolizaMaestra2"></asp:ListItem>
@@ -220,7 +220,7 @@
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
-                <label class="form-label">Tipo Siniestro</label>
+                <label class="form-label">Tipo siniestro</label>
                 <asp:DropDownList ID="ddlTipoSiniestro" runat="server" CssClass="form-select">
                     <asp:ListItem>Siniestro 1</asp:ListItem>
                     <asp:ListItem>Siniestro 2</asp:ListItem>
@@ -231,16 +231,20 @@
                 <asp:TextBox ID="txtMercancia" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
             <div class="col-md-4">
-                <label class="form-label">Lugar de Siniestro</label>
+                <label class="form-label">Lugar de siniestro</label>
                 <asp:TextBox ID="txtLugarSiniestro" runat="server" CssClass="form-control"></asp:TextBox>
             </div>           
             <div class="col-md-4">
-                <label class="form-label">Modo de Reclamo</label>
+                <label class="form-label">Monto de reclamo</label>
                 <asp:TextBox ID="txtModoReclamo" runat="server" CssClass="form-control"></asp:TextBox>
             </div>           
             <div class="col-md-4">
                 <label class="form-label">Monto de indemnizacion</label>
                 <asp:TextBox ID="txtMontoIndemnizacion" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>           
+            <div class="col-md-4">
+                <label class="form-label">Suma asegurada</label>
+                <asp:TextBox ID="txtSumaAsegurada" runat="server" CssClass="form-control"></asp:TextBox>
             </div>           
         </div>
     </asp:Panel>

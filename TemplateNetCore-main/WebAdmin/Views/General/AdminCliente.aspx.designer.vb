@@ -167,6 +167,24 @@ Partial Public Class AdminCliente
     Protected WithEvents txtNombre As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control pnlNombreCompleto.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents pnlNombreCompleto As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control txtNombreCompleto.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtNombreCompleto As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control txtRegimenFiscal.
     '''</summary>
     '''<remarks>
@@ -194,13 +212,22 @@ Partial Public Class AdminCliente
     Protected WithEvents txtRFCGenerico As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtNombreRazonSocial.
+    '''Control pnlRazonSocial.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtNombreRazonSocial As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents pnlRazonSocial As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control txtRazonSocial.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtRazonSocial As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtFechaRegistro.

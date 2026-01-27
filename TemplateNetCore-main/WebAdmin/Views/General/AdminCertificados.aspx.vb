@@ -1,4 +1,4 @@
-﻿Public Class AdminCotizaciones
+﻿Public Class AdminCertificados
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -7,7 +7,7 @@
         End If
     End Sub
 
-    Protected Sub btnAgregarCotizacion_Click(sender As Object, e As EventArgs)
+    Protected Sub btnAgregarCertificado_Click(sender As Object, e As EventArgs)
         pnlFormularioCotizaciones.Visible = True
         pnlEncabezado.Visible = False
         PnlTabla.Visible = False

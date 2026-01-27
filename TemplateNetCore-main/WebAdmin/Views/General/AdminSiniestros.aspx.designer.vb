@@ -183,4 +183,13 @@ Partial Public Class AdminSiniestros
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtMontoIndemnizacion As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtSumaAsegurada.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtSumaAsegurada As Global.System.Web.UI.WebControls.TextBox
 End Class

@@ -1,4 +1,4 @@
-﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="login.aspx.vb" Inherits="WebAdmin.login" %>
+﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="login.aspx.vb" Inherits="WebAdmin.login" ValidateRequest="false" UnobtrusiveValidationMode="None" %>
 
 <!DOCTYPE html>
 
@@ -34,6 +34,19 @@
                 background-color: #15b981;
                 border-color: #15b981;
             }
+
+        .mensaje-error {
+            display: block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            margin-bottom: 15px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -43,17 +56,17 @@
                 <img src="../../Resources/Image/logo_MS.png" alt="Logo" width="120" />
             </div>
             <h3 class="text-center mb-4">Iniciar Sesión</h3>
-            <asp:Label ID="lblMensaje" runat="server"></asp:Label>
+            <asp:Label ID="lblMensaje" runat="server" CssClass="mensaje-error" Visible="False"></asp:Label>
             <div class="mb-3">
                 <label for="txtEmail" class="form-label">Correo</label>
                 <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="form-control" />
             </div>
             <div class="mb-3">
                 <label for="txtPassword" class="form-label">Contraseña</label>
-                <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" CssClass="form-control" />
+                <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" CssClass="form-control" />               
             </div>
             <asp:Button ID="btnLogin" runat="server" Text="Entrar" CssClass="btn btn-custom w-100" OnClick="btnLogin_Click" />
-           
+
         </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -101,7 +101,7 @@
                         </asp:HyperLink>
                     </li>
                     <li class="nav-item">
-                        <asp:HyperLink ID="hlVentas" runat="server" NavigateUrl="~/Views/General/AdminSIMs.aspx" CssClass="nav-link text-dark">
+                        <asp:HyperLink ID="hlVentas" runat="server" NavigateUrl="~/Views/General/AdminCertificados.aspx" CssClass="nav-link text-dark">
                     <i class="bi bi-cart-check me-2"></i> Certificados
                         </asp:HyperLink>
                     </li>

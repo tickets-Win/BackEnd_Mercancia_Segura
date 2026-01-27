@@ -64,12 +64,12 @@
             <h4 class="mb-3" style="color: #000; font-weight: bold;">Tipo de cambio</h4>
 
             <div class="mb-3 d-flex align-items-center">
-                <label for="usd" class="form-label me-2" style="width: 90px;">USD:</label>
+                <label for="usd" class="form-label me-2" style="width: 90px;">USD D.O.F:</label>
                 <input type="text" id="usd" class="form-control" placeholder="$ 0.00">
             </div>
 
             <div class="mb-3 d-flex align-items-center">
-                <label for="ventanilla" class="form-label me-2" style="width: 90px;">Ventanilla:</label>
+                <label for="ventanilla" class="form-label me-2" style="width: 90px;">USD Bancario:</label>
                 <input type="text" id="ventanilla" class="form-control" placeholder="$ 0.00">
             </div>
 
