@@ -75,5 +75,6 @@ namespace MercanciaSegura.RestAPI.Models
         public decimal? CuotaAplicableInternacional { get; set; }
         public decimal? CuotaAplicableNacional { get; set; }
         public BeneficiarioPreferenteRequest? Beneficiario { get; set; }
+        public DateTime FechaRegistro { get; set; }
     }
 }
