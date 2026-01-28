@@ -21,10 +21,11 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         }
 
         // Mapear Cliente → ClienteRequest
-        private ClienteRequest MapToRequest(Cliente c)
+        private ClienteResponse MapToResponse(Cliente c)
         {
-            return new ClienteRequest
+            return new ClienteResponse
             {
+                ClienteId = c.ClienteId,
                 Rfc = c.Rfc,
                 RfcGenericoId = c.RfcGenericoId,
                 Telefono = c.Telefono,
@@ -54,7 +55,9 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 CuotaMinimaNacional = c.CuotaMinimaNacional,
                 CuotaAplicableInternacional = c.CuotaAplicableInternacional,
                 CuotaAplicableNacional = c.CuotaAplicableNacional,
-                FechaRegistro = c.FechaRegistro
+                FechaRegistro = c.FechaRegistro,
+                FechaBaja = c.FechaBaja,
+                Clave = c.Clave,
             };
         }
 
@@ -90,24 +93,32 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             cliente.CuotaMinimaNacional = body.CuotaMinimaNacional;
             cliente.CuotaAplicableInternacional = body.CuotaAplicableInternacional;
             cliente.CuotaAplicableNacional = body.CuotaAplicableNacional;
+            cliente.Clave = body.Clave;
         }
 
         public override async Task<IActionResult> GetClientesAsync(string version)
         {
-            var clientes = await _context.Cliente.ToListAsync();
-            return Ok(clientes.Select(MapToRequest));
+            var clientes = await _context.Cliente
+                .Where(c => !c.FechaBaja.HasValue)
+                .ToListAsync();
+
+            return Ok(clientes.Select(MapToResponse));
         }
+
 
         public override async Task<IActionResult> GetClienteByIdAsync(string version, int idCliente)
         {
             var cliente = await _context.Cliente
-                .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
+                .FirstOrDefaultAsync(c =>
+                    c.ClienteId == idCliente &&
+                    !c.FechaBaja.HasValue);
 
             if (cliente == null)
                 return NotFound();
 
-            return Ok(MapToRequest(cliente));
+            return Ok(MapToResponse(cliente));
         }
+
 
         public override async Task<IActionResult> CreateClienteAsync(string version, [FromBody] ClienteRequest body)
         {
@@ -148,12 +159,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 }
                 await transaction.CommitAsync();
 
-
-                return Ok(new
-                {
-                    message = "Cliente y beneficiario creados correctamente",
-                    clienteId = nuevoCliente.ClienteId
-                });
+                return Ok(MapToResponse(nuevoCliente));
             }
             catch (Exception ex)
             {
@@ -218,7 +224,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                 await transaction.CommitAsync();
 
-                return Ok(MapToRequest(cliente));
+                return Ok(MapToResponse(cliente));
             }
             catch (Exception ex)
             {
@@ -234,41 +240,24 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
         public override async Task<IActionResult> DeleteClienteAsync(string version, int idCliente)
         {
-            await using var transaction = await _context.Database.BeginTransactionAsync();
+            var cliente = await _context.Cliente
+                .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
 
-            try
-            {
-                var cliente = await _context.Cliente
-                    .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
+            if (cliente == null)
+                return NotFound();
 
-                if (cliente == null)
-                    return NotFound();
+            if (cliente.FechaBaja.HasValue)
+                return BadRequest(new { message = "El cliente ya está dado de baja" });
 
-                // 1️⃣ Borrar beneficiario si existe
-                var beneficiario = await _context.BeneficiarioPreferente
-                    .FirstOrDefaultAsync(b => b.ClienteId == idCliente);
+            cliente.FechaBaja = DateTime.Now;
+            cliente.EstatusId = 2;
 
-                if (beneficiario != null)
-                    _context.BeneficiarioPreferente.Remove(beneficiario);
+            _context.Entry(cliente).Property(c => c.FechaBaja).IsModified = true;
 
-                // 2️⃣ Borrar cliente
-                _context.Cliente.Remove(cliente);
+            await _context.SaveChangesAsync();
 
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return Ok(new { message = "Cliente eliminado correctamente" });
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-
-                return StatusCode(500, new
-                {
-                    message = "Error al eliminar cliente",
-                    error = ex.Message
-                });
-            }
+            return Ok(new { message = "El cliente ya fue dado de baja" });
         }
+
     }
 }

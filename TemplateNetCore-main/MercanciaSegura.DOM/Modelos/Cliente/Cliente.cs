@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+
 namespace MercanciaSegura.DOM.Modelos.Cliente
 {
     [Table("Cliente")]
@@ -119,6 +120,14 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
 
         [Column("Tipo_Estatus_ID")]
         public int? EstatusId { get; set; }
+
+        [Column("Fecha_Baja")]
+        public DateTime? FechaBaja { get; set; }
+
+        [Column("Clave")]
+        [MaxLength(10)]
+        public string? Clave { get; set; }
+
 
         //Llaves foraneas
 

@@ -67,5 +67,29 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
 
         [Column("Prima_Total", TypeName = "decimal(10,2)")]
         public decimal? PrimaTotal { get; set; }
+
+        [Column("Fecha_Actualizacion")]
+        public DateTime? FechaActualizacion { get; set; }
+
+        [Column("Fecha_Registro")]
+        public DateTime FechaRegistro { get; set; } = DateTime.Now;
+
+        [ForeignKey(nameof(ProductoId))]
+        public Producto? Producto { get; set; }
+
+        [ForeignKey(nameof(ContratanteId))]
+        public Contratante? Contratante { get; set; }
+
+        [ForeignKey(nameof(AseguradoraId))]
+        public Aseguradora? Aseguradora { get; set; }
+
+        [ForeignKey(nameof(SubRamoId))]
+        public SubRamo? SubRamo { get; set; }
+
+        [ForeignKey(nameof(MonedaId))]
+        public Moneda? Moneda { get; set; }
+
+        [ForeignKey(nameof(FormaPagoId))]
+        public FormaPago? FormaPago { get; set; }
     }
 }
