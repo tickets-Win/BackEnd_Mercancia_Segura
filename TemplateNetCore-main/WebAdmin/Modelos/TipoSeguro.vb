@@ -1,6 +1,6 @@
 ﻿Namespace MercanciaSegura.DOM.Modelos
-    Public Class TipoPersona
-        Public Property TipoPersonaId As Integer
+    Public Class TipoSeguro
+        Public Property TipoSeguroId As Integer
         Public Property Tipo As String
     End Class
 End Namespace

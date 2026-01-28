@@ -41,6 +41,15 @@ Partial Public Class AdminVendedor
     Protected WithEvents txtBuscarVendedor As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control ddlTipoEstatusCliente.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlTipoEstatusCliente As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
     '''Control PnlTabla.
     '''</summary>
     '''<remarks>
@@ -66,6 +75,15 @@ Partial Public Class AdminVendedor
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents pnlFormularioVendedor As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control hfVendedorId.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfVendedorId As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
     '''Control lblMensaje.
@@ -246,6 +264,15 @@ Partial Public Class AdminVendedor
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtCorreo As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control pnlGenero.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents pnlGenero As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
     '''Control ddlGenero.

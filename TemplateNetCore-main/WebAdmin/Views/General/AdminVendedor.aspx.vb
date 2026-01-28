@@ -5,11 +5,13 @@ Public Class AdminVendedor
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If Not IsPostBack Then
+            pnlDatosFisica.Visible = True
             pnlRazonSocial.Visible = False
             cargarTipoPersona()
             cargarTipoVendedor()
             CargarVendedores()
             txtFechaRegistro.Text = DateTime.Now.ToString("yyyy-MM-dd")
+            CargarDatos()
         End If
     End Sub
 
@@ -18,18 +20,23 @@ Public Class AdminVendedor
         PnlTabla.Visible = False
         PnlEncabezado.Visible = False
         lblMensaje.Text = "Nuevo Registro"
+
+        ddlEstatus.SelectedValue = "Activo"
+        ddlEstatus.Enabled = False
     End Sub
 
     Protected Sub ddlTipoPersona_SelectedIndexChanged(sender As Object, e As EventArgs)
-        If ddlTipoPersona.SelectedValue = "F" Then
+        If ddlTipoPersona.SelectedValue = "1" Then
             pnlRazonSocial.Visible = False
             pnlDatosFisica.Visible = True
             pnlNombreCompleto.Visible = True
+            pnlGenero.Visible = True
 
-        ElseIf ddlTipoPersona.SelectedValue = "M" Then
+        ElseIf ddlTipoPersona.SelectedValue = "2" Then
             pnlRazonSocial.Visible = True
             pnlDatosFisica.Visible = False
             pnlNombreCompleto.Visible = False
+            pnlGenero.Visible = False
         End If
     End Sub
 
@@ -37,6 +44,7 @@ Public Class AdminVendedor
 
         Dim api As New ConsumoApi()
 
+        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
         Dim tipoVendedorId As Integer = Convert.ToInt32(ddlTipoVendedor.SelectedValue)
 
         Dim comisionValue As Decimal = 0
@@ -45,12 +53,19 @@ Public Class AdminVendedor
         If comisionValue > 100 Then comisionValue = 100
         If comisionValue < 0 Then comisionValue = 0
 
+        Dim nombreCompleto As String
+        If tipoPersonaId = 1 Then
+            nombreCompleto = txtNombre.Text.Trim() & " " & txtApellidoP.Text.Trim() & " " & txtApellidoM.Text.Trim()
+        Else
+            nombreCompleto = txtRazonSocial.Text.Trim()
+        End If
+
         Dim vendedor As New Vendedor With {
         .ApellidoPaterno = txtApellidoP.Text,
         .ApellidoMaterno = txtApellidoM.Text,
         .Nombres = txtNombre.Text,
-        .NombreCompleto = txtNombre.Text & " " & txtApellidoP.Text & " " & txtApellidoM.Text,
-        .TipoPersona = 1,
+        .NombreCompleto = nombreCompleto,
+        .TipoPersonaId = tipoPersonaId,
         .TipoVendedorId = tipoVendedorId,
         .Estatus = (ddlEstatus.SelectedValue = "Activo"),
         .Clave = txtClave.Text,
@@ -68,17 +83,33 @@ Public Class AdminVendedor
             }
 
         Dim json As String = JsonConvert.SerializeObject(vendedor)
-        Dim respuesta As String = api.PostVendedor(json)
+        Dim respuesta As String
 
+        If String.IsNullOrEmpty(hfVendedorId.Value) Then
+            respuesta = api.PostVendedor(json)
+        Else
+            Dim vendedorId As Integer = Convert.ToInt32(hfVendedorId.Value)
+            respuesta = api.PutEditarVendedores(vendedorId, json)
+        End If
 
-        Debug.WriteLine(json)
-
+        CargarVendedores()
+        pnlFormularioVendedor.Visible = False
+        PnlTabla.Visible = True
+        PnlEncabezado.Visible = True
+        LimpiarFormulario()
 
     End Sub
 
     Private Sub cargarTipoPersona()
         Dim api As New ConsumoApi()
         Dim tipoPersona As String = api.GetTipoPersona()
+
+        Dim listaTipoPersona As List(Of TipoPersona) = JsonConvert.DeserializeObject(Of List(Of TipoPersona))(tipoPersona)
+
+        ddlTipoPersona.DataSource = listaTipoPersona
+        ddlTipoPersona.DataTextField = "Tipo"
+        ddlTipoPersona.DataValueField = "TipoPersonaId"
+        ddlTipoPersona.DataBind()
 
     End Sub
     Private Sub cargarTipoVendedor()
@@ -106,5 +137,140 @@ Public Class AdminVendedor
     Protected Sub gvVendedores_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
         gvVendedores.PageIndex = e.NewPageIndex
         CargarVendedores()
+    End Sub
+
+    Private Sub CargarDatos()
+        Dim estatusBD As Boolean = True
+
+        If estatusBD Then
+            ddlEstatus.SelectedValue = "Activo"
+        Else
+            ddlEstatus.SelectedValue = "Suspendido"
+        End If
+    End Sub
+
+    Private Sub LimpiarFormulario()
+        txtNombre.Text = ""
+        txtApellidoP.Text = ""
+        txtApellidoM.Text = ""
+        txtRazonSocial.Text = ""
+        txtClave.Text = ""
+        txtRFC.Text = ""
+        txtDomicilio.Text = ""
+        txtCP.Text = ""
+        txtColonia.Text = ""
+        txtEstado.Text = ""
+        ddlGenero.SelectedIndex = 0
+        txtTelefono.Text = ""
+        txtCorreo.Text = ""
+        txtObservaciones.Text = ""
+        txtComisión.Text = ""
+    End Sub
+
+    Protected Sub gvVendedores_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Editar" Then
+            Dim vendedorId As Integer = Convert.ToInt32(e.CommandArgument)
+            pnlFormularioVendedor.Visible = True
+            PnlTabla.Visible = False
+            PnlEncabezado.Visible = False
+            lblMensaje.Text = "Editar Vendedor"
+
+            EditarVendedor(vendedorId)
+        End If
+
+        If e.CommandName = "Eliminar" Then
+            Dim vendedorId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim api As New ConsumoApi()
+            api.DeleteVendedores(vendedorId)
+            CargarVendedores()
+        End If
+    End Sub
+
+    Protected Sub EditarVendedor(vendedorId As Integer)
+        Dim api As New ConsumoApi()
+        Dim objvendedor As String = api.GetVendedorId(vendedorId)
+
+        Dim vendedor As Vendedor = JsonConvert.DeserializeObject(Of Vendedor)(objvendedor)
+
+        hfVendedorId.Value = vendedor.VendedorId.ToString()
+        txtNombre.Text = vendedor.Nombres
+        txtApellidoP.Text = vendedor.ApellidoPaterno
+        txtApellidoM.Text = vendedor.ApellidoMaterno
+        txtRazonSocial.Text = If(vendedor.TipoPersonaId = 1, vendedor.NombreCompleto, "")
+        txtClave.Text = vendedor.Clave
+        txtRFC.Text = vendedor.Rfc
+        txtDomicilio.Text = vendedor.Domicilio
+        txtCP.Text = vendedor.Cp
+        txtColonia.Text = vendedor.Colonia
+        txtEstado.Text = vendedor.Estado
+        ddlGenero.SelectedValue = vendedor.Genero
+        txtTelefono.Text = vendedor.Telefono
+        txtCorreo.Text = vendedor.CorreoElectronico
+        txtObservaciones.Text = vendedor.Observaciones
+        txtComisión.Text = vendedor.Comision.ToString()
+        ddlEstatus.SelectedValue = If(vendedor.Estatus, "Activo", "Suspendido")
+        ddlEstatus.Enabled = True
+
+        If vendedor.TipoPersonaId = 1 Then
+            pnlRazonSocial.Visible = False
+            pnlDatosFisica.Visible = True
+            pnlNombreCompleto.Visible = True
+            pnlGenero.Visible = True
+        Else
+            pnlRazonSocial.Visible = True
+            pnlDatosFisica.Visible = False
+            pnlNombreCompleto.Visible = False
+            pnlGenero.Visible = False
+        End If
+    End Sub
+
+    Protected Sub btnCancelar_Click(sender As Object, e As EventArgs)
+        CargarVendedores()
+        pnlFormularioVendedor.Visible = False
+        PnlTabla.Visible = True
+        PnlEncabezado.Visible = True
+        LimpiarFormulario()
+    End Sub
+
+    Protected Sub txtBuscarVendedor_TextChanged(sender As Object, e As EventArgs)
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCargarVendedores()
+
+        Dim lista As List(Of Vendedor) =
+        JsonConvert.DeserializeObject(Of List(Of Vendedor))(json)
+
+        Dim texto As String = txtBuscarVendedor.Text.Trim().ToLower()
+
+        Dim filtrados = lista.Where(Function(v) _
+            v.NombreCompleto.ToLower().Contains(texto) OrElse
+            v.Rfc.ToLower().Contains(texto)).ToList()
+
+        gvVendedores.DataSource = filtrados
+        gvVendedores.DataBind()
+    End Sub
+
+    Protected Sub ddlTipoEstatusCliente_SelectedIndexChanged(sender As Object, e As EventArgs)
+        FiltrarVendedoresPorEstatus()
+    End Sub
+
+    Public Sub FiltrarVendedoresPorEstatus()
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCargarVendedores()
+
+        Dim lista As List(Of Vendedor) =
+            JsonConvert.DeserializeObject(Of List(Of Vendedor))(json)
+
+        Select Case ddlTipoEstatusCliente.SelectedValue
+            Case "1"
+                lista = lista.Where(Function(v) v.Estatus = True).ToList()
+
+            Case "2"
+                lista = lista.Where(Function(v) v.Estatus = False).ToList()
+
+            Case Else
+        End Select
+
+        gvVendedores.DataSource = lista
+        gvVendedores.DataBind()
     End Sub
 End Class

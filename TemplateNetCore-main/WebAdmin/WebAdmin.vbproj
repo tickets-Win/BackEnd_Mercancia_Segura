@@ -122,7 +122,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Modelos\Cliente.vb" />
+    <Compile Include="Modelos\OrigenCliente.vb" />
+    <Compile Include="Modelos\rfcGenerico.vb" />
+    <Compile Include="Modelos\TipoCuenta.vb" />
+    <Compile Include="Modelos\TipoEstatus.vb" />
     <Compile Include="Modelos\TipoPersona.vb" />
+    <Compile Include="Modelos\TipoSector.vb" />
+    <Compile Include="Modelos\TipoSeguro.vb" />
     <Compile Include="Modelos\TipoVendedor.vb" />
     <Compile Include="Modelos\Usuario.vb" />
     <Compile Include="Modelos\Vendedor.vb" />
@@ -145,6 +151,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Modelos\RegimenFiscal.vb" />
     <Compile Include="Views\Account\login.aspx.designer.vb">
       <DependentUpon>login.aspx</DependentUpon>
     </Compile>

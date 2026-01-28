@@ -18,6 +18,30 @@
         .action-icon {
             text-decoration: none !important;
         }
+
+        .filtro-estilo {
+            background-color: #f0f4f8;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            padding-right: 1.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23334555" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M5.516 7.548a.625.625 0 0 1 .884 0L10 11.154l3.6-3.606a.625.625 0 0 1 .884.884l-4.134 4.134a.625.625 0 0 1-.884 0L5.516 8.432a.625.625 0 0 1 0-.884z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+        }
+
+            .filtro-estilo:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
+            }
     </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -29,7 +53,15 @@
         </div>
         <div class="mb-4">
             <asp:TextBox ID="txtBuscarVendedor" runat="server" CssClass="form-control"
-                placeholder="🔍 Buscar vendedores..."></asp:TextBox>
+                placeholder="🔍 Buscar vendedores..." AutoPostBack="true" OnTextChanged="txtBuscarVendedor_TextChanged" onkeyup="this.onchange();"></asp:TextBox>
+        </div>
+        <div class="d-flex justify-content-left mb-4">
+            <label for="ddlTipoEstatusCliente" class="form-label visually-hidden">Filtrar</label>
+            <asp:DropDownList ID="ddlTipoEstatusCliente" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoEstatusCliente_SelectedIndexChanged"   >
+                <asp:ListItem Text="-- Todos --" Value="0" />
+                <asp:ListItem Text="Activo" Value="1" />
+                <asp:ListItem Text="Suspendido" Value="2" />
+            </asp:DropDownList>
         </div>
     </asp:Panel>
     <asp:Panel ID="PnlTabla" runat="server">
@@ -38,6 +70,7 @@
                 <asp:GridView ID="gvVendedores" runat="server"
                     CssClass="table table-hover align-middle"
                     AutoGenerateColumns="False"
+                    OnRowCommand="gvVendedores_RowCommand"
                     HeaderStyle-CssClass="table-light"
                     DataKeyNames="VendedorId"
                     AllowPaging="True"
@@ -46,18 +79,17 @@
                     <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
                     <Columns>
                         <asp:BoundField DataField="Clave" HeaderText="Clave" />
-                        <asp:BoundField DataField="Estatus" HeaderText="Estatus" />
+                        <asp:TemplateField HeaderText="Estatus">
+                            <ItemTemplate>
+                                <%# If(Eval("Estatus"), "Activo", "Suspendido") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
                         <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
                         <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
 
                         <asp:TemplateField HeaderText="Acciones">
                             <ItemTemplate>
-                                <asp:LinkButton ID="lnkVer" runat="server" CommandName="Ver" CommandArgument='<%# Eval("VendedorId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Ver">
-                                <i class="bi bi-eye"></i>
-                                </asp:LinkButton>
-
                                 <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("VendedorId") %>'
                                     CssClass="icon-btn action-icon" ToolTip="Editar">
                                 <i class="bi bi-pencil"></i>
@@ -83,14 +115,14 @@
 
     <!-- FORMULARIO DE REGISTRO / EDICIÓN DE VENDEDOR -->
     <asp:Panel ID="pnlFormularioVendedor" runat="server" CssClass="card p-4 mt-4" Visible="false">
-
+        <asp:HiddenField ID="hfVendedorId" runat="server" />
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>
                 <asp:Label ID="lblMensaje" runat="server"></asp:Label>
             </h2>
 
             <div>
-                <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" />
+                <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" OnClick="btnCancelar_Click" />
                 <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClick="btnGuardar_Click" />
             </div>
         </div>
@@ -103,8 +135,6 @@
             <div class="col-md-4">
                 <label class="form-label">Tipo de persona</label>
                 <asp:DropDownList ID="ddlTipoPersona" CssClass="form-select" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoPersona_SelectedIndexChanged">
-                    <asp:ListItem Text="Fisica" Value="Fisica"></asp:ListItem>
-                    <asp:ListItem Text="Moral" Value="Moral"></asp:ListItem>
                 </asp:DropDownList>
             </div>
 
@@ -184,13 +214,13 @@
                 <asp:TextBox ID="txtCorreo" TextMode="Email" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
 
-            <div class="col-md-4">
+            <asp:Panel ID="pnlGenero" runat="server" CssClass="col-md-4">
                 <label class="form-label">Género</label>
                 <asp:DropDownList ID="ddlGenero" runat="server" CssClass="form-select">
                     <asp:ListItem Text="Masculino" Value="M"></asp:ListItem>
                     <asp:ListItem Text="Femenino" Value="F"></asp:ListItem>
                 </asp:DropDownList>
-            </div>
+            </asp:Panel>
             <div class="col-md-4">
                 <label class="form-label">Estado</label>
                 <asp:TextBox ID="txtEstado" runat="server" CssClass="form-control"></asp:TextBox>

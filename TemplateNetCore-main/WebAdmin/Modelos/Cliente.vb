@@ -8,7 +8,8 @@
         Public Property TipoSectorId As Integer?
         Public Property RegimenFiscalId As Integer?
         Public Property BeneficiarioPreferenteId As Integer?
-
+        Public Property EstatusId As Integer?
+        Public Property Clave As String
         Public Property TipoPersona As String
         Public Property Rfc As String
         Public Property RfcGenerico As String

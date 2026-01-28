@@ -9,7 +9,7 @@ Namespace MercanciaSegura.DOM.Modelos
         Public Property ApellidoMaterno As String
         Public Property Nombres As String
         Public Property NombreCompleto As String
-        Public Property TipoPersona As String
+        Public Property TipoPersonaId As Integer?
         Public Property TipoVendedorId As Integer?
         Public Property Estatus As Boolean
         Public Property Clave As String

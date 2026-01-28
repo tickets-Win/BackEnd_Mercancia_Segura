@@ -17,6 +17,10 @@
                 color: #555;
             }
 
+        .action-icon {
+            text-decoration: none !important;
+        }
+
         .filtro-estilo {
             background-color: #f0f4f8;
             border: 1px solid #cbd5e1;
@@ -71,111 +75,48 @@
         </div>
     </asp:Panel>
     <asp:Panel ID="PnlTabla" runat="server">
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col">Clave</th>
-                    <th scope="col">Estatus</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Télefono</th>
-                    <th scope="col">Fecha Registro</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row">F-01</th>
-                    <td>Activo</td>
-                    <td>Carlos López</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-02</th>
-                    <td>Suspendido</td>
-                    <td>Ana García</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-03</th>
-                    <td>Activo</td>
-                    <td>Roberto Pérez</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-04</th>
-                    <td>Moroso</td>
-                    <td>Sofía Martínez</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-05</th>
-                    <td>Suspendido</td>
-                    <td>Carlos López</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-06</th>
-                    <td>Activo</td>
-                    <td>Javier Ruiz</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">F-07</th>
-                    <td>Activo</td>
-                    <td>Elena Sánchez</td>
-                    <td>555-1234</td>
-                    <td>2023-01-15</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="card card-shadow p-4 mb-4">
+            <div style="overflow-x: auto; width: 100%;">
+                <asp:GridView ID="gvClientes" runat="server"
+                    CssClass="table table-hover align-middle"
+                    AutoGenerateColumns="False"
+                    OnRowCommand="gvClientes_RowCommand"
+                    HeaderStyle-CssClass="table-light"
+                    DataKeyNames="ClienteId"
+                    AllowPaging="True"
+                    PageSize="10"
+                    OnPageIndexChanging="gvClientes_PageIndexChanging">
+                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                    <Columns>
+                        <asp:BoundField DataField="Clave" HeaderText="Clave" />
+                        <asp:BoundField DataField="EstatusId" HeaderText="Estatus" />
+                        <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
+                        <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
+                        <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
+
+                        <asp:TemplateField HeaderText="Acciones">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ClienteId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Editar">
+                         <i class="bi bi-pencil"></i>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("ClienteId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                    OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
+                         <i class="bi bi-trash"></i>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("ClienteId") %>'
+                                    CssClass="icon-btn" ToolTip="Enviar correo">
+                         <i class="bi bi-envelope"></i>
+                                </asp:LinkButton>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
     </asp:Panel>
     <asp:Panel ID="pnlTabs" runat="server">
         <ul class="nav nav-tabs mb-4 justify-content-center" id="clienteTabs" role="tablist">
@@ -218,8 +159,6 @@
                     <div class="col-md-4">
                         <label class="form-label">Tipo de persona</label>
                         <asp:DropDownList ID="ddlTipoPersona" CssClass="form-select" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ddlTipoPersona_SelectedIndexChanged">
-                            <asp:ListItem Text="Fisica" Value="F"></asp:ListItem>
-                            <asp:ListItem Text="Moral" Value="M"></asp:ListItem>
                         </asp:DropDownList>
                     </div>
 
@@ -231,9 +170,6 @@
                     <div class="col-md-4">
                         <label class="form-label">Estatus</label>
                         <asp:DropDownList ID="ddlEstatus" CssClass="form-select" runat="server">
-                            <asp:ListItem>Activo</asp:ListItem>
-                            <asp:ListItem>Suspendido</asp:ListItem>
-                            <asp:ListItem>Moroso</asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <asp:Panel ID="pnlDatosFiscales" runat="server">
@@ -260,7 +196,8 @@
                     </asp:Panel>
                     <div class="col-md-4">
                         <label class="form-label">Regimen Fiscal</label>
-                        <asp:TextBox ID="txtRegimenFiscal" runat="server" CssClass="form-control"></asp:TextBox>
+                        <asp:DropDownList ID="ddlRegimenFiscal" CssClass="form-select" runat="server">
+                        </asp:DropDownList>
                     </div>
 
                     <div class="col-md-4">
@@ -270,7 +207,8 @@
 
                     <div class="col-md-4">
                         <label class="form-label">RFC Génerico</label>
-                        <asp:TextBox ID="txtRFCGenerico" runat="server" CssClass="form-control"></asp:TextBox>
+                        <asp:DropDownList ID="ddlRFCGenerico" CssClass="form-select" runat="server">
+                        </asp:DropDownList>
                     </div>
                     <asp:Panel ID="pnlRazonSocial" runat="server" CssClass="col-md-4" Visible="false">
                         <label class="form-label">Razón Social</label>
@@ -284,40 +222,24 @@
                     <div class="col-md-4">
                         <label class="form-label">Seguro que Contrata</label>
                         <asp:DropDownList ID="ddlSeguroContrata" CssClass="form-select" runat="server">
-                            <asp:ListItem Text="-- Selecciona --" Value=""></asp:ListItem>
-                            <asp:ListItem>Interno</asp:ListItem>
-                            <asp:ListItem>Socio</asp:ListItem>
-                            <asp:ListItem>Intermediario</asp:ListItem>
                         </asp:DropDownList>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Tipo de Cuenta</label>
                         <asp:DropDownList ID="ddlTipoCuenta" CssClass="form-select" runat="server">
-                            <asp:ListItem Text="-- Selecciona --" Value=""></asp:ListItem>
-                            <asp:ListItem>Interno</asp:ListItem>
-                            <asp:ListItem>Socio</asp:ListItem>
-                            <asp:ListItem>Intermediario</asp:ListItem>
                         </asp:DropDownList>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Origen Cliente</label>
                         <asp:DropDownList ID="ddlOrigenCliente" CssClass="form-select" runat="server">
-                            <asp:ListItem Text="-- Selecciona --" Value=""></asp:ListItem>
-                            <asp:ListItem>Interno</asp:ListItem>
-                            <asp:ListItem>Socio</asp:ListItem>
-                            <asp:ListItem>Intermediario</asp:ListItem>
                         </asp:DropDownList>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Sector</label>
                         <asp:DropDownList ID="ddlSector" CssClass="form-select" runat="server">
-                            <asp:ListItem Text="-- Selecciona --" Value=""></asp:ListItem>
-                            <asp:ListItem>Interno</asp:ListItem>
-                            <asp:ListItem>Socio</asp:ListItem>
-                            <asp:ListItem>Intermediario</asp:ListItem>
                         </asp:DropDownList>
                     </div>
 

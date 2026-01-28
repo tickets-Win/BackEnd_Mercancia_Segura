@@ -59,6 +59,15 @@ Partial Public Class AdminCliente
     Protected WithEvents PnlTabla As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
+    '''Control gvClientes.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents gvClientes As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
     '''Control pnlTabs.
     '''</summary>
     '''<remarks>
@@ -185,13 +194,13 @@ Partial Public Class AdminCliente
     Protected WithEvents txtNombreCompleto As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtRegimenFiscal.
+    '''Control ddlRegimenFiscal.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtRegimenFiscal As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlRegimenFiscal As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''Control txtRFC.
@@ -203,13 +212,13 @@ Partial Public Class AdminCliente
     Protected WithEvents txtRFC As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtRFCGenerico.
+    '''Control ddlRFCGenerico.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtRFCGenerico As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlRFCGenerico As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''Control pnlRazonSocial.
