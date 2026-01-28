@@ -84,7 +84,10 @@ namespace MercanciaSegura.DOM.Modelos.Vendedor
 
         [Column("Fecha_Registro")]
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
-        
+
+        [Column("Fecha_Baja")]
+        public DateTime? FechaBaja { get; set; }
+
         //Llaves foraneas
         [ForeignKey(nameof(TipoVendedorId))]
         public TipoVendedor? TipoVendedor { get; set; }

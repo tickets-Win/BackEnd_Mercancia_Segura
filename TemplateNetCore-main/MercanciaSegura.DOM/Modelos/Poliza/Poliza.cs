@@ -53,19 +53,43 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [MaxLength(100)]
         public string? OtrosPoliza { get; set; }
 
-        [Column("Prima_Neta", TypeName = "decimal(18,2)")]
+        [Column("Prima_Neta", TypeName = "decimal(10,2)")]
         public decimal? PrimaNeta { get; set; }
 
-        [Column("Derecho_Poliza", TypeName = "decimal(18,2)")]
+        [Column("Derecho_Poliza", TypeName = "decimal(10,2)")]
         public decimal? DerechoPoliza { get; set; }
 
-        [Column("Otros", TypeName = "decimal(18,2)")]
+        [Column("Otros", TypeName = "decimal(10,2)")]
         public decimal? Otros { get; set; }
 
-        [Column("IVA", TypeName = "decimal(18,2)")]
+        [Column("IVA", TypeName = "decimal(10,2)")]
         public decimal? IVA { get; set; }
 
-        [Column("Prima_Total", TypeName = "decimal(18,2)")]
+        [Column("Prima_Total", TypeName = "decimal(10,2)")]
         public decimal? PrimaTotal { get; set; }
+
+        [Column("Fecha_Actualizacion")]
+        public DateTime? FechaActualizacion { get; set; }
+
+        [Column("Fecha_Registro")]
+        public DateTime FechaRegistro { get; set; } = DateTime.Now;
+
+        [ForeignKey(nameof(ProductoId))]
+        public Producto? Producto { get; set; }
+
+        [ForeignKey(nameof(ContratanteId))]
+        public Contratante? Contratante { get; set; }
+
+        [ForeignKey(nameof(AseguradoraId))]
+        public Aseguradora? Aseguradora { get; set; }
+
+        [ForeignKey(nameof(SubRamoId))]
+        public SubRamo? SubRamo { get; set; }
+
+        [ForeignKey(nameof(MonedaId))]
+        public Moneda? Moneda { get; set; }
+
+        [ForeignKey(nameof(FormaPagoId))]
+        public FormaPago? FormaPago { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260128161353_InitialCreate_v3.1")]
+    partial class InitialCreate_v31
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,7 +128,7 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("Fecha_Actualizacion");
 
-                    b.Property<DateTime?>("FechaBaja")
+                    b.Property<DateTime>("FechaBaja")
                         .HasColumnType("datetime2")
                         .HasColumnName("Fecha_Baja");
 
@@ -751,7 +754,7 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("Fecha_Actualizacion");
 
-                    b.Property<DateTime?>("FechaBaja")
+                    b.Property<DateTime>("FechaBaja")
                         .HasColumnType("datetime2")
                         .HasColumnName("Fecha_Baja");
 
