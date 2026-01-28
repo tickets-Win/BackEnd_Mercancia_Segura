@@ -3,8 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MercanciaSegura.RestAPI.Models
 {
-    public class VendedorRequest
+    public class VendedorResponse
     {
+        public int VendedorId { get; set; }
 
         [MaxLength(60)]
         public string? ApellidoPaterno { get; set; }
@@ -18,13 +19,11 @@ namespace MercanciaSegura.RestAPI.Models
         [MaxLength(200)]
         public string? NombreCompleto { get; set; }
 
-        // FK
+        // Llaves foráneas
         public int? TipoPersonaId { get; set; }
-
-        // FK
         public int? TipoVendedorId { get; set; }
 
-        public bool Estatus { get; set; } = true;
+        public bool Estatus { get; set; }
 
         [MaxLength(10)]
         public string? Clave { get; set; }
@@ -36,7 +35,6 @@ namespace MercanciaSegura.RestAPI.Models
         public string? Domicilio { get; set; }
 
         [StringLength(5)]
-        [RegularExpression(@"^\d{5}$", ErrorMessage = "CP inválido")]
         public string? Cp { get; set; }
 
         [MaxLength(60)]
@@ -46,20 +44,21 @@ namespace MercanciaSegura.RestAPI.Models
         public string? Estado { get; set; }
 
         [StringLength(1)]
-        [RegularExpression("M|F", ErrorMessage = "Genero debe ser 'M' o 'F'")]
         public string? Genero { get; set; }
 
         [MaxLength(13)]
         public string? Telefono { get; set; }
 
         [MaxLength(200)]
-        [EmailAddress]
         public string? CorreoElectronico { get; set; }
 
         [MaxLength(200)]
         public string? Observaciones { get; set; }
 
-        [Range(0, 100)]
         public decimal? Comision { get; set; }
+
+        public DateTime FechaRegistro { get; set; }
+
+        public DateTime? FechaBaja { get; set; }
     }
 }

@@ -19,10 +19,11 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         }
 
         // Mapear Vendedor → VendedorRequest
-        private VendedorRequest MapToRequest(Vendedor v)
+        private VendedorResponse MapToResponse(Vendedor v)
         {
-            return new VendedorRequest
-            {
+            return new VendedorResponse
+            {   
+                VendedorId = v.VendedorId,
                 ApellidoPaterno = v.ApellidoPaterno,
                 ApellidoMaterno = v.ApellidoMaterno,
                 Nombres = v.Nombres,
@@ -41,7 +42,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 CorreoElectronico = v.CorreoElectronico,
                 Observaciones = v.Observaciones,
                 Comision = v.Comision,
-                FechaRegistro = v.FechaRegistro
+                FechaRegistro = v.FechaRegistro,
+                FechaBaja = v.FechaBaja,
             };
         }
 
@@ -75,21 +77,28 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         // GET /v1/vendedor
         public override async Task<IActionResult> GetVendedoresAsync(string version)
         {
-            var vendedores = await _context.Vendedor.ToListAsync();
-            return Ok(vendedores.Select(MapToRequest));
+            var vendedores = await _context.Vendedor
+                .Where(v => !v.FechaBaja.HasValue)
+                .ToListAsync();
+
+            return Ok(vendedores.Select(MapToResponse));
         }
+
 
         // GET /v1/vendedor/{id}
         public override async Task<IActionResult> GetVendedorByIdAsync(string version, int idVendedor)
         {
             var vendedor = await _context.Vendedor
-                .FirstOrDefaultAsync(v => v.VendedorId == idVendedor);
+                .FirstOrDefaultAsync(v =>
+                    v.VendedorId == idVendedor &&
+                    !v.FechaBaja.HasValue);
 
             if (vendedor == null)
                 return NotFound();
 
-            return Ok(MapToRequest(vendedor));
+            return Ok(MapToResponse(vendedor));
         }
+
 
         // POST /v1/vendedor
         public override async Task<IActionResult> CreateVendedorAsync(string version, [FromBody] VendedorRequest body)
@@ -107,11 +116,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             _context.Vendedor.Add(vendedor);
             await _context.SaveChangesAsync();
 
-            return Ok(new
-            {
-                message = "Vendedor creado correctamente",
-                vendedorId = vendedor.VendedorId
-            });
+            return Ok(MapToResponse(vendedor));
         }
 
         // PUT /v1/vendedor/{id}
@@ -129,22 +134,31 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             MapToVendedor(vendedor, body);
             await _context.SaveChangesAsync();
 
-            return Ok(MapToRequest(vendedor));
+            return Ok(MapToResponse(vendedor));
         }
 
-        // DELETE /v1/vendedor/{id}
+
         public override async Task<IActionResult> DeleteVendedorAsync(string version, int idVendedor)
-        {
-            var vendedor = await _context.Vendedor
-                .FirstOrDefaultAsync(v => v.VendedorId == idVendedor);
+{
+    var vendedor = await _context.Vendedor
+        .FirstOrDefaultAsync(v => v.VendedorId == idVendedor);
 
-            if (vendedor == null)
-                return NotFound();
+    if (vendedor == null)
+        return NotFound();
 
-            _context.Vendedor.Remove(vendedor);
-            await _context.SaveChangesAsync();
+            if (vendedor.FechaBaja.HasValue)
+                return BadRequest(new { message = "El vendedor ya está dado de baja" });
 
-            return Ok(new { message = "Vendedor eliminado correctamente" });
+    vendedor.FechaBaja = DateTime.Now;
+    vendedor.Estatus = false;
+
+    _context.Entry(vendedor).Property(v => v.FechaBaja).IsModified = true;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "El vendedor ya fue dado de baja" });
         }
+
+
     }
 }
