@@ -356,13 +356,13 @@ Partial Public Class AdminCliente
     Protected WithEvents txtColonia As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtDomicilio.
+    '''Control txtCalle.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtDomicilio As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtCalle As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtCP.
@@ -669,4 +669,40 @@ Partial Public Class AdminCliente
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnGuardarVendedor As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control txtNombreBeneficiarioP.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtNombreBeneficiarioP As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtDomicilioBeneficiario.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtDomicilioBeneficiario As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtRFCBeneficiario.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtRFCBeneficiario As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control btnGuardarBeneficiario.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnGuardarBeneficiario As Global.System.Web.UI.WebControls.Button
 End Class

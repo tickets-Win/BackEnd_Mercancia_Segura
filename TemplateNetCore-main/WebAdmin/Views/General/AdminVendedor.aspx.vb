@@ -1,4 +1,5 @@
 ﻿Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Linq
 Imports WebAdmin.MercanciaSegura.DOM.Modelos
 Public Class AdminVendedor
     Inherits System.Web.UI.Page
@@ -21,7 +22,7 @@ Public Class AdminVendedor
         PnlEncabezado.Visible = False
         lblMensaje.Text = "Nuevo Registro"
 
-        ddlEstatus.SelectedValue = "Activo"
+        ddlEstatus.SelectedValue = "1"
         ddlEstatus.Enabled = False
     End Sub
 
@@ -60,6 +61,12 @@ Public Class AdminVendedor
             nombreCompleto = txtRazonSocial.Text.Trim()
         End If
 
+        Dim correo As String = txtCorreo.Text.Trim()
+
+        If correo = "" Then
+            correo = Nothing
+        End If
+
         Dim vendedor As New Vendedor With {
         .ApellidoPaterno = txtApellidoP.Text,
         .ApellidoMaterno = txtApellidoM.Text,
@@ -67,7 +74,7 @@ Public Class AdminVendedor
         .NombreCompleto = nombreCompleto,
         .TipoPersonaId = tipoPersonaId,
         .TipoVendedorId = tipoVendedorId,
-        .Estatus = (ddlEstatus.SelectedValue = "Activo"),
+        .Estatus = (ddlEstatus.SelectedValue = "1"),
         .Clave = txtClave.Text,
         .Rfc = txtRFC.Text,
         .Domicilio = txtDomicilio.Text,
@@ -76,7 +83,7 @@ Public Class AdminVendedor
         .Estado = txtEstado.Text,
         .Genero = ddlGenero.SelectedValue,
         .Telefono = txtTelefono.Text,
-        .CorreoElectronico = txtCorreo.Text,
+        .CorreoElectronico = correo,
         .Observaciones = txtObservaciones.Text,
         .Comision = comisionValue,
         .FechaRegistro = Date.Now
@@ -84,12 +91,15 @@ Public Class AdminVendedor
 
         Dim json As String = JsonConvert.SerializeObject(vendedor)
         Dim respuesta As String
+        Dim mensajeToast As String = ""
 
         If String.IsNullOrEmpty(hfVendedorId.Value) Then
             respuesta = api.PostVendedor(json)
+            mensajeToast = "Vendedor agregado correctamente"
         Else
             Dim vendedorId As Integer = Convert.ToInt32(hfVendedorId.Value)
             respuesta = api.PutEditarVendedores(vendedorId, json)
+            mensajeToast = "Vendedor editado correctamente"
         End If
 
         CargarVendedores()
@@ -97,6 +107,9 @@ Public Class AdminVendedor
         PnlTabla.Visible = True
         PnlEncabezado.Visible = True
         LimpiarFormulario()
+
+        ClientScript.RegisterStartupScript(Me.GetType(), "toast", "showToast('" & mensajeToast & "', 'success');", True)
+
 
     End Sub
 
@@ -143,9 +156,9 @@ Public Class AdminVendedor
         Dim estatusBD As Boolean = True
 
         If estatusBD Then
-            ddlEstatus.SelectedValue = "Activo"
+            ddlEstatus.SelectedValue = "1"
         Else
-            ddlEstatus.SelectedValue = "Suspendido"
+            ddlEstatus.SelectedValue = "0"
         End If
     End Sub
 
@@ -179,10 +192,22 @@ Public Class AdminVendedor
         End If
 
         If e.CommandName = "Eliminar" Then
-            Dim vendedorId As Integer = Convert.ToInt32(e.CommandArgument)
             Dim api As New ConsumoApi()
-            api.DeleteVendedores(vendedorId)
+            Dim vendedorId As Integer = Convert.ToInt32(e.CommandArgument)
+
+            Dim eliminado As String = api.DeleteVendedores(vendedorId)
+
             CargarVendedores()
+
+            Dim respuestaObj As JObject = JObject.Parse(eliminado)
+            Dim mensaje As String = respuestaObj("message").ToString()
+
+            If mensaje.Contains("exitosamente") Or mensaje.Contains("ya fue dado de baja") Then
+                ClientScript.RegisterStartupScript(Me.GetType(), "toast", "showToast('" & mensaje & "', 'success');", True)
+            Else
+                ClientScript.RegisterStartupScript(Me.GetType(), "toast", "showToast('Error al eliminar el vendedor: " & mensaje & "', 'danger');", True)
+            End If
+
         End If
     End Sub
 
@@ -208,7 +233,7 @@ Public Class AdminVendedor
         txtCorreo.Text = vendedor.CorreoElectronico
         txtObservaciones.Text = vendedor.Observaciones
         txtComisión.Text = vendedor.Comision.ToString()
-        ddlEstatus.SelectedValue = If(vendedor.Estatus, "Activo", "Suspendido")
+        ddlEstatus.SelectedValue = If(vendedor.Estatus, "1", "0")
         ddlEstatus.Enabled = True
 
         If vendedor.TipoPersonaId = 1 Then

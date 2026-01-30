@@ -1,48 +1,7 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminVendedor.aspx.vb" Inherits="WebAdmin.AdminVendedor" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <style>
-        .icon-btn {
-            background: none;
-            border: none;
-            padding: 6px;
-            font-size: 20px;
-            color: #000;
-            cursor: pointer;
-        }
-
-            .icon-btn:hover {
-                color: #555;
-            }
-
-        .action-icon {
-            text-decoration: none !important;
-        }
-
-        .filtro-estilo {
-            background-color: #f0f4f8;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.375rem;
-            padding-right: 1.5rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #334155;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="%23334555" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M5.516 7.548a.625.625 0 0 1 .884 0L10 11.154l3.6-3.606a.625.625 0 0 1 .884.884l-4.134 4.134a.625.625 0 0 1-.884 0L5.516 8.432a.625.625 0 0 1 0-.884z"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 1rem;
-        }
-
-            .filtro-estilo:focus {
-                outline: none;
-                border-color: #3b82f6;
-                box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
-            }
-    </style>
+    <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:Panel ID="PnlEncabezado" runat="server">
@@ -53,11 +12,11 @@
         </div>
         <div class="mb-4">
             <asp:TextBox ID="txtBuscarVendedor" runat="server" CssClass="form-control"
-                placeholder="🔍 Buscar vendedores..." AutoPostBack="true" OnTextChanged="txtBuscarVendedor_TextChanged" onkeyup="this.onchange();"></asp:TextBox>
+                placeholder="🔍 Buscar vendedores..." AutoPostBack="true" OnTextChanged="txtBuscarVendedor_TextChanged"></asp:TextBox>
         </div>
         <div class="d-flex justify-content-left mb-4">
             <label for="ddlTipoEstatusCliente" class="form-label visually-hidden">Filtrar</label>
-            <asp:DropDownList ID="ddlTipoEstatusCliente" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoEstatusCliente_SelectedIndexChanged"   >
+            <asp:DropDownList ID="ddlTipoEstatusCliente" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoEstatusCliente_SelectedIndexChanged">
                 <asp:ListItem Text="-- Todos --" Value="0" />
                 <asp:ListItem Text="Activo" Value="1" />
                 <asp:ListItem Text="Suspendido" Value="2" />
@@ -123,7 +82,7 @@
 
             <div>
                 <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" OnClick="btnCancelar_Click" />
-                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClick="btnGuardar_Click" />
+                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClick="btnGuardar_Click" OnClientClick="return validarCampos();" />
             </div>
         </div>
 
@@ -134,38 +93,38 @@
 
             <div class="col-md-4">
                 <label class="form-label">Tipo de persona</label>
-                <asp:DropDownList ID="ddlTipoPersona" CssClass="form-select" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoPersona_SelectedIndexChanged">
+                <asp:DropDownList ID="ddlTipoPersona" CssClass="form-select required" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoPersona_SelectedIndexChanged">
                 </asp:DropDownList>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Estatus</label>
                 <asp:DropDownList ID="ddlEstatus" CssClass="form-select" runat="server">
-                    <asp:ListItem Text="Activo" Value="Activo"></asp:ListItem>
-                    <asp:ListItem Text="Suspendido" Value="Suspendido"></asp:ListItem>
+                    <asp:ListItem Text="Activo" Value="1"></asp:ListItem>
+                    <asp:ListItem Text="Suspendido" Value="0"></asp:ListItem>
                 </asp:DropDownList>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Tipo Vendedor</label>
-                <asp:DropDownList ID="ddlTipoVendedor" CssClass="form-select" runat="server">
+                <asp:DropDownList ID="ddlTipoVendedor" CssClass="form-select required" runat="server" AutoPostBack="false" onchange="onTipoVendedorChange()">
                 </asp:DropDownList>
             </div>
             <asp:Panel ID="pnlDatosFisica" runat="server">
                 <div class="row g-3 mt-2">
                     <div class="col-md-4">
                         <label class="form-label">Apellido paterno</label>
-                        <asp:TextBox ID="txtApellidoP" runat="server" CssClass="form-control" oninput="llenarNombreCompleto()"></asp:TextBox>
+                        <asp:TextBox ID="txtApellidoP" runat="server" CssClass="form-control required" oninput="llenarNombreCompleto()"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Apellido materno</label>
-                        <asp:TextBox ID="txtApellidoM" runat="server" CssClass="form-control" oninput="llenarNombreCompleto()"></asp:TextBox>
+                        <asp:TextBox ID="txtApellidoM" runat="server" CssClass="form-control required" oninput="llenarNombreCompleto()"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Nombre</label>
-                        <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" oninput="llenarNombreCompleto()"></asp:TextBox>
+                        <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control required" oninput="llenarNombreCompleto()"></asp:TextBox>
                     </div>
                 </div>
             </asp:Panel>
@@ -175,17 +134,17 @@
             </asp:Panel>
             <div class="col-md-4">
                 <label class="form-label">Clave</label>
-                <asp:TextBox ID="txtClave" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtClave" runat="server" CssClass="form-control required"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">RFC</label>
-                <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control required"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Fecha registro</label>
-                <asp:TextBox ID="txtFechaRegistro" TextMode="Date" runat="server" CssClass="form-control" ReadOnly="True"></asp:TextBox>
+                <asp:TextBox ID="txtFechaRegistro" TextMode="Date" runat="server" CssClass="form-control required" ReadOnly="True"></asp:TextBox>
             </div>
             <asp:Panel ID="pnlRazonSocial" runat="server" CssClass="col-md-4">
                 <label class="form-label">Razón / Denominación social</label>
@@ -206,7 +165,7 @@
 
             <div class="col-md-4">
                 <label class="form-label">Teléfono</label>
-                <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control required"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
@@ -246,10 +205,88 @@
 
         <div class="col-md-4">
             <label class="form-label">Comisión</label>
-            <asp:TextBox ID="txtComisión" runat="server" CssClass="form-control"></asp:TextBox>
+            <asp:TextBox ID="txtComisión" runat="server" CssClass="form-control required"></asp:TextBox>
         </div>
 
     </asp:Panel>
+    <script>
+        function onTipoVendedorChange() {
+
+            limpiarValidacion();
+
+            const ddl = document.getElementById('<%= ddlTipoVendedor.ClientID %>');
+            const txtComision = document.getElementById('<%= txtComisión.ClientID %>');
+
+            if (ddl.value === "1") {
+                txtComision.disabled = false;
+                txtComision.classList.add('required');
+            } else {
+                txtComision.disabled = true;
+                txtComision.value = "";
+                txtComision.classList.remove('required');
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var ddlTipoVendedor = document.getElementById('<%= ddlTipoVendedor.ClientID %>');
+            var txtComision = document.getElementById('<%= txtComisión.ClientID %>');
+
+            function toggleComision() {
+                var tipoSeleccionado = ddlTipoVendedor.options[ddlTipoVendedor.selectedIndex].text;
+
+                if (tipoSeleccionado.toLowerCase() === "intermediario") {
+                    txtComision.disabled = false;
+                } else {
+                    txtComision.disabled = true;
+                    txtComision.value = "";
+                }
+            }
+
+            ddlTipoVendedor.addEventListener("change", toggleComision);
+
+            toggleComision();
+        });
+    </script>
+
+    <script>
+        function validarCampos() {
+
+            limpiarValidacion()
+            let campos = document.querySelectorAll('.required');
+            let valido = true;
+
+            campos.forEach(function (campo) {
+                if (campo.disabled) return;
+
+                if (!campo.value.trim()) {
+                    campo.classList.add('is-invalid');
+                    valido = false;
+                } else {
+                    campo.classList.remove('is-invalid');
+                }
+            });
+
+            if (!valido) {
+                showToast('Completa todos los campos obligatorios', 'danger');
+            }
+
+            return valido;
+
+
+        }
+    </script>
+
+    <script>
+        function limpiarValidacion() {
+            let campos = document.querySelectorAll('.required');
+            campos.forEach(function (campo) {
+                campo.classList.remove('is-invalid');
+            });
+        }
+
+    </script>
     <script type="text/javascript">
         function llenarNombreCompleto() {
             var nombre = document.getElementById('<%= txtNombre.ClientID %>').value;
@@ -260,5 +297,25 @@
             document.getElementById('<%= txtNombreCompleto.ClientID %>').value = nombreCompleto.trim();
         }
     </script>
+    <script>
+        function showToast(message, type) {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = `
+        <div class="toast align-items-center text-bg-${type} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+            document.getElementById('alertPlaceholder').append(wrapper);
 
+            setTimeout(() => {
+                wrapper.querySelector('.toast').classList.remove('show');
+                wrapper.remove();
+            }, 3000);
+        }
+    </script>
+
+    <div id="alertPlaceholder" class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;"></div>
 </asp:Content>

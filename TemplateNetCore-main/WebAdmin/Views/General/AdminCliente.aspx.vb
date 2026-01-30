@@ -14,13 +14,14 @@ Public Class AdminCliente
             cargarTipoCuenta()
             cargarOrigenCliente()
             cargarTipoSector()
-            cargarRegimenFiscal()
             cargarRFCGenerico()
             cargarClientes()
         End If
     End Sub
 
     Protected Sub btnAgregarCliente_Click(sender As Object, e As EventArgs)
+        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
+
         pnlFormularioCliente.Visible = True
         PnlTabla.Visible = False
         PnlEncabezado.Visible = False
@@ -28,9 +29,12 @@ Public Class AdminCliente
         pnlTabs.Visible = True
         pnlGestionarCredito.Visible = True
         pnlEstadoCuenta.Visible = True
+
+        cargarRegimenFiscal(tipoPersonaId)
     End Sub
 
     Protected Sub ddlTipoPersona_SelectedIndexChanged(sender As Object, e As EventArgs)
+        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
         If ddlTipoPersona.SelectedValue = "1" Then
             pnlDatosFiscales.Visible = True
             pnlRazonSocial.Visible = False
@@ -41,6 +45,7 @@ Public Class AdminCliente
             pnlRazonSocial.Visible = True
             pnlNombreCompleto.Visible = False
         End If
+        cargarRegimenFiscal(tipoPersonaId)
     End Sub
 
     Private Sub cargarTipoPersona()
@@ -113,14 +118,22 @@ Public Class AdminCliente
         ddlSector.DataValueField = "TipoSectorId"
         ddlSector.DataBind()
     End Sub
-    Private Sub cargarRegimenFiscal()
+    Private Sub cargarRegimenFiscal(tipoPersonaId As Integer)
         Dim api As New ConsumoApi()
         Dim regimenFiscal As String = api.GetRegimenFiscal()
 
         Dim listaRegimenFiscal As List(Of RegimenFiscal) = JsonConvert.DeserializeObject(Of List(Of RegimenFiscal))(regimenFiscal)
 
-        ddlRegimenFiscal.DataSource = listaRegimenFiscal
-        ddlRegimenFiscal.DataTextField = "Descripcion"
+        Dim listaFiltrada As List(Of RegimenFiscal)
+
+        If tipoPersonaId = 1 Then
+            listaFiltrada = listaRegimenFiscal.Where(Function(r) r.AplicaFisica).ToList()
+        Else
+            listaFiltrada = listaRegimenFiscal.Where(Function(r) r.AplicaMoral).ToList()
+        End If
+
+        ddlRegimenFiscal.DataSource = listaFiltrada
+        ddlRegimenFiscal.DataTextField = "CodigoDescripcion"
         ddlRegimenFiscal.DataValueField = "RegimenFiscalId"
         ddlRegimenFiscal.DataBind()
     End Sub
@@ -152,5 +165,55 @@ Public Class AdminCliente
     Protected Sub gvClientes_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
         gvClientes.PageIndex = e.NewPageIndex
         cargarClientes()
+    End Sub
+
+    Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
+        Dim api As New ConsumoApi()
+
+        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
+
+        Dim nombreCompleto As String
+        If tipoPersonaId = 1 Then
+            nombreCompleto = txtNombre.Text.Trim() & " " & txtApellidoP.Text.Trim() & " " & txtApellidoM.Text.Trim()
+        Else
+            nombreCompleto = txtRazonSocial.Text.Trim()
+        End If
+
+        Dim cliente As New Cliente With {
+        .TipoPersona = tipoPersonaId,
+        .Clave = txtClave.Text,
+        .EstatusId = (ddlEstatus.SelectedValue = "Activo"),
+        .ApellidoPaterno = txtApellidoP.Text,
+        .ApellidoMaterno = txtApellidoM.Text,
+        .Nombres = txtNombre.Text,
+        .NombreCompleto = nombreCompleto,
+        .RegimenFiscalId = ddlRegimenFiscal.SelectedValue,
+        .Rfc = txtRFC.Text,
+        .RfcGenerico = ddlRFCGenerico.SelectedValue,
+        .FechaRegistro = Date.Now,
+        .TipoSeguroId = ddlSeguroContrata.SelectedValue,
+        .TipoCuentaId = ddlTipoCuenta.SelectedValue,
+        .OrigenClienteId = ddlOrigenCliente.SelectedValue,
+        .TipoSectorId = ddlSector.SelectedValue,
+        .Telefono = txtTelefono.Text,
+        .CorreoElectronico = txtCorreo.Text,
+        .Nacionalidad = txtNacionalidad.Text,
+        .Pais = ddlPais.SelectedValue,
+        .Estado = ddlEstado.SelectedValue,
+        .Municipio = ddlMunicipio.SelectedValue,
+        .Colonia = txtColonia.Text,
+        .Calle = txtCalle.Text,
+        .Cp = txtCP.Text,
+        .NumeroInt = txtNumeroInterior.Text,
+        .NumeroExt = txtNumeroExterior.Text,
+        .Poblacion = ddlPoblacion.SelectedValue,
+        .CuotaAplicableInternacional = txtCuotaInternacional.Text,
+        .CuotaAplicableNacional = txtCuotaNacional.Text,
+        .CuotaMinimaInternacional = txtMinimoInternacional.Text,
+        .CuotaMinimaNacional = txtMinimoNacional.Text
+        }
+        'correos adicionales
+        'cuotascontenedoressecos,refrigerados,isotanques
+        '.Genero = ddlGenero.SelectedValue,
     End Sub
 End Class

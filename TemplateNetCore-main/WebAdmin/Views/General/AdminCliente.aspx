@@ -3,54 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        .icon-btn {
-            background: none;
-            border: none;
-            padding: 6px;
-            font-size: 20px;
-            color: #000;
-            cursor: pointer;
-        }
-
-            .icon-btn:hover {
-                color: #555;
-            }
-
-        .action-icon {
-            text-decoration: none !important;
-        }
-
-        .filtro-estilo {
-            background-color: #f0f4f8;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.375rem;
-            padding-right: 1.5rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #334155;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="%23334555" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M5.516 7.548a.625.625 0 0 1 .884 0L10 11.154l3.6-3.606a.625.625 0 0 1 .884.884l-4.134 4.134a.625.625 0 0 1-.884 0L5.516 8.432a.625.625 0 0 1 0-.884z"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 1rem;
-        }
-
-            .filtro-estilo:focus {
-                outline: none;
-                border-color: #3b82f6;
-                box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
-            }
-
-        .nav-tabs .nav-link.active {
-            color: #000 !important;
-            background-color: #f8f9fa !important;
-            border-color: #dee2e6 #dee2e6 #fff;
-        }
-    </style>
+    <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:Panel ID="PnlEncabezado" runat="server">
@@ -147,7 +100,7 @@
 
                     <div>
                         <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" />
-                        <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" />
+                        <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClick="btnGuardar_Click" />
                     </div>
                 </div>
 
@@ -304,7 +257,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label">Calle</label>
-                        <asp:TextBox ID="txtDomicilio" runat="server" CssClass="form-control"></asp:TextBox>
+                        <asp:TextBox ID="txtCalle" runat="server" CssClass="form-control"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
@@ -458,7 +411,7 @@
                                 <h5>Beneficiario Preferente</h5>
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <div>
-                                        <button type="button" class="btn btn-primary btn-add" data-bs-toggle="modal" data-bs-target="#modalAgregarVendedor">
+                                        <button type="button" class="btn btn-primary btn-add" data-bs-toggle="modal" data-bs-target="#modalAgregarBeneficiario">
                                             Agregar Beneficiario
                                         </button>
                                     </div>
@@ -581,6 +534,34 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <asp:Button ID="btnGuardarVendedor" runat="server" CssClass="btn btn-primary" Text="Guardar" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalAgregarBeneficiario" tabindex="-1" aria-labelledby="modalAgregarBeneficiarioLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAgregarBeneficiarioLabel">Agregar Beneficiario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h6>Nombre</h6>
+                        <asp:TextBox ID="txtNombreBeneficiarioP" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Domicilio</h6>
+                        <asp:TextBox ID="txtDomicilioBeneficiario" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+                    <div class="mb-3">
+                        <h6>RFC</h6>
+                        <asp:TextBox ID="txtRFCBeneficiario" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <asp:Button ID="btnGuardarBeneficiario" runat="server" CssClass="btn btn-primary" Text="Guardar" />
                 </div>
             </div>
         </div>

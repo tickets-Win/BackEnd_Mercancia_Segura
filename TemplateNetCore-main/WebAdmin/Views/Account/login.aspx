@@ -10,44 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        body {
-            background-color: #f5f7fb;
-        }
-
-        .login-card {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            background-color: #fff;
-        }
-
-        .btn-custom {
-            background-color: #18CE91;
-            border-color: #18CE91;
-            color: #fff;
-        }
-
-            .btn-custom:hover {
-                background-color: #15b981;
-                border-color: #15b981;
-            }
-
-        .mensaje-error {
-            display: block;
-            background-color: #e74c3c;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-            margin-bottom: 15px;
-            text-align: center;
-        }
-    </style>
+    <link href="../../Content/site.css" rel="stylesheet" />   
 </head>
 <body>
     <form id="form1" runat="server">
