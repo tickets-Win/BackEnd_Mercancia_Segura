@@ -147,7 +147,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         return NotFound();
 
             if (vendedor.FechaBaja.HasValue)
-                return BadRequest(new { message = "El vendedor ya está dado de baja" });
+                return BadRequest(new { message = "El vendedor se ha eliminado correctamente" });
 
     vendedor.FechaBaja = DateTime.Now;
     vendedor.Estatus = false;
@@ -156,7 +156,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
     await _context.SaveChangesAsync();
 
-    return Ok(new { message = "El vendedor ya fue dado de baja" });
+    return Ok(new { message = "El vendedor ya fue eliminado" });
         }
 
 

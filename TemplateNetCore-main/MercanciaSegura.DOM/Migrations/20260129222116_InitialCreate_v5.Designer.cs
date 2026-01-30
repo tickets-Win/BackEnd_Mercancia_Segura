@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260129222116_InitialCreate_v5")]
+    partial class InitialCreate_v5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -547,12 +550,12 @@ namespace MercanciaSegura.DOM.Migrations
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.TipoTarifa", b =>
                 {
-                    b.Property<int>("TipoTarifaId")
+                    b.Property<int>("ContenedoresRefrigeradosTarifaId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("Tipo_Tarifa_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TipoTarifaId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContenedoresRefrigeradosTarifaId"));
 
                     b.Property<string>("Tarifa")
                         .IsRequired()
@@ -560,7 +563,7 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("Tarifa");
 
-                    b.HasKey("TipoTarifaId");
+                    b.HasKey("ContenedoresRefrigeradosTarifaId");
 
                     b.ToTable("Tipo_Tarifa");
                 });
@@ -1098,7 +1101,7 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Colonia");
 
                     b.Property<decimal?>("Comision")
-                        .HasColumnType("decimal(10,2)")
+                        .HasColumnType("decimal(5,2)")
                         .HasColumnName("Comision");
 
                     b.Property<string>("CorreoElectronico")
