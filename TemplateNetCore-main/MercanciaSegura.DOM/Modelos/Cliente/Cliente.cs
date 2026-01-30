@@ -128,6 +128,11 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         [MaxLength(10)]
         public string? Clave { get; set; }
 
+        [Column("Genero")]
+        [StringLength(1)]
+        public string? Genero { get; set; }
+
+
 
         //Llaves foraneas
 
@@ -155,8 +160,13 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         [ForeignKey(nameof(RfcGenericoId))]
         public RfcGenerico? RfcGenerico { get; set; }
 
-        public ICollection<BeneficiarioPreferente> BeneficiariosPreferentes { get; set; }
-    = new List<BeneficiarioPreferente>();
+        public ICollection<BeneficiarioPreferente> BeneficiariosPreferentes { get; set; } = new List<BeneficiarioPreferente>();
+
+        public ICollection<Cuota> Cuota { get; set; } = new List<Cuota>();
+
+        public ICollection<Correos> Correos { get; set; } = new List<Correos>();
+
+        public ICollection<ClienteVendedor> ClienteVendedor { get; set; } = new List<ClienteVendedor>();
 
 
     }

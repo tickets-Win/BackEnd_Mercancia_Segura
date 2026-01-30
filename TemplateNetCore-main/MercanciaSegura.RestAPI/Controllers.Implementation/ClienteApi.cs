@@ -58,6 +58,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 FechaRegistro = c.FechaRegistro,
                 FechaBaja = c.FechaBaja,
                 Clave = c.Clave,
+                FechaActualizacion = c.FechaActualizacion,
+                Genero = c.Genero,
             };
         }
 
@@ -94,6 +96,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             cliente.CuotaAplicableInternacional = body.CuotaAplicableInternacional;
             cliente.CuotaAplicableNacional = body.CuotaAplicableNacional;
             cliente.Clave = body.Clave;
+            cliente.Genero = body.Genero;
         }
 
         public override async Task<IActionResult> GetClientesAsync(string version)
@@ -120,13 +123,15 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         }
 
 
-        public override async Task<IActionResult> CreateClienteAsync(string version, [FromBody] ClienteRequest body)
+
+        public override async Task<IActionResult> CreateClienteAsync(string version,[FromBody] ClienteRequest body)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
                     .Where(ms => ms.Value.Errors.Count > 0)
-                    .Select(ms => new {
+                    .Select(ms => new
+                    {
                         Field = ms.Key,
                         Errors = ms.Value.Errors.Select(e => e.ErrorMessage)
                     });
@@ -138,12 +143,14 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             try
             {
+                // 1️⃣ Crear Cliente
                 var nuevoCliente = new Cliente();
                 MapToCliente(nuevoCliente, body);
 
                 _context.Cliente.Add(nuevoCliente);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // necesario para obtener ClienteId
 
+                // 2️⃣ Beneficiario Preferente
                 if (body.Beneficiario != null)
                 {
                     var beneficiario = new BeneficiarioPreferente
@@ -155,15 +162,72 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     };
 
                     _context.BeneficiarioPreferente.Add(beneficiario);
-                    await _context.SaveChangesAsync();
                 }
+
+                // 3️⃣ Correos
+                if (body.Correos != null)
+                {
+                    _context.Correos.Add(new Correos
+                    {
+                        ClienteId = nuevoCliente.ClienteId,
+                        Correo = body.Correos.Correo,
+                        TipoCorreoId = body.Correos.TipoCorreoId
+                    });
+                }
+
+
+
+                // 4️⃣ Cliente - Vendedor
+                if (body.ClienteVendedor != null)
+                {
+                    var clienteVendedor = new ClienteVendedor
+                    {
+                        ClienteId = nuevoCliente.ClienteId,
+                        VendedorId = body.ClienteVendedor.VendedorId,
+                        Comision = body.ClienteVendedor.Comision
+                    };
+
+                    _context.ClienteVendedor.Add(clienteVendedor);
+                }
+
+                // 5️⃣ Cuota
+                if (body.Cuota != null)
+                {
+                    var cuota = new Cuota
+                    {
+                        ClienteId = nuevoCliente.ClienteId,
+                        TipoCuotaId = body.Cuota.TipoCuotaId,
+                        TipoTarifaId = body.Cuota.TipoTarifaId,
+                        Monto = body.Cuota.Monto
+                    };
+
+                    _context.Cuota.Add(cuota);
+                }
+
+                if (body.ClienteCredito != null)
+                {
+                    var clienteCredito = new ClienteCredito
+                    {
+                        ClienteId = nuevoCliente.ClienteId,
+                        DiasDeCredito = body.ClienteCredito.DiasDeCredito,
+                        MetodoDePago = body.ClienteCredito.MetodoDePago,
+                        NumeroCuenta = body.ClienteCredito.NumeroCuenta,
+                        LimiteDeCredito = body.ClienteCredito.LimiteDeCredito,
+                        DiasDePago = body.ClienteCredito.DiasDePago,
+                        DiasDeRevision = body.ClienteCredito.DiasDeRevision,
+                        Saldo = body.ClienteCredito.Saldo
+                    };
+                    _context.ClienteCredito.Add(clienteCredito);
+                }
+
+                // 6️⃣ Guardar TODO
+                await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
                 return Ok(MapToResponse(nuevoCliente));
             }
             catch (Exception ex)
             {
-                // 4️⃣ Revertir TODO
                 await transaction.RollbackAsync();
 
                 return StatusCode(500, new
@@ -174,6 +238,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             }
         }
 
+
         public override async Task<IActionResult> UpdateClienteAsync(string version, int idCliente, [FromBody] ClienteRequest body)
         {
             if (!ModelState.IsValid)
@@ -183,16 +248,19 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             try
             {
+                // 1️⃣ Cliente
                 var cliente = await _context.Cliente
-                .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
+                    .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
 
                 if (cliente == null)
                     return NotFound();
-                // 1️⃣ Actualizar cliente
-                MapToCliente(cliente, body);
-                await _context.SaveChangesAsync();
 
-                // 2️⃣ Actualizar o crear beneficiario
+                MapToCliente(cliente, body);
+
+                cliente.FechaActualizacion = DateTime.Now;
+
+
+                // 2️⃣ Beneficiario
                 if (body.Beneficiario != null)
                 {
                     var beneficiario = await _context.BeneficiarioPreferente
@@ -200,28 +268,128 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                     if (beneficiario != null)
                     {
-                        // 🔁 UPDATE
                         beneficiario.Nombre = body.Beneficiario.Nombre;
                         beneficiario.RFC = body.Beneficiario.RFC;
                         beneficiario.Domicilio = body.Beneficiario.Domicilio;
                     }
                     else
                     {
-                        // ➕ INSERT
-                        beneficiario = new BeneficiarioPreferente
+                        _context.BeneficiarioPreferente.Add(new BeneficiarioPreferente
                         {
                             ClienteId = idCliente,
                             Nombre = body.Beneficiario.Nombre,
                             RFC = body.Beneficiario.RFC,
                             Domicilio = body.Beneficiario.Domicilio
-                        };
-
-                        _context.BeneficiarioPreferente.Add(beneficiario);
+                        });
                     }
-
-                    await _context.SaveChangesAsync();
                 }
 
+                // 3️⃣ Correos
+                if (body.Correos != null)
+                {
+                    var correo = await _context.Correos
+                        .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
+
+                    if (correo != null)
+                    {
+                        correo.Correo = body.Correos.Correo;
+                        correo.TipoCorreoId = body.Correos.TipoCorreoId;
+                    }
+                    else
+                    {
+                        _context.Correos.Add(new Correos
+                        {
+                            ClienteId = idCliente,
+                            Correo = body.Correos.Correo,
+                            TipoCorreoId = body.Correos.TipoCorreoId
+                        });
+                    }
+                }
+
+                // 4️⃣ Cliente - Vendedor
+                if (body.ClienteVendedor != null)
+                {
+                    var clienteVendedor = await _context.ClienteVendedor
+                        .FirstOrDefaultAsync(cv => cv.ClienteId == idCliente);
+
+                    if (clienteVendedor != null)
+                    {
+                        clienteVendedor.VendedorId = body.ClienteVendedor.VendedorId;
+                        clienteVendedor.Comision = body.ClienteVendedor.Comision;
+                    }
+                    else
+                    {
+                        _context.ClienteVendedor.Add(new ClienteVendedor
+                        {
+                            ClienteId = idCliente,
+                            VendedorId = body.ClienteVendedor.VendedorId,
+                            Comision = body.ClienteVendedor.Comision
+                        });
+                    }
+                }
+
+                // 5️⃣ Cuota
+                if (body.Cuota != null)
+                {
+                    var cuota = await _context.Cuota
+                        .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
+
+                    if (cuota != null)
+                    {
+                        cuota.TipoCuotaId = body.Cuota.TipoCuotaId;
+                        cuota.TipoTarifaId = body.Cuota.TipoTarifaId;
+                        cuota.Monto = body.Cuota.Monto;
+                    }
+                    else
+                    {
+                        _context.Cuota.Add(new Cuota
+                        {
+                            ClienteId = idCliente,
+                            TipoCuotaId = body.Cuota.TipoCuotaId,
+                            TipoTarifaId = body.Cuota.TipoTarifaId,
+                            Monto = body.Cuota.Monto
+                        });
+                    }
+                }
+
+                // Cliente Crédito (UPDATE / UPSERT)
+                if (body.ClienteCredito != null)
+                {
+                    var clienteCredito = await _context.ClienteCredito
+                        .FirstOrDefaultAsync(cc => cc.ClienteId == idCliente);
+
+                    if (clienteCredito != null)
+                    {
+                        // 🔁 UPDATE
+                        clienteCredito.DiasDeCredito = body.ClienteCredito.DiasDeCredito;
+                        clienteCredito.MetodoDePago = body.ClienteCredito.MetodoDePago;
+                        clienteCredito.NumeroCuenta = body.ClienteCredito.NumeroCuenta;
+                        clienteCredito.LimiteDeCredito = body.ClienteCredito.LimiteDeCredito;
+                        clienteCredito.DiasDePago = body.ClienteCredito.DiasDePago;
+                        clienteCredito.DiasDeRevision = body.ClienteCredito.DiasDeRevision;
+                        clienteCredito.Saldo = body.ClienteCredito.Saldo;
+                    }
+                    else
+                    {
+                        // ➕ INSERT (solo si no existe)
+                        _context.ClienteCredito.Add(new ClienteCredito
+                        {
+                            ClienteId = idCliente,
+                            DiasDeCredito = body.ClienteCredito.DiasDeCredito,
+                            MetodoDePago = body.ClienteCredito.MetodoDePago,
+                            NumeroCuenta = body.ClienteCredito.NumeroCuenta,
+                            LimiteDeCredito = body.ClienteCredito.LimiteDeCredito,
+                            DiasDePago = body.ClienteCredito.DiasDePago,
+                            DiasDeRevision = body.ClienteCredito.DiasDeRevision,
+                            Saldo = body.ClienteCredito.Saldo
+                        });
+                    }
+                }
+
+
+
+                // 6️⃣ Guardar TODO
+                await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
                 return Ok(MapToResponse(cliente));
@@ -232,11 +400,12 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                 return StatusCode(500, new
                 {
-                    message = "Error al actualizar cliente y beneficiario",
+                    message = "Error al actualizar cliente",
                     error = ex.Message
                 });
             }
         }
+
 
         public override async Task<IActionResult> DeleteClienteAsync(string version, int idCliente)
         {
@@ -247,7 +416,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 return NotFound();
 
             if (cliente.FechaBaja.HasValue)
-                return BadRequest(new { message = "El cliente ya está dado de baja" });
+                return BadRequest(new { message = "El cliente se ha eliminado correctamente" });
 
             cliente.FechaBaja = DateTime.Now;
             cliente.EstatusId = 2;
@@ -256,7 +425,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "El cliente ya fue dado de baja" });
+            return Ok(new { message = "El cliente ya fue eliminado" });
         }
 
     }

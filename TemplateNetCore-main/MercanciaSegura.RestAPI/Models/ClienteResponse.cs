@@ -43,9 +43,13 @@ namespace MercanciaSegura.RestAPI.Models
 
         public DateTime FechaRegistro { get; set; }
 
+        public DateTime? FechaActualizacion { get; set; }
+
         public DateTime? FechaBaja { get; set; }
 
         public string? Clave { get; set; }
+
+        public string? Genero { get; set; }
 
     }
 }
