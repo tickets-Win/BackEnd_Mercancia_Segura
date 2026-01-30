@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MercanciaSegura.DOM.Modelos.Poliza.Enum;
 
 namespace MercanciaSegura.DOM.Modelos.Poliza
 {
@@ -35,8 +34,8 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         public string? Estatus { get; set; }
 
         [Column("Tipo_Poliza")]
-        [MaxLength(50)]
-        public TipoPolizaEnum TipoPoliza { get; set; }
+        [MaxLength(200)]
+        public string? TipoPoliza { get; set; }
 
 
         [Column("Numero_Poliza")]

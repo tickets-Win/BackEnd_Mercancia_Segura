@@ -75,7 +75,7 @@ namespace MercanciaSegura.DOM.Modelos.Vendedor
         [MaxLength(200)]
         public string? Observaciones { get; set; }
 
-        [Column("Comision", TypeName = "decimal(5,2)")]
+        [Column("Comision", TypeName = "decimal(10,2)")]
         public decimal? Comision { get; set; }
 
 

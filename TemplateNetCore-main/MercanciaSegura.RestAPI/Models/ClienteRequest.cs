@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using MercanciaSegura.DOM.Modelos;
+using MercanciaSegura.DOM.Modelos.Cliente;
 namespace MercanciaSegura.RestAPI.Models
 {
     public class ClienteRequest
@@ -13,7 +15,7 @@ namespace MercanciaSegura.RestAPI.Models
         [MaxLength(13)]
         public string? Telefono { get; set; }
 
-        [EmailAddress, MaxLength(200)]
+        [MaxLength(200)]
         public string? CorreoElectronico { get; set; }
 
         [MaxLength(30)]
@@ -78,6 +80,18 @@ namespace MercanciaSegura.RestAPI.Models
 
         [MaxLength(10)]
         public string? Clave { get; set; }
+
+        [StringLength(1)]
+        [RegularExpression("M|F", ErrorMessage = "Genero debe ser 'M' o 'F'")]
+        public string? Genero { get; set; }
+
+        public CorreosRequest? Correos { get; set; }
+
+        public CuotaRequest? Cuota { get; set; }
+
+        public ClienteVendedorRequest? ClienteVendedor { get; set; }
+
+        public ClienteCreditoRequest? ClienteCredito { get; set; }
 
     }
 }
