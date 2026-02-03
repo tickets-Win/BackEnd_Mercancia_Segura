@@ -164,49 +164,70 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     _context.BeneficiarioPreferente.Add(beneficiario);
                 }
 
-                // 3️⃣ Correos
-                if (body.Correos != null)
+                // 3️⃣ Correos (LISTA)
+                if (body.Correos != null && body.Correos.Any())
                 {
-                    _context.Correos.Add(new Correos
+                    foreach (var c in body.Correos)
                     {
-                        ClienteId = nuevoCliente.ClienteId,
-                        Correo = body.Correos.Correo,
-                        TipoCorreoId = body.Correos.TipoCorreoId
-                    });
+                        _context.Correos.Add(new Correos
+                        {
+                            ClienteId = nuevoCliente.ClienteId,
+                            Correo = c.Correo,
+                            TipoCorreoId = c.TipoCorreoId
+                        });
+                    }
                 }
 
 
-
-                // 4️⃣ Cliente - Vendedor
-                if (body.ClienteVendedor != null)
+                // 4️⃣ Cliente - Vendedores (LISTA)
+                if (body.Vendedores != null && body.Vendedores.Any())
                 {
-                    var clienteVendedor = new ClienteVendedor
-                    {
-                        ClienteId = nuevoCliente.ClienteId,
-                        VendedorId = body.ClienteVendedor.VendedorId,
-                        Comision = body.ClienteVendedor.Comision
-                    };
+                    var vendedorIds = body.Vendedores
+                        .Select(v => v.VendedorId)
+                        .Distinct()
+                        .ToList();
 
-                    _context.ClienteVendedor.Add(clienteVendedor);
+                    if (vendedorIds.Count != body.Vendedores.Count)
+                        return BadRequest("No se permiten vendedores duplicados");
+
+                    foreach (var v in body.Vendedores)
+                    {
+                        // Validar que el vendedor exista
+                        var existeVendedor = await _context.Vendedor
+                            .AnyAsync(x => x.VendedorId == v.VendedorId);
+
+                        if (!existeVendedor)
+                            return BadRequest($"El vendedor {v.VendedorId} no existe");
+
+                        _context.ClienteVendedor.Add(new ClienteVendedor
+                        {
+                            ClienteId = nuevoCliente.ClienteId,
+                            VendedorId = v.VendedorId,
+                            Comision = v.Comision
+                        });
+                    }
                 }
 
-                // 5️⃣ Cuota
-                if (body.Cuota != null)
-                {
-                    var cuota = new Cuota
-                    {
-                        ClienteId = nuevoCliente.ClienteId,
-                        TipoCuotaId = body.Cuota.TipoCuotaId,
-                        TipoTarifaId = body.Cuota.TipoTarifaId,
-                        Monto = body.Cuota.Monto
-                    };
 
-                    _context.Cuota.Add(cuota);
+                // 5️⃣ Cuotas (LISTA)
+                if (body.Cuotas != null && body.Cuotas.Any())
+                {
+                    foreach (var c in body.Cuotas)
+                    {
+                        _context.Cuota.Add(new Cuota
+                        {
+                            ClienteId = nuevoCliente.ClienteId,
+                            TipoCuotaId = c.TipoCuotaId,
+                            TipoTarifaId = c.TipoTarifaId,
+                            Monto = c.Monto
+                        });
+                    }
                 }
 
+                // 6️⃣ Cliente Crédito (CREATE)
                 if (body.ClienteCredito != null)
                 {
-                    var clienteCredito = new ClienteCredito
+                    _context.ClienteCredito.Add(new ClienteCredito
                     {
                         ClienteId = nuevoCliente.ClienteId,
                         DiasDeCredito = body.ClienteCredito.DiasDeCredito,
@@ -216,9 +237,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                         DiasDePago = body.ClienteCredito.DiasDePago,
                         DiasDeRevision = body.ClienteCredito.DiasDeRevision,
                         Saldo = body.ClienteCredito.Saldo
-                    };
-                    _context.ClienteCredito.Add(clienteCredito);
+                    });
                 }
+
+
 
                 // 6️⃣ Guardar TODO
                 await _context.SaveChangesAsync();
@@ -284,73 +306,71 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     }
                 }
 
-                // 3️⃣ Correos
+                // 3️⃣ Correos (REEMPLAZAR)
                 if (body.Correos != null)
                 {
-                    var correo = await _context.Correos
-                        .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
+                    var actuales = await _context.Correos
+                        .Where(c => c.ClienteId == idCliente)
+                        .ToListAsync();
 
-                    if (correo != null)
-                    {
-                        correo.Correo = body.Correos.Correo;
-                        correo.TipoCorreoId = body.Correos.TipoCorreoId;
-                    }
-                    else
+                    _context.Correos.RemoveRange(actuales);
+
+                    foreach (var c in body.Correos)
                     {
                         _context.Correos.Add(new Correos
                         {
                             ClienteId = idCliente,
-                            Correo = body.Correos.Correo,
-                            TipoCorreoId = body.Correos.TipoCorreoId
+                            Correo = c.Correo,
+                            TipoCorreoId = c.TipoCorreoId
                         });
                     }
                 }
 
-                // 4️⃣ Cliente - Vendedor
-                if (body.ClienteVendedor != null)
-                {
-                    var clienteVendedor = await _context.ClienteVendedor
-                        .FirstOrDefaultAsync(cv => cv.ClienteId == idCliente);
 
-                    if (clienteVendedor != null)
-                    {
-                        clienteVendedor.VendedorId = body.ClienteVendedor.VendedorId;
-                        clienteVendedor.Comision = body.ClienteVendedor.Comision;
-                    }
-                    else
+                // 4️⃣ Cliente - Vendedores (REEMPLAZAR)
+                if (body.Vendedores != null)
+                {
+                    // Eliminar relaciones actuales
+                    var actuales = await _context.ClienteVendedor
+                        .Where(cv => cv.ClienteId == idCliente)
+                        .ToListAsync();
+
+                    _context.ClienteVendedor.RemoveRange(actuales);
+
+                    // Insertar nuevas
+                    foreach (var v in body.Vendedores)
                     {
                         _context.ClienteVendedor.Add(new ClienteVendedor
                         {
                             ClienteId = idCliente,
-                            VendedorId = body.ClienteVendedor.VendedorId,
-                            Comision = body.ClienteVendedor.Comision
+                            VendedorId = v.VendedorId,
+                            Comision = v.Comision
                         });
                     }
                 }
 
-                // 5️⃣ Cuota
-                if (body.Cuota != null)
-                {
-                    var cuota = await _context.Cuota
-                        .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
 
-                    if (cuota != null)
-                    {
-                        cuota.TipoCuotaId = body.Cuota.TipoCuotaId;
-                        cuota.TipoTarifaId = body.Cuota.TipoTarifaId;
-                        cuota.Monto = body.Cuota.Monto;
-                    }
-                    else
+                // 5️⃣ Cuotas (LISTA)
+                if (body.Cuotas != null)
+                {
+                    var cuotasActuales = await _context.Cuota
+                        .Where(c => c.ClienteId == idCliente)
+                        .ToListAsync();
+
+                    _context.Cuota.RemoveRange(cuotasActuales);
+
+                    foreach (var c in body.Cuotas)
                     {
                         _context.Cuota.Add(new Cuota
                         {
                             ClienteId = idCliente,
-                            TipoCuotaId = body.Cuota.TipoCuotaId,
-                            TipoTarifaId = body.Cuota.TipoTarifaId,
-                            Monto = body.Cuota.Monto
+                            TipoCuotaId = c.TipoCuotaId,
+                            TipoTarifaId = c.TipoTarifaId,
+                            Monto = c.Monto
                         });
                     }
                 }
+
 
                 // Cliente Crédito (UPDATE / UPSERT)
                 if (body.ClienteCredito != null)

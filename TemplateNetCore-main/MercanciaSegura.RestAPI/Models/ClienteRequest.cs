@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using MercanciaSegura.DOM.Modelos;
 using MercanciaSegura.DOM.Modelos.Cliente;
@@ -85,11 +86,11 @@ namespace MercanciaSegura.RestAPI.Models
         [RegularExpression("M|F", ErrorMessage = "Genero debe ser 'M' o 'F'")]
         public string? Genero { get; set; }
 
-        public CorreosRequest? Correos { get; set; }
+        public List<CorreosRequest>? Correos { get; set; }
 
-        public CuotaRequest? Cuota { get; set; }
+        public List<CuotaRequest> Cuotas { get; set; }
 
-        public ClienteVendedorRequest? ClienteVendedor { get; set; }
+        public List<ClienteVendedorRequest>? Vendedores { get; set; }
 
         public ClienteCreditoRequest? ClienteCredito { get; set; }
 
