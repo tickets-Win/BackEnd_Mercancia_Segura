@@ -162,7 +162,7 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
 
         public ICollection<BeneficiarioPreferente> BeneficiariosPreferentes { get; set; } = new List<BeneficiarioPreferente>();
 
-        public ICollection<Cuota> Cuota { get; set; } = new List<Cuota>();
+        public ICollection<Cuota> Cuotas { get; set; } = new List<Cuota>();
 
         public ICollection<Correos> Correos { get; set; } = new List<Correos>();
 
