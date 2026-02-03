@@ -401,31 +401,49 @@ Partial Public Class AdminCliente
     Protected WithEvents ddlPoblacion As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control txtCorreoFacturas.
+    '''Control btnAgregarCorreo.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtCorreoFacturas As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents btnAgregarCorreo As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control txtCorreosRecepcion.
+    '''Control gvCorreos.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtCorreosRecepcion As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents gvCorreos As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
-    '''Control txtCorreosAdicionales.
+    '''Control ddlTipoCorreo.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtCorreosAdicionales As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlTipoCorreo As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control TextBox1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents TextBox1 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control btnGuardarCorreo.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnGuardarCorreo As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
     '''Control txtCuotaNacional.
@@ -500,13 +518,13 @@ Partial Public Class AdminCliente
     Protected WithEvents ddlTipoRefrigerados As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control txtCuota2.
+    '''Control txtCuotaIsotanques.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtCuota2 As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtCuotaIsotanques As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control ddlTipoIsotaques.
@@ -516,6 +534,15 @@ Partial Public Class AdminCliente
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents ddlTipoIsotaques As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control gvListaVendedores.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents gvListaVendedores As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
     '''Control pnlGestionarCredito.

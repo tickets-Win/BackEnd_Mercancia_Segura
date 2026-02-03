@@ -8,8 +8,8 @@ Public Class AdminVendedor
         If Not IsPostBack Then
             pnlDatosFisica.Visible = True
             pnlRazonSocial.Visible = False
-            cargarTipoPersona()
-            cargarTipoVendedor()
+            DropdownHelpers.CargarTipoPersona(ddlTipoPersona)
+            DropdownHelpers.cargarTipoVendedor(ddlTipoVendedor)
             CargarVendedores()
             txtFechaRegistro.Text = DateTime.Now.ToString("yyyy-MM-dd")
             CargarDatos()
@@ -113,30 +113,6 @@ Public Class AdminVendedor
 
     End Sub
 
-    Private Sub cargarTipoPersona()
-        Dim api As New ConsumoApi()
-        Dim tipoPersona As String = api.GetTipoPersona()
-
-        Dim listaTipoPersona As List(Of TipoPersona) = JsonConvert.DeserializeObject(Of List(Of TipoPersona))(tipoPersona)
-
-        ddlTipoPersona.DataSource = listaTipoPersona
-        ddlTipoPersona.DataTextField = "Tipo"
-        ddlTipoPersona.DataValueField = "TipoPersonaId"
-        ddlTipoPersona.DataBind()
-
-    End Sub
-    Private Sub cargarTipoVendedor()
-        Dim api As New ConsumoApi()
-        Dim tipoVendedor As String = api.GetTipoVendedor()
-
-        Dim listaTipoVendedor As List(Of TipoVendedor) = JsonConvert.DeserializeObject(Of List(Of TipoVendedor))(tipoVendedor)
-
-        ddlTipoVendedor.DataSource = listaTipoVendedor
-        ddlTipoVendedor.DataTextField = "Tipo"
-        ddlTipoVendedor.DataValueField = "TipoVendedorId"
-        ddlTipoVendedor.DataBind()
-    End Sub
-
     Public Sub CargarVendedores()
         Dim api As New ConsumoApi()
         Dim cargarVendedores As String = api.GetCargarVendedores()
@@ -202,11 +178,14 @@ Public Class AdminVendedor
             Dim respuestaObj As JObject = JObject.Parse(eliminado)
             Dim mensaje As String = respuestaObj("message").ToString()
 
-            If mensaje.Contains("exitosamente") Or mensaje.Contains("ya fue dado de baja") Then
-                ClientScript.RegisterStartupScript(Me.GetType(), "toast", "showToast('" & mensaje & "', 'success');", True)
+            If eliminado IsNot Nothing AndAlso eliminado <> "" Then
+                ClientScript.RegisterStartupScript(Me.GetType(), "toast",
+                    "showToast('" & mensaje & "', 'success');", True)
             Else
-                ClientScript.RegisterStartupScript(Me.GetType(), "toast", "showToast('Error al eliminar el vendedor: " & mensaje & "', 'danger');", True)
+                ClientScript.RegisterStartupScript(Me.GetType(), "toast",
+                    "showToast('Error al eliminar el vendedor', 'danger');", True)
             End If
+
 
         End If
     End Sub

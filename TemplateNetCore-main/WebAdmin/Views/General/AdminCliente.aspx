@@ -215,12 +215,13 @@
 
                     <div class="col-md-4">
                         <label class="form-label">Nacionalidad</label>
-                        <asp:TextBox ID="txtNacionalidad" TextMode="Email" runat="server" CssClass="form-control"></asp:TextBox>
+                        <asp:TextBox ID="txtNacionalidad" runat="server" CssClass="form-control"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Género</label>
                         <asp:DropDownList ID="ddlGenero" runat="server" CssClass="form-select">
+                            <asp:ListItem Text="Selecciona género" Value="" />
                             <asp:ListItem>Masculino</asp:ListItem>
                             <asp:ListItem>Femenino</asp:ListItem>
                         </asp:DropDownList>
@@ -228,25 +229,22 @@
 
                     <div class="col-md-4">
                         <label class="form-label">País</label>
-                        <asp:DropDownList ID="ddlPais" runat="server" CssClass="form-select">
-                            <asp:ListItem>Masculino</asp:ListItem>
-                            <asp:ListItem>Femenino</asp:ListItem>
+                        <asp:DropDownList ID="ddlPais" runat="server" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlPais_SelectedIndexChanged" Visible="true">
+                            <asp:ListItem Text="Selecciona un país" Value="" />
+                            <asp:ListItem Text="México" Value="MX"></asp:ListItem>
+                            <asp:ListItem Text="Estados Unidos" Value="US"></asp:ListItem>
                         </asp:DropDownList>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Estado</label>
-                        <asp:DropDownList ID="ddlEstado" runat="server" CssClass="form-select">
-                            <asp:ListItem>Masculino</asp:ListItem>
-                            <asp:ListItem>Femenino</asp:ListItem>
+                        <asp:DropDownList ID="ddlEstado" runat="server" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlEstado_SelectedIndexChanged">
                         </asp:DropDownList>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Municipio</label>
                         <asp:DropDownList ID="ddlMunicipio" runat="server" CssClass="form-select">
-                            <asp:ListItem>Masculino</asp:ListItem>
-                            <asp:ListItem>Femenino</asp:ListItem>
                         </asp:DropDownList>
                     </div>
 
@@ -288,17 +286,76 @@
                         <div class="col-md-6">
                             <h5>Correos</h5>
                             <div class="card p-3 shadow-sm">
-                                <h6>Correos para recepción de facturas</h6>
-                                <asp:TextBox ID="txtCorreoFacturas" runat="server" CssClass="form-control mb-3"
-                                    placeholder="Ingresar Correos adicionales, separados por comas"></asp:TextBox>
-                                <h6>Correos para recepción cp</h6>
-                                <asp:TextBox ID="txtCorreosRecepcion" runat="server" CssClass="form-control mb-3"
-                                    placeholder="Ingresar Correos adicionales, separados por comas"></asp:TextBox>
-                                <h6>Correos adicionales</h6>
-                                <asp:TextBox ID="txtCorreosAdicionales" runat="server" CssClass="form-control mb-3"
-                                    placeholder="Ingresar Correos adicionales, separados por comas"></asp:TextBox>
+                                <div class="d-flex justify-content-end align-items-center mb-4">
+                                    <asp:Button ID="btnAgregarCorreo" runat="server" CssClass="btn btn-primary btn-add" OnClientClick="return false;" data-bs-toggle="modal"
+                                        data-bs-target="#modalCorreo"
+                                        Text="Agregar" />
+                                </div>
+                                <asp:GridView ID="gvCorreos" runat="server"
+                                    CssClass="table table-bordered"
+                                    AutoGenerateColumns="False"
+                                    ShowHeader="True">
+
+                                    <Columns>
+                                        <asp:BoundField DataField="TipoCorreo" HeaderText="Tipo" />
+                                        <asp:BoundField DataField="Correo" HeaderText="Correo" />
+
+                                        <asp:TemplateField HeaderText="Acciones">
+                                            <ItemTemplate>
+                                                <asp:Button runat="server"
+                                                    Text="Eliminar"
+                                                    CssClass="btn btn-danger btn-sm"
+                                                    CommandName="Eliminar"
+                                                    CommandArgument="<%# Container.DataItemIndex %>" />
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                    </Columns>
+                                </asp:GridView>
                             </div>
                         </div>
+                        <div class="modal fade" id="modalCorreo" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Agregar Correo</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Tipo</label>
+                                            <asp:DropDownList ID="ddlTipoCorreo" runat="server"
+                                                CssClass="form-select">
+                                                <asp:ListItem Text="Seleccione" Value="" />
+                                                <asp:ListItem Text="Facturación" Value="F" />
+                                                <asp:ListItem Text="Recepción" Value="R" />
+                                                <asp:ListItem Text="Adicional" Value="A" />
+                                            </asp:DropDownList>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Correo</label>
+                                            <asp:TextBox ID="TextBox1" runat="server"
+                                                CssClass="form-control"
+                                                placeholder="correo@ejemplo.com"></asp:TextBox>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">
+                                            Cancelar</button>
+
+                                        <asp:Button ID="btnGuardarCorreo" runat="server"
+                                            CssClass="btn btn-primary"
+                                            Text="Guardar" />
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-md-6">
                             <h5>Cuotas</h5>
                             <div class="card p-3 shadow-sm">
@@ -340,8 +397,6 @@
                                         <div class="col col-md-6">
                                             <label class="form-label" for="ddlTipoTarifaSecos">Tipo Tarifa</label>
                                             <asp:DropDownList ID="ddlTipoTarifaSecos" runat="server" CssClass="form-select">
-                                                <asp:ListItem>ejemplo</asp:ListItem>
-                                                <asp:ListItem>ejemplo1</asp:ListItem>
                                             </asp:DropDownList>
                                         </div>
                                     </div>
@@ -356,8 +411,6 @@
                                         <div class="col col-md-6">
                                             <label class="form-label" for="ddlTipoRefrigerados">Tipo Tarifa</label>
                                             <asp:DropDownList ID="ddlTipoRefrigerados" runat="server" CssClass="form-select">
-                                                <asp:ListItem>ejemplo</asp:ListItem>
-                                                <asp:ListItem>ejemplo 1</asp:ListItem>
                                             </asp:DropDownList>
                                         </div>
                                     </div>
@@ -365,8 +418,8 @@
                                     <h6>Isotanques</h6>
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
-                                            <label class="form-label" for="txtCuota2">Cuota (%)</label>
-                                            <asp:TextBox ID="txtCuota2" runat="server" CssClass="form-control"
+                                            <label class="form-label" for="txtCuotaIsotanques">Cuota (%)</label>
+                                            <asp:TextBox ID="txtCuotaIsotanques" runat="server" CssClass="form-control"
                                                 placeholder="Cuota (%)"></asp:TextBox>
                                         </div>
                                         <div class="col col-md-6">
@@ -392,16 +445,35 @@
                                         </button>
                                     </div>
                                 </div>
-                                <table class="table table-bordered">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Tipo Vendedor</th>
-                                            <th>Nombre / Razón Social</th>
-                                            <th>Comisión</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                </table>
+                                <div class="card card-shadow p-4 mb-4">
+                                    <div style="overflow-x: auto; width: 100%;">
+                                        <asp:GridView ID="gvListaVendedores" runat="server"
+                                            CssClass="table table-hover align-middle"
+                                            AutoGenerateColumns="False"
+                                            OnRowCommand="gvListaVendedores_RowCommand"
+                                            HeaderStyle-CssClass="table-light"
+                                            DataKeyNames="VendedorId"
+                                            AllowPaging="True"
+                                            PageSize="10"
+                                            OnPageIndexChanging="gvListaVendedores_PageIndexChanging">
+                                            <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                                            <Columns>
+                                                <asp:BoundField DataField="VendedorId" HeaderText="Tipo Vendedor" />
+                                                <asp:BoundField DataField="ClienteId" HeaderText="Nombre/Razón Social" />
+                                                <asp:BoundField DataField="Comision" HeaderText="Comision" />
+                                                <asp:TemplateField HeaderText="Acciones">
+                                                    <ItemTemplate>
+                                                        <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("VendedorId") %>'
+                                                            CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                                            OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
+                 <i class="bi bi-trash"></i>
+                                                        </asp:LinkButton>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+                                            </Columns>
+                                        </asp:GridView>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -521,9 +593,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <h6>Selecciona un vendedor</h6>
-                        <asp:DropDownList ID="ddlNombreVendedor" runat="server" CssClass="form-control">
-                            <asp:ListItem Text="Edgar Pérez" Value="1" />
-                            <asp:ListItem Text="Marco Salas" Value="2" />
+                        <asp:DropDownList ID="ddlNombreVendedor" runat="server" CssClass="form-select">
                         </asp:DropDownList>
                     </div>
                     <div class="mb-3">

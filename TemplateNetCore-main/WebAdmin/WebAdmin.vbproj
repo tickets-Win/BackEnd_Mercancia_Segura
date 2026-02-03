@@ -122,14 +122,22 @@
     <Compile Include="Global.asax.vb">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\DropdownHelpers.vb" />
+    <Compile Include="Modelos\BeneficiarioPreferente.vb" />
     <Compile Include="Modelos\Cliente.vb" />
+    <Compile Include="Modelos\ClienteCredito.vb" />
+    <Compile Include="Modelos\ClienteVendedor.vb" />
+    <Compile Include="Modelos\Correos.vb" />
+    <Compile Include="Modelos\Cuota.vb" />
     <Compile Include="Modelos\OrigenCliente.vb" />
     <Compile Include="Modelos\rfcGenerico.vb" />
+    <Compile Include="Modelos\TipoCorreo.vb" />
     <Compile Include="Modelos\TipoCuenta.vb" />
     <Compile Include="Modelos\TipoEstatus.vb" />
     <Compile Include="Modelos\TipoPersona.vb" />
     <Compile Include="Modelos\TipoSector.vb" />
     <Compile Include="Modelos\TipoSeguro.vb" />
+    <Compile Include="Modelos\TipoTarifa.vb" />
     <Compile Include="Modelos\TipoVendedor.vb" />
     <Compile Include="Modelos\Usuario.vb" />
     <Compile Include="Modelos\Vendedor.vb" />
@@ -172,7 +180,7 @@
     </Compile>
     <Compile Include="Views\General\AdminCliente.aspx.vb">
       <DependentUpon>AdminCliente.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Views\General\AdminCotizaciones.aspx.designer.vb">
       <DependentUpon>AdminCotizaciones.aspx</DependentUpon>

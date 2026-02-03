@@ -8,14 +8,19 @@ Public Class AdminCliente
             pnlTabs.Visible = False
             pnlGestionarCredito.Visible = False
             pnlEstadoCuenta.Visible = False
-            cargarTipoPersona()
-            cargarTipoEstatus()
-            cargarTipoSeguro()
-            cargarTipoCuenta()
-            cargarOrigenCliente()
-            cargarTipoSector()
-            cargarRFCGenerico()
+            DropdownHelpers.CargarTipoPersona(ddlTipoPersona)
+            DropdownHelpers.CargarTipoEstatus(ddlEstatus)
+            DropdownHelpers.CargarTipoSeguro(ddlSeguroContrata)
+            DropdownHelpers.CargarTipoCuenta(ddlTipoCuenta)
+            DropdownHelpers.CargarOrigenCliente(ddlOrigenCliente)
+            DropdownHelpers.CargarTipoSector(ddlSector)
+            DropdownHelpers.CargarRFCGenerico(ddlRFCGenerico)
+            Dim tipoPersonaId As Integer = If(ddlTipoPersona.SelectedValue IsNot Nothing, Convert.ToInt32(ddlTipoPersona.SelectedValue), 1)
+            DropdownHelpers.CargarRegimenFiscal(ddlRegimenFiscal, tipoPersonaId)
+            DropdownHelpers.CargarTipoTarifa(ddlTipoTarifaSecos, ddlTipoRefrigerados, ddlTipoIsotaques)
             cargarClientes()
+            ddlEstado.Items.Clear()
+            ddlMunicipio.Items.Clear()
         End If
     End Sub
 
@@ -30,7 +35,7 @@ Public Class AdminCliente
         pnlGestionarCredito.Visible = True
         pnlEstadoCuenta.Visible = True
 
-        cargarRegimenFiscal(tipoPersonaId)
+        DropdownHelpers.CargarRegimenFiscal(ddlRegimenFiscal, tipoPersonaId)
     End Sub
 
     Protected Sub ddlTipoPersona_SelectedIndexChanged(sender As Object, e As EventArgs)
@@ -45,108 +50,7 @@ Public Class AdminCliente
             pnlRazonSocial.Visible = True
             pnlNombreCompleto.Visible = False
         End If
-        cargarRegimenFiscal(tipoPersonaId)
-    End Sub
-
-    Private Sub cargarTipoPersona()
-        Dim api As New ConsumoApi()
-        Dim tipoPersona As String = api.GetTipoPersona()
-
-        Dim listaTipoPersona As List(Of TipoPersona) = JsonConvert.DeserializeObject(Of List(Of TipoPersona))(tipoPersona)
-
-        ddlTipoPersona.DataSource = listaTipoPersona
-        ddlTipoPersona.DataTextField = "Tipo"
-        ddlTipoPersona.DataValueField = "TipoPersonaId"
-        ddlTipoPersona.DataBind()
-
-    End Sub
-
-    Private Sub cargarTipoEstatus()
-        Dim api As New ConsumoApi()
-        Dim tipoEstatus As String = api.GetTipoEstatus()
-
-        Dim listaTipoEstatus As List(Of TipoEstatus) = JsonConvert.DeserializeObject(Of List(Of TipoEstatus))(tipoEstatus)
-
-        ddlEstatus.DataSource = listaTipoEstatus
-        ddlEstatus.DataTextField = "Tipo"
-        ddlEstatus.DataValueField = "EstatusId"
-        ddlEstatus.DataBind()
-    End Sub
-
-    Private Sub cargarTipoSeguro()
-        Dim api As New ConsumoApi()
-        Dim tipoSeguro As String = api.GetTipoSeguro()
-
-        Dim listaTipoSeguro As List(Of TipoSeguro) = JsonConvert.DeserializeObject(Of List(Of TipoSeguro))(tipoSeguro)
-
-        ddlSeguroContrata.DataSource = listaTipoSeguro
-        ddlSeguroContrata.DataTextField = "Tipo"
-        ddlSeguroContrata.DataValueField = "TipoSeguroId"
-        ddlSeguroContrata.DataBind()
-    End Sub
-
-    Private Sub cargarTipoCuenta()
-        Dim api As New ConsumoApi()
-        Dim tipoCuenta As String = api.GetTipoCuenta()
-
-        Dim listaTipoCuenta As List(Of TipoCuenta) = JsonConvert.DeserializeObject(Of List(Of TipoCuenta))(tipoCuenta)
-
-        ddlTipoCuenta.DataSource = listaTipoCuenta
-        ddlTipoCuenta.DataTextField = "Tipo"
-        ddlTipoCuenta.DataValueField = "TipoCuentaId"
-        ddlTipoCuenta.DataBind()
-    End Sub
-    Private Sub cargarOrigenCliente()
-        Dim api As New ConsumoApi()
-        Dim origenCliente As String = api.GetOrigenCliente()
-
-        Dim listaorigenCliente As List(Of OrigenCliente) = JsonConvert.DeserializeObject(Of List(Of OrigenCliente))(origenCliente)
-
-        ddlOrigenCliente.DataSource = listaorigenCliente
-        ddlOrigenCliente.DataTextField = "Tipo"
-        ddlOrigenCliente.DataValueField = "OrigenClienteId"
-        ddlOrigenCliente.DataBind()
-    End Sub
-    Private Sub cargarTipoSector()
-        Dim api As New ConsumoApi()
-        Dim tipoSector As String = api.GetTipoSector()
-
-        Dim listaTipoSector As List(Of TipoSector) = JsonConvert.DeserializeObject(Of List(Of TipoSector))(tipoSector)
-
-        ddlSector.DataSource = listaTipoSector
-        ddlSector.DataTextField = "Tipo"
-        ddlSector.DataValueField = "TipoSectorId"
-        ddlSector.DataBind()
-    End Sub
-    Private Sub cargarRegimenFiscal(tipoPersonaId As Integer)
-        Dim api As New ConsumoApi()
-        Dim regimenFiscal As String = api.GetRegimenFiscal()
-
-        Dim listaRegimenFiscal As List(Of RegimenFiscal) = JsonConvert.DeserializeObject(Of List(Of RegimenFiscal))(regimenFiscal)
-
-        Dim listaFiltrada As List(Of RegimenFiscal)
-
-        If tipoPersonaId = 1 Then
-            listaFiltrada = listaRegimenFiscal.Where(Function(r) r.AplicaFisica).ToList()
-        Else
-            listaFiltrada = listaRegimenFiscal.Where(Function(r) r.AplicaMoral).ToList()
-        End If
-
-        ddlRegimenFiscal.DataSource = listaFiltrada
-        ddlRegimenFiscal.DataTextField = "CodigoDescripcion"
-        ddlRegimenFiscal.DataValueField = "RegimenFiscalId"
-        ddlRegimenFiscal.DataBind()
-    End Sub
-    Private Sub cargarRFCGenerico()
-        Dim api As New ConsumoApi()
-        Dim rfcGenerico As String = api.GetRFCGenerico()
-
-        Dim listaRFCGenerico As List(Of rfcGenerico) = JsonConvert.DeserializeObject(Of List(Of rfcGenerico))(rfcGenerico)
-
-        ddlRFCGenerico.DataSource = listaRFCGenerico
-        ddlRFCGenerico.DataTextField = "Tipo"
-        ddlRFCGenerico.DataValueField = "RfcGenericoId"
-        ddlRFCGenerico.DataBind()
+        DropdownHelpers.CargarRegimenFiscal(ddlRegimenFiscal, tipoPersonaId)
     End Sub
 
     Protected Sub cargarClientes()
@@ -180,16 +84,16 @@ Public Class AdminCliente
         End If
 
         Dim cliente As New Cliente With {
-        .TipoPersona = tipoPersonaId,
+        .TipoPersonaId = tipoPersonaId,
         .Clave = txtClave.Text,
-        .EstatusId = (ddlEstatus.SelectedValue = "Activo"),
+        .EstatusId = Convert.ToInt32(ddlEstatus.SelectedValue),
         .ApellidoPaterno = txtApellidoP.Text,
         .ApellidoMaterno = txtApellidoM.Text,
         .Nombres = txtNombre.Text,
         .NombreCompleto = nombreCompleto,
         .RegimenFiscalId = ddlRegimenFiscal.SelectedValue,
         .Rfc = txtRFC.Text,
-        .RfcGenerico = ddlRFCGenerico.SelectedValue,
+        .RfcGenericoId = ddlRFCGenerico.SelectedValue,
         .FechaRegistro = Date.Now,
         .TipoSeguroId = ddlSeguroContrata.SelectedValue,
         .TipoCuentaId = ddlTipoCuenta.SelectedValue,
@@ -198,6 +102,7 @@ Public Class AdminCliente
         .Telefono = txtTelefono.Text,
         .CorreoElectronico = txtCorreo.Text,
         .Nacionalidad = txtNacionalidad.Text,
+        .Genero = ddlGenero.SelectedValue,
         .Pais = ddlPais.SelectedValue,
         .Estado = ddlEstado.SelectedValue,
         .Municipio = ddlMunicipio.SelectedValue,
@@ -212,8 +117,148 @@ Public Class AdminCliente
         .CuotaMinimaInternacional = txtMinimoInternacional.Text,
         .CuotaMinimaNacional = txtMinimoNacional.Text
         }
-        'correos adicionales
-        'cuotascontenedoressecos,refrigerados,isotanques
-        '.Genero = ddlGenero.SelectedValue,
+
+        '        'Dim listaCorreos As New List(Of Correos)
+
+        '        'If Not String.IsNullOrWhiteSpace(txtCorreoFacturas.Text) Then
+        '        '    For Each correo In txtCorreoFacturas.Text.Split(","c)
+        '        '        listaCorreos.Add(New Correos With {
+        '        '        .Correo = correo.Trim(),
+        '        '        .TipoCorreoId = 1
+        '        '        })
+        '        '    Next
+        '        'End If
+
+        '        'If Not String.IsNullOrWhiteSpace(txtCorreosRecepcion.Text) Then
+        '        '    For Each correo In txtCorreosRecepcion.Text.Split(","c)
+        '        '        listaCorreos.Add(New Correos With {
+        '        '        .Correo = correo.Trim(),
+        '        '        .TipoCorreoId = 2
+        '        '        })
+        '        '    Next
+        '        'End If
+
+        '        'If Not String.IsNullOrWhiteSpace(txtCorreosAdicionales.Text) Then
+        '        '    For Each correo In txtCorreosAdicionales.Text.Split(","c)
+        '        '        listaCorreos.Add(New Correos With {
+        '        '        .Correo = correo.Trim(),
+        '        '        .TipoCorreoId = 3
+        '        '        })
+        '        '    Next
+        '        'End If
+
+        '        'cliente.Correos = listaCorreos
+
+        '        Dim listaCuotas As New List(Of Cuota)
+
+        '        If Not String.IsNullOrWhiteSpace(txtCuotaSecos.Text) Then
+        '            listaCuotas.Add(New Cuota With {
+        '            .Monto = Convert.ToDecimal(txtCuotaSecos.Text),
+        '            .TipoCuotaId = 1,
+        '            .TipoTarifaId = Convert.ToInt32(ddlTipoTarifaSecos.SelectedValue)
+        '            })
+        '        End If
+
+        '        If Not String.IsNullOrWhiteSpace(txtCuotaRefrigerados.Text) Then
+        '            listaCuotas.Add(New Cuota With {
+        '            .Monto = Convert.ToDecimal(txtCuotaRefrigerados.Text),
+        '            .TipoCuotaId = 2,
+        '            .TipoTarifaId = Convert.ToInt32(ddlTipoRefrigerados.SelectedValue)
+        '            })
+        '        End If
+
+        '        If Not String.IsNullOrWhiteSpace(txtCuotaIsotanques.Text) Then
+        '            listaCuotas.Add(New Cuota With {
+        '            .Monto = Convert.ToDecimal(txtCuotaIsotanques.Text),
+        '            .TipoCuotaId = 3,
+        '            .TipoTarifaId = Convert.ToInt32(ddlTipoIsotaques.SelectedValue)
+        '            })
+        '        End If
+
+        '        cliente.Cuota = listaCuotas
+
+        'Dim vendedoresJson As String = api.GetCargarVendedores()
+        'Dim listaVendedores As List(Of ClienteVendedor) = JsonConvert.DeserializeObject(Of List(Of ClienteVendedor))(vendedoresJson)
+
+        'ddlNombreVendedor.DataSource = listaVendedores
+        'ddlNombreVendedor.DataTextField = "Nombre"
+        'ddlNombreVendedor.DataValueField = "VendedorId"
+        'ddlNombreVendedor.DataBind()
+
+        'ddlNombreVendedor.Items.Insert(0, New ListItem("Selecciona un vendedor", "0"))
+
+        'Dim listaClienteVendedores As New List(Of ClienteVendedor)
+
+        'If ddlNombreVendedor.SelectedValue <> "0" Then
+        '    Dim clienteVendedor As New ClienteVendedor With {
+        '        .VendedorId = Convert.ToInt32(ddlNombreVendedor.SelectedValue),
+        '        .Comision = If(String.IsNullOrWhiteSpace(txtComision.Text), 0, Convert.ToDecimal(txtComision.Text))
+        '    }
+        '    listaClienteVendedores.Add(clienteVendedor)
+        'End If
+
+        'cliente.ClienteVendedor = listaClienteVendedores
+
+        '        Dim clienteCredito As New ClienteCredito With {
+        '    .DiasDeCredito = If(String.IsNullOrWhiteSpace(txtDiasCredito.Text), Nothing, Convert.ToInt32(txtDiasCredito.Text)),
+        '    .MetodoDePago = txtMetodoPago.Text,
+        '    .NumeroCuenta = txtNumeroCuenta.Text,
+        '    .LimiteDeCredito = If(String.IsNullOrWhiteSpace(txtLimiteCredito.Text), Nothing, Convert.ToDecimal(txtLimiteCredito.Text)),
+        '    .DiasDePago = txtDiasPago.Text,
+        '    .DiasDeRevision = txtDiasRevision.Text,
+        '    .Saldo = If(String.IsNullOrWhiteSpace(txtSaldo.Text), Nothing, Convert.ToDecimal(txtSaldo.Text))
+        '}
+
+        Dim json As String = JsonConvert.SerializeObject(cliente)
+        Dim respuesta As String
+
+
+        respuesta = api.PostCliente(json)
+
+
+    End Sub
+
+    Protected Sub ddlPais_SelectedIndexChanged(sender As Object, e As EventArgs)
+        ddlEstado.Items.Clear()
+        ddlEstado.Items.Add(New ListItem("Selecciona un estado", ""))
+
+        Select Case ddlPais.SelectedValue
+            Case "MX"
+                ddlEstado.Items.Add(New ListItem("CDMX", "CDMX"))
+                ddlEstado.Items.Add(New ListItem("PUEBLA", "PUE"))
+            Case "US"
+                ddlEstado.Items.Add(New ListItem("California", "CA"))
+                ddlEstado.Items.Add(New ListItem("Texas", "TX"))
+        End Select
+
+        ddlMunicipio.Items.Clear()
+        ddlMunicipio.Items.Add(New ListItem("Selecciona un municipio", ""))
+    End Sub
+    Protected Sub ddlEstado_SelectedIndexChanged(sender As Object, e As EventArgs)
+        ddlMunicipio.Items.Clear()
+        ddlMunicipio.Items.Add(New ListItem("Selecciona un municipio", ""))
+
+        Select Case ddlEstado.SelectedValue
+            Case "CDMX"
+                ddlMunicipio.Items.Add(New ListItem("Álvaro Obregón", "AO"))
+                ddlMunicipio.Items.Add(New ListItem("Coyoacán", "CO"))
+            Case "JAL"
+                ddlMunicipio.Items.Add(New ListItem("Guadalajara", "GDL"))
+                ddlMunicipio.Items.Add(New ListItem("Zapopan", "ZAP"))
+            Case "CA"
+                ddlMunicipio.Items.Add(New ListItem("Los Ángeles", "LA"))
+                ddlMunicipio.Items.Add(New ListItem("San Francisco", "SF"))
+            Case "TX"
+                ddlMunicipio.Items.Add(New ListItem("Houston", "HOU"))
+                ddlMunicipio.Items.Add(New ListItem("Dallas", "DAL"))
+        End Select
+    End Sub
+
+    Protected Sub gvListaVendedores_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+
+    End Sub
+
+    Protected Sub gvListaVendedores_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+
     End Sub
 End Class
