@@ -466,7 +466,7 @@
                                                         <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("VendedorId") %>'
                                                             CssClass="icon-btn action-icon" ToolTip="Eliminar"
                                                             OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
-                 <i class="bi bi-trash"></i>
+                                                        <i class="bi bi-trash"></i>
                                                         </asp:LinkButton>
                                                     </ItemTemplate>
                                                 </asp:TemplateField>
