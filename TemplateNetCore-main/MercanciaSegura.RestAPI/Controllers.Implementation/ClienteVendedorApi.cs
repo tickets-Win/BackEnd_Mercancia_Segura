@@ -23,10 +23,14 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             var vendedores = await _context.ClienteVendedor
                 .Where(cv => cv.ClienteId == clienteId)
                 .Include(cv => cv.Vendedor)
+                    .ThenInclude(v => v.TipoVendedor)
                 .Select(cv => new ClienteVendedorResponse
                 {
                     Vendedor = cv.Vendedor != null
                         ? cv.Vendedor.NombreCompleto
+                        : null,
+                    TipoVendedor = cv.Vendedor != null
+                        ? cv.Vendedor.TipoVendedor.Tipo
                         : null,
                     Comision = cv.Comision
                 })
@@ -34,6 +38,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             return Ok(vendedores);
         }
+
 
     }
 }
