@@ -289,7 +289,7 @@
                                 <div class="d-flex justify-content-end align-items-center mb-4">
                                     <asp:Button ID="btnAgregarCorreo" runat="server" CssClass="btn btn-primary btn-add" OnClientClick="return false;" data-bs-toggle="modal"
                                         data-bs-target="#modalCorreo"
-                                        Text="Agregar" />
+                                        Text="Agregar" OnClick="btnAgregarCorreo_Click" />
                                 </div>
                                 <asp:GridView ID="gvCorreos" runat="server"
                                     CssClass="table table-bordered"
@@ -297,7 +297,7 @@
                                     ShowHeader="True">
 
                                     <Columns>
-                                        <asp:BoundField DataField="TipoCorreo" HeaderText="Tipo" />
+                                        <asp:BoundField DataField="TipoCorreoId" HeaderText="Tipo" />
                                         <asp:BoundField DataField="Correo" HeaderText="Correo" />
 
                                         <asp:TemplateField HeaderText="Acciones">
@@ -593,7 +593,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <h6>Selecciona un vendedor</h6>
-                        <asp:DropDownList ID="ddlNombreVendedor" runat="server" CssClass="form-select">
+                        <asp:DropDownList ID="ddlNombreVendedor" runat="server" CssClass="form-select" OnSelectedIndexChanged="ddlNombreVendedor_SelectedIndexChanged" >
                         </asp:DropDownList>
                     </div>
                     <div class="mb-3">
@@ -603,7 +603,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <asp:Button ID="btnGuardarVendedor" runat="server" CssClass="btn btn-primary" Text="Guardar" />
+                    <asp:Button ID="btnGuardarVendedor" runat="server" CssClass="btn btn-primary" Text="Guardar" OnClick="btnGuardarVendedor_Click" />
                 </div>
             </div>
         </div>

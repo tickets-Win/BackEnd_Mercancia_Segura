@@ -15,12 +15,18 @@ Public Class AdminCliente
             DropdownHelpers.CargarOrigenCliente(ddlOrigenCliente)
             DropdownHelpers.CargarTipoSector(ddlSector)
             DropdownHelpers.CargarRFCGenerico(ddlRFCGenerico)
+            DropdownHelpers.CargarTipoCorreo(ddlTipoCorreo)
+            DropdownHelpers.CargarVendedores(ddlNombreVendedor)
             Dim tipoPersonaId As Integer = If(ddlTipoPersona.SelectedValue IsNot Nothing, Convert.ToInt32(ddlTipoPersona.SelectedValue), 1)
             DropdownHelpers.CargarRegimenFiscal(ddlRegimenFiscal, tipoPersonaId)
             DropdownHelpers.CargarTipoTarifa(ddlTipoTarifaSecos, ddlTipoRefrigerados, ddlTipoIsotaques)
             cargarClientes()
             ddlEstado.Items.Clear()
             ddlMunicipio.Items.Clear()
+
+            If Session("Cliente") Is Nothing Then
+                Session("Cliente") = New Cliente()
+            End If
         End If
     End Sub
 
@@ -118,36 +124,9 @@ Public Class AdminCliente
         .CuotaMinimaNacional = txtMinimoNacional.Text
         }
 
-        '        'Dim listaCorreos As New List(Of Correos)
+        Dim clienteSession As Cliente = CType(Session("Cliente"), Cliente)
+        cliente.ClienteVendedor = clienteSession.ClienteVendedor
 
-        '        'If Not String.IsNullOrWhiteSpace(txtCorreoFacturas.Text) Then
-        '        '    For Each correo In txtCorreoFacturas.Text.Split(","c)
-        '        '        listaCorreos.Add(New Correos With {
-        '        '        .Correo = correo.Trim(),
-        '        '        .TipoCorreoId = 1
-        '        '        })
-        '        '    Next
-        '        'End If
-
-        '        'If Not String.IsNullOrWhiteSpace(txtCorreosRecepcion.Text) Then
-        '        '    For Each correo In txtCorreosRecepcion.Text.Split(","c)
-        '        '        listaCorreos.Add(New Correos With {
-        '        '        .Correo = correo.Trim(),
-        '        '        .TipoCorreoId = 2
-        '        '        })
-        '        '    Next
-        '        'End If
-
-        '        'If Not String.IsNullOrWhiteSpace(txtCorreosAdicionales.Text) Then
-        '        '    For Each correo In txtCorreosAdicionales.Text.Split(","c)
-        '        '        listaCorreos.Add(New Correos With {
-        '        '        .Correo = correo.Trim(),
-        '        '        .TipoCorreoId = 3
-        '        '        })
-        '        '    Next
-        '        'End If
-
-        '        'cliente.Correos = listaCorreos
 
         '        Dim listaCuotas As New List(Of Cuota)
 
@@ -175,29 +154,7 @@ Public Class AdminCliente
         '            })
         '        End If
 
-        '        cliente.Cuota = listaCuotas
-
-        'Dim vendedoresJson As String = api.GetCargarVendedores()
-        'Dim listaVendedores As List(Of ClienteVendedor) = JsonConvert.DeserializeObject(Of List(Of ClienteVendedor))(vendedoresJson)
-
-        'ddlNombreVendedor.DataSource = listaVendedores
-        'ddlNombreVendedor.DataTextField = "Nombre"
-        'ddlNombreVendedor.DataValueField = "VendedorId"
-        'ddlNombreVendedor.DataBind()
-
-        'ddlNombreVendedor.Items.Insert(0, New ListItem("Selecciona un vendedor", "0"))
-
-        'Dim listaClienteVendedores As New List(Of ClienteVendedor)
-
-        'If ddlNombreVendedor.SelectedValue <> "0" Then
-        '    Dim clienteVendedor As New ClienteVendedor With {
-        '        .VendedorId = Convert.ToInt32(ddlNombreVendedor.SelectedValue),
-        '        .Comision = If(String.IsNullOrWhiteSpace(txtComision.Text), 0, Convert.ToDecimal(txtComision.Text))
-        '    }
-        '    listaClienteVendedores.Add(clienteVendedor)
-        'End If
-
-        'cliente.ClienteVendedor = listaClienteVendedores
+        '        cliente.Cuota = listaCuotas        
 
         '        Dim clienteCredito As New ClienteCredito With {
         '    .DiasDeCredito = If(String.IsNullOrWhiteSpace(txtDiasCredito.Text), Nothing, Convert.ToInt32(txtDiasCredito.Text)),
@@ -212,12 +169,23 @@ Public Class AdminCliente
         Dim json As String = JsonConvert.SerializeObject(cliente)
         Dim respuesta As String
 
+        Dim totalVendedores = cliente.ClienteVendedor.Count
+
 
         respuesta = api.PostCliente(json)
 
 
     End Sub
 
+    Public Sub CargarVendedores()
+        Dim api As New ConsumoApi()
+        Dim cargarVendedores As String = api.GetCargarVendedores()
+
+        Dim listavendedores As List(Of Vendedor) = JsonConvert.DeserializeObject(Of List(Of Vendedor))(cargarVendedores)
+
+        gvListaVendedores.DataSource = listavendedores
+        gvListaVendedores.DataBind()
+    End Sub
     Protected Sub ddlPais_SelectedIndexChanged(sender As Object, e As EventArgs)
         ddlEstado.Items.Clear()
         ddlEstado.Items.Add(New ListItem("Selecciona un estado", ""))
@@ -261,4 +229,54 @@ Public Class AdminCliente
     Protected Sub gvListaVendedores_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
 
     End Sub
+
+    Protected Sub ddlNombreVendedor_SelectedIndexChanged(sender As Object, e As EventArgs)
+        Dim ddl As DropDownList = CType(sender, DropDownList)
+        If ddl.SelectedIndex > 0 Then
+            Dim comision As Decimal = Convert.ToDecimal(ddl.SelectedItem.Attributes("data-comision"))
+            txtComision.Text = comision.ToString("N2")
+        Else
+            txtComision.Text = ""
+        End If
+    End Sub
+
+    Protected Sub btnAgregarCorreo_Click(sender As Object, e As EventArgs)
+
+    End Sub
+
+    Protected Sub btnGuardarVendedor_Click(sender As Object, e As EventArgs)
+        Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
+
+        Dim vendedorId As Integer = Convert.ToInt32(ddlNombreVendedor.SelectedValue)
+        Dim comision As Decimal = Convert.ToDecimal(txtComision.Text)
+
+        If cliente.ClienteVendedor.Any(Function(v) v.VendedorId = vendedorId) Then
+            Exit Sub
+        End If
+
+        cliente.ClienteVendedor.Add(New ClienteVendedor With {
+        .VendedorId = vendedorId,
+        .Comision = comision
+    })
+
+        Session("Cliente") = cliente
+
+        CargarGridVendedores()
+        CerrarModal()
+    End Sub
+
+    Public Sub CargarGridVendedores()
+        Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
+
+        gvListaVendedores.DataSource = cliente.ClienteVendedor
+        gvListaVendedores.DataBind()
+    End Sub
+
+    Private Sub CerrarModal()
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(),
+        "cerrarModal",
+        "var modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarVendedor')); modal.hide();",
+        True)
+    End Sub
+
 End Class

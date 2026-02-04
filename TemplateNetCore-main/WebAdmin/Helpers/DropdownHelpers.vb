@@ -121,19 +121,31 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoCorreo As String = api.GetTipoCorreo()
 
-        Dim listaTipoVendedor As List(Of TipoVendedor) = JsonConvert.DeserializeObject(Of List(Of TipoVendedor))(tipoVendedor)
+        Dim listaTipoCorreo As List(Of TipoCorreo) = JsonConvert.DeserializeObject(Of List(Of TipoCorreo))(tipoCorreo)
 
-        ddlTipoCorreo.DataSource = listaTipoVendedor
+        ddlTipoCorreo.DataSource = listaTipoCorreo
         ddlTipoCorreo.DataTextField = "Tipo"
-        ddlTipoCorreo.DataValueField = "TipoVendedorId"
+        ddlTipoCorreo.DataValueField = "TipoCorreoId"
         ddlTipoCorreo.DataBind()
+    End Sub
+    Public Sub CargarVendedores(ddlNombreVendedor As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim Vendedores As String = api.GetCargarVendedores()
+
+        Dim lstVendedores As List(Of Vendedor) = JsonConvert.DeserializeObject(Of List(Of Vendedor))(Vendedores)
+
+        ddlNombreVendedor.DataSource = lstVendedores
+        ddlNombreVendedor.DataTextField = "Nombres"
+        ddlNombreVendedor.DataValueField = "VendedorId"
+        ddlNombreVendedor.DataBind()
+
+        ddlNombreVendedor.Items.Insert(0, New ListItem("Selecciona un vendedor", "0"))
     End Sub
     Public Sub CargarTipoTarifa(ParamArray ddls() As DropDownList)
         Dim api As New ConsumoApi()
         Dim tipoTarifaJson As String = api.GetTipoTarifa()
         Dim listaTipoTarifa As List(Of TipoTarifa) = JsonConvert.DeserializeObject(Of List(Of TipoTarifa))(tipoTarifaJson)
 
-        ' Llenamos cada DropDownList con los mismos datos
         For Each ddl As DropDownList In ddls
             ddl.DataSource = listaTipoTarifa
             ddl.DataTextField = "Tarifa"
