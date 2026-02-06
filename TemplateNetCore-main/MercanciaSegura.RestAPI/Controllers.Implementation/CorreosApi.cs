@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using MercanciaSegura.DOM.ApplicationDbContext;
 using MercanciaSegura.DOM.Modelos.Cliente;
-using MercanciaSegura.RestAPI.Models;
+using MercanciaSegura.RestAPI.Models.Cliente;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

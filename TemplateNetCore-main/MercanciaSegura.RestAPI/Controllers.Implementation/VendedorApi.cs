@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MercanciaSegura.DOM.ApplicationDbContext;
 using MercanciaSegura.DOM.Modelos.Vendedor;
-using MercanciaSegura.RestAPI.Models;
+using MercanciaSegura.RestAPI.Models.Vendedor;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

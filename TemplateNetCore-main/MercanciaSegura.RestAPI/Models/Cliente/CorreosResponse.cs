@@ -1,9 +1,9 @@
-﻿namespace MercanciaSegura.RestAPI.Models
+﻿namespace MercanciaSegura.RestAPI.Models.Cliente
 {
     public class CorreosResponse
     {
         public int CorreoId { get; set; }
         public string Correo { get; set; }
-        public string? TipoCorreo { get; set; }
+        public string TipoCorreo { get; set; }
     }
 }

@@ -30,8 +30,7 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         public int? FormaPagoId { get; set; }
 
         [Column("Estatus")]
-        [MaxLength(20)]
-        public string? Estatus { get; set; }
+        public bool? Estatus { get; set; }
 
         [Column("Tipo_Poliza")]
         [MaxLength(200)]
