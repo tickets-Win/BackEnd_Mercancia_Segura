@@ -59,6 +59,15 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents PnlTabla As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
+    '''Control gvPolizas.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents gvPolizas As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
     '''Control pnlFormularioPolizas.
     '''</summary>
     '''<remarks>

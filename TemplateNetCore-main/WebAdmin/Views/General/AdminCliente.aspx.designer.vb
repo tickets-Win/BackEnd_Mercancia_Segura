@@ -14,6 +14,15 @@ Option Explicit On
 Partial Public Class AdminCliente
 
     '''<summary>
+    '''Control upVendedores.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents upVendedores As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control PnlEncabezado.
     '''</summary>
     '''<remarks>
@@ -77,6 +86,24 @@ Partial Public Class AdminCliente
     Protected WithEvents pnlTabs As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
+    '''Control hfTipoPersona.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfTipoPersona As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
+    '''Control hfTRFCGenerico.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfTRFCGenerico As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
     '''Control pnlFormularioCliente.
     '''</summary>
     '''<remarks>
@@ -84,6 +111,15 @@ Partial Public Class AdminCliente
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents pnlFormularioCliente As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control hfClienteId.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfClienteId As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
     '''Control lblMensaje.
@@ -311,6 +347,15 @@ Partial Public Class AdminCliente
     Protected WithEvents txtNacionalidad As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control pnlGenero.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents pnlGenero As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
     '''Control ddlGenero.
     '''</summary>
     '''<remarks>
@@ -338,13 +383,13 @@ Partial Public Class AdminCliente
     Protected WithEvents ddlEstado As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control ddlMunicipio.
+    '''Control txtMunicipio.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents ddlMunicipio As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtMunicipio As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtColonia.
@@ -392,13 +437,13 @@ Partial Public Class AdminCliente
     Protected WithEvents txtNumeroExterior As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control ddlPoblacion.
+    '''Control txtPoblacion.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents ddlPoblacion As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtPoblacion As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control btnAgregarCorreo.
@@ -410,40 +455,13 @@ Partial Public Class AdminCliente
     Protected WithEvents btnAgregarCorreo As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control gvCorreos.
+    '''Control gvCorreosAdicionales.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents gvCorreos As Global.System.Web.UI.WebControls.GridView
-
-    '''<summary>
-    '''Control ddlTipoCorreo.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents ddlTipoCorreo As Global.System.Web.UI.WebControls.DropDownList
-
-    '''<summary>
-    '''Control TextBox1.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents TextBox1 As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control btnGuardarCorreo.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents btnGuardarCorreo As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents gvCorreosAdicionales As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
     '''Control txtCuotaNacional.
@@ -543,6 +561,24 @@ Partial Public Class AdminCliente
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents gvListaVendedores As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control GvBeneficiarioPreferente.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBeneficiarioPreferente As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control updCredito.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents updCredito As Global.System.Web.UI.UpdatePanel
 
     '''<summary>
     '''Control pnlGestionarCredito.
@@ -696,6 +732,33 @@ Partial Public Class AdminCliente
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnGuardarVendedor As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control ddlTipoCorreo.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlTipoCorreo As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control txtCorreoAdicional.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtCorreoAdicional As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control btnGuardarCorreo.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents btnGuardarCorreo As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
     '''Control txtNombreBeneficiarioP.

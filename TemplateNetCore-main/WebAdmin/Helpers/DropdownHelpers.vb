@@ -153,4 +153,57 @@ Module DropdownHelpers
             ddl.DataBind()
         Next
     End Sub
+
+    Public Sub CargarPaises(ddlPais As DropDownList)
+        ddlPais.Items.Clear()
+        ddlPais.Items.Add(New ListItem("Selecciona un país", ""))
+        ddlPais.Items.Add(New ListItem("México", "MX"))
+        ddlPais.Items.Add(New ListItem("Estados Unidos", "US"))
+    End Sub
+
+    Public Sub CargarEstados(ddlEstado As DropDownList, pais As String)
+        ddlEstado.Items.Clear()
+        ddlEstado.Items.Add(New ListItem("Selecciona un estado", ""))
+
+        Select Case pais
+            Case "MX"
+                ddlEstado.Items.Add(New ListItem("Aguascalientes", "AGS"))
+                ddlEstado.Items.Add(New ListItem("Baja California", "BC"))
+                ddlEstado.Items.Add(New ListItem("Baja California Sur", "BCS"))
+                ddlEstado.Items.Add(New ListItem("Campeche", "CAMP"))
+                ddlEstado.Items.Add(New ListItem("Chiapas", "CHIS"))
+                ddlEstado.Items.Add(New ListItem("Chihuahua", "CHIH"))
+                ddlEstado.Items.Add(New ListItem("Ciudad de México", "CDMX"))
+                ddlEstado.Items.Add(New ListItem("Coahuila", "COAH"))
+                ddlEstado.Items.Add(New ListItem("Colima", "COL"))
+                ddlEstado.Items.Add(New ListItem("Durango", "DGO"))
+                ddlEstado.Items.Add(New ListItem("Estado de México", "MEX"))
+                ddlEstado.Items.Add(New ListItem("Guanajuato", "GTO"))
+                ddlEstado.Items.Add(New ListItem("Guerrero", "GRO"))
+                ddlEstado.Items.Add(New ListItem("Hidalgo", "HGO"))
+                ddlEstado.Items.Add(New ListItem("Jalisco", "JAL"))
+                ddlEstado.Items.Add(New ListItem("Michoacán", "MICH"))
+                ddlEstado.Items.Add(New ListItem("Morelos", "MOR"))
+                ddlEstado.Items.Add(New ListItem("Nayarit", "NAY"))
+                ddlEstado.Items.Add(New ListItem("Nuevo León", "NL"))
+                ddlEstado.Items.Add(New ListItem("Oaxaca", "OAX"))
+                ddlEstado.Items.Add(New ListItem("Puebla", "PUE"))
+                ddlEstado.Items.Add(New ListItem("Querétaro", "QRO"))
+                ddlEstado.Items.Add(New ListItem("Quintana Roo", "QROO"))
+                ddlEstado.Items.Add(New ListItem("San Luis Potosí", "SLP"))
+                ddlEstado.Items.Add(New ListItem("Sinaloa", "SIN"))
+                ddlEstado.Items.Add(New ListItem("Sonora", "SON"))
+                ddlEstado.Items.Add(New ListItem("Tabasco", "TAB"))
+                ddlEstado.Items.Add(New ListItem("Tamaulipas", "TAM"))
+                ddlEstado.Items.Add(New ListItem("Tlaxcala", "TLAX"))
+                ddlEstado.Items.Add(New ListItem("Veracruz", "VER"))
+                ddlEstado.Items.Add(New ListItem("Yucatán", "YUC"))
+                ddlEstado.Items.Add(New ListItem("Zacatecas", "ZAC"))
+            Case "US"
+                ddlEstado.Items.Add(New ListItem("Florida", "FL"))
+                ddlEstado.Items.Add(New ListItem("New York", "NY"))
+                ddlEstado.Items.Add(New ListItem("Texas", "TX"))
+        End Select
+    End Sub
+
 End Module

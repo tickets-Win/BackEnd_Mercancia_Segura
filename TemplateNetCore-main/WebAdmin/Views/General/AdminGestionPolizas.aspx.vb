@@ -32,4 +32,12 @@
 
         End If
     End Sub
+
+    Protected Sub gvPolizas_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+
+    End Sub
+
+    Protected Sub gvPolizas_PageIndexChanged(sender As Object, e As EventArgs)
+
+    End Sub
 End Class

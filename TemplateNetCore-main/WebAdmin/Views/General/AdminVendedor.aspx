@@ -75,6 +75,7 @@
     <!-- FORMULARIO DE REGISTRO / EDICIÓN DE VENDEDOR -->
     <asp:Panel ID="pnlFormularioVendedor" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <asp:HiddenField ID="hfVendedorId" runat="server" />
+        <asp:HiddenField ID="hfTipoPersona" runat="server" />
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>
                 <asp:Label ID="lblMensaje" runat="server"></asp:Label>
@@ -176,6 +177,7 @@
             <asp:Panel ID="pnlGenero" runat="server" CssClass="col-md-4">
                 <label class="form-label">Género</label>
                 <asp:DropDownList ID="ddlGenero" runat="server" CssClass="form-select">
+                    <asp:ListItem Text="Selecciona género" Value="" />
                     <asp:ListItem Text="Masculino" Value="M"></asp:ListItem>
                     <asp:ListItem Text="Femenino" Value="F"></asp:ListItem>
                 </asp:DropDownList>
@@ -196,7 +198,7 @@
 
             <div class="col-md-4">
                 <label class="form-label">C.P.</label>
-                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control"></asp:TextBox>                
             </div>
 
         </div>

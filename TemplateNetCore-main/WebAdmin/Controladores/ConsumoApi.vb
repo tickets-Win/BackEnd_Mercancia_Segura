@@ -56,12 +56,10 @@ Public Class ConsumoApi
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
 
             Using client As New HttpClient()
-
-                Dim json As String = JsonConvert.SerializeObject(body)
                 Dim content As New StringContent(body, Encoding.UTF8, "application/json")
 
                 Dim response As HttpResponseMessage =
-                        client.PostAsync(ConfigurationManager.AppSettings("Cliente"), content).Result
+                    client.PostAsync(ConfigurationManager.AppSettings("Cliente"), content).Result
 
                 Return response.Content.ReadAsStringAsync().Result
             End Using
@@ -70,6 +68,7 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+
 
 #End Region
 
@@ -125,6 +124,20 @@ Public Class ConsumoApi
 
             Using client As New HttpClient()
                 Dim url As String = $"{ConfigurationManager.AppSettings("ConsultarVendedorId")}/{vendedorId}"
+                Dim response As HttpResponseMessage = client.GetAsync(url).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetClienteId(clienteId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = $"{ConfigurationManager.AppSettings("ConsultarClienteId")}/{clienteId}"
                 Dim response As HttpResponseMessage = client.GetAsync(url).Result
                 Return response.Content.ReadAsStringAsync().Result
             End Using
@@ -284,6 +297,21 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function GetCargarPolizas() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("CargarPolizas")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
 #End Region
 
 #Region "PUT"
@@ -302,6 +330,21 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function PutEditarCliente(clienteId As Integer, json As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = $"{ConfigurationManager.AppSettings("EditarCliente")}/{clienteId}"
+                Dim content As New StringContent(json, Encoding.UTF8, "application/json")
+                Dim response As HttpResponseMessage = client.PutAsync(url, content).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
 #End Region
 
 #Region "DELETE"
@@ -311,6 +354,20 @@ Public Class ConsumoApi
 
             Using client As New HttpClient()
                 Dim url As String = $"{ConfigurationManager.AppSettings("EliminarVendedor")}/{vendedorId}"
+                Dim response As HttpResponseMessage = client.DeleteAsync(url).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function DeleteClientes(clienteId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = $"{ConfigurationManager.AppSettings("EliminarCliente")}/{clienteId}"
                 Dim response As HttpResponseMessage = client.DeleteAsync(url).Result
                 Return response.Content.ReadAsStringAsync().Result
             End Using

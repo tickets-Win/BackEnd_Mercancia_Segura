@@ -1,4 +1,6 @@
-﻿Namespace MercanciaSegura.DOM.Modelos
+﻿Imports Newtonsoft.Json
+
+Namespace MercanciaSegura.DOM.Modelos
 
     Public Class ClienteCredito
         Public Property ClienteCreditosId As Integer

@@ -1,4 +1,6 @@
 ﻿
+Imports Newtonsoft.Json
+
 Namespace MercanciaSegura.DOM.Modelos
     Public Class Correos
         Public Property CorreoId As Integer

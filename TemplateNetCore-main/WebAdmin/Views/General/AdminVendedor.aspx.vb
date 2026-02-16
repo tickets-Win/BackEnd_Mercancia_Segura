@@ -24,6 +24,7 @@ Public Class AdminVendedor
 
         ddlEstatus.SelectedValue = "1"
         ddlEstatus.Enabled = False
+        ddlTipoPersona.Enabled = True
     End Sub
 
     Protected Sub ddlTipoPersona_SelectedIndexChanged(sender As Object, e As EventArgs)
@@ -92,24 +93,34 @@ Public Class AdminVendedor
         Dim json As String = JsonConvert.SerializeObject(vendedor)
         Dim respuesta As String
         Dim mensajeToast As String = ""
+        Dim esExito As Boolean = False
 
         If String.IsNullOrEmpty(hfVendedorId.Value) Then
             respuesta = api.PostVendedor(json)
-            mensajeToast = "Vendedor agregado correctamente"
         Else
             Dim vendedorId As Integer = Convert.ToInt32(hfVendedorId.Value)
             respuesta = api.PutEditarVendedores(vendedorId, json)
-            mensajeToast = "Vendedor editado correctamente"
         End If
 
-        CargarVendedores()
-        pnlFormularioVendedor.Visible = False
-        PnlTabla.Visible = True
-        PnlEncabezado.Visible = True
-        LimpiarFormulario()
+        Dim respuestaObj As JObject = JObject.Parse(respuesta)
 
-        ClientScript.RegisterStartupScript(Me.GetType(), "toast", "showToast('" & mensajeToast & "', 'success');", True)
+        If respuestaObj("errors") IsNot Nothing Then
+            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "apiErrors",
+        "showToast('No se pudo guardar el vendedor', 'danger');", True)
+        Else
+            mensajeToast = If(String.IsNullOrEmpty(hfVendedorId.Value),
+                                    "Vendedor agregado correctamente",
+                                    "Vendedor editado correctamente")
+            ClientScript.RegisterStartupScript(Me.GetType(), "toast",
+        "showToast('" & mensajeToast & "', 'success');", True)
 
+
+            CargarVendedores()
+            pnlFormularioVendedor.Visible = False
+            PnlTabla.Visible = True
+            PnlEncabezado.Visible = True
+            LimpiarFormulario()
+        End If
 
     End Sub
 
@@ -197,10 +208,20 @@ Public Class AdminVendedor
         Dim vendedor As Vendedor = JsonConvert.DeserializeObject(Of Vendedor)(objvendedor)
 
         hfVendedorId.Value = vendedor.VendedorId.ToString()
+
+        If Not IsPostBack Then
+            DropdownHelpers.CargarTipoPersona(ddlTipoPersona)
+            DropdownHelpers.CargarTipoVendedor(ddlTipoVendedor)
+        End If
+
+        hfTipoPersona.Value = vendedor.TipoPersonaId.ToString()
+        ddlTipoPersona.SelectedValue = vendedor.TipoPersonaId.ToString()
+        ddlTipoVendedor.SelectedValue = vendedor.TipoVendedorId.ToString()
         txtNombre.Text = vendedor.Nombres
         txtApellidoP.Text = vendedor.ApellidoPaterno
         txtApellidoM.Text = vendedor.ApellidoMaterno
-        txtRazonSocial.Text = If(vendedor.TipoPersonaId = 1, vendedor.NombreCompleto, "")
+        txtRazonSocial.Text = If(vendedor.TipoPersonaId = 2, vendedor.NombreCompleto, "")
+        txtNombreCompleto.Text = If(vendedor.TipoPersonaId = 1, vendedor.NombreCompleto, "")
         txtClave.Text = vendedor.Clave
         txtRFC.Text = vendedor.Rfc
         txtDomicilio.Text = vendedor.Domicilio
@@ -214,7 +235,7 @@ Public Class AdminVendedor
         txtComisión.Text = vendedor.Comision.ToString()
         ddlEstatus.SelectedValue = If(vendedor.Estatus, "1", "0")
         ddlEstatus.Enabled = True
-
+        ddlTipoPersona.Enabled = False
         If vendedor.TipoPersonaId = 1 Then
             pnlRazonSocial.Visible = False
             pnlDatosFisica.Visible = True

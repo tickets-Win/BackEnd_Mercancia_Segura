@@ -31,112 +31,48 @@
     </asp:Panel>
 
     <asp:Panel ID="PnlTabla" runat="server">
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col">N° Póliza</th>
-                    <th scope="col">Contratante</th>
-                    <th scope="col">Recibos</th>
-                    <th scope="col">Endosos</th>
-                    <th scope="col">Vigencia</th>
-                    <th scope="col">Estatus</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row">MSGX-18135</th>
-                    <td>Mercancia segura</td>
-                    <td>Ver recibos</td>
-                    <td>Ver endosos</td>
-                    <td>2023-01-15</td>
-                    <td>Activa</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">PZ2023003</th>
-                    <td>Mercancia segura</td>
-                    <td>Ver recibos</td>
-                    <td>Ver endosos</td>
-                    <td>2023-01-15</td>
-                    <td>Activa</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">PZ2023003</th>
-                    <td>Mercancia segura</td>
-                    <td>Ver recibos</td>
-                    <td>Ver endosos</td>
-                    <td>2023-01-15</td>
-                    <td>Activa</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">PZ2023003</th>
-                    <td>Mercancia segura</td>
-                    <td>Ver recibos</td>
-                    <td>Ver endosos</td>
-                    <td>2023-01-15</td>
-                    <td>Activa</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">PZ2023003</th>
-                    <td>Mercancia segura</td>
-                    <td>Ver recibos</td>
-                    <td>Ver endosos</td>
-                    <td>2023-01-15</td>
-                    <td>Activa</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">PZ2023003</th>
-                    <td>Mercancia segura</td>
-                    <td>Ver recibos</td>
-                    <td>Ver endosos</td>
-                    <td>2023-01-15</td>
-                    <td>Activa</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">PZ2023003</th>
-                    <td>Mercancia segura</td>
-                    <td>Ver recibos</td>
-                    <td>Ver endosos</td>
-                    <td>2023-01-15</td>
-                    <td>Activa</td>
-                    <td>
-                        <button class="icon-btn" title="Ver"><i class="bi bi-eye"></i></button>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="card card-shadow p-4 mb-4">
+        <div style="overflow-x: auto; width: 100%;">
+            <asp:GridView ID="gvPolizas" runat="server"
+                CssClass="table table-hover align-middle"
+                AutoGenerateColumns="False"
+                OnRowCommand="gvPolizas_RowCommand"
+                HeaderStyle-CssClass="table-light"
+                DataKeyNames="PolizaId"
+                AllowPaging="True"
+                PageSize="10"
+                OnPageIndexChanged="gvPolizas_PageIndexChanged">
+                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                <Columns>
+                    <asp:BoundField DataField="Clave" HeaderText="Clave" />
+                    <asp:BoundField DataField="EstatusId" HeaderText="Estatus" />
+                    <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
+                    <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
+                    <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
+
+                    <asp:TemplateField HeaderText="Acciones">
+                        <ItemTemplate>
+                            <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("PolizaId") %>'
+                                CssClass="icon-btn action-icon" ToolTip="Editar">
+             <i class="bi bi-pencil"></i>
+                            </asp:LinkButton>
+
+                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("PolizaId") %>'
+                                CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                OnClientClick="return confirm('¿Seguro que deseas eliminar esta póliza?');">
+             <i class="bi bi-trash"></i>
+                            </asp:LinkButton>
+
+                            <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("PolizaId") %>'
+                                CssClass="icon-btn" ToolTip="Enviar correo">
+             <i class="bi bi-envelope"></i>
+                            </asp:LinkButton>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                </Columns>
+            </asp:GridView>
+        </div>
+    </div>
     </asp:Panel>
     <asp:Panel ID="pnlFormularioPolizas" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">

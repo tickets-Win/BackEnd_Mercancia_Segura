@@ -86,6 +86,15 @@ Partial Public Class AdminVendedor
     Protected WithEvents hfVendedorId As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
+    '''Control hfTipoPersona.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfTipoPersona As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
     '''Control lblMensaje.
     '''</summary>
     '''<remarks>
