@@ -3,10 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MercanciaSegura.DOM.Modelos.Poliza
 {
-    [Table("Producto")]
-    public class Producto
+    [Table("Riesgo")]
+    public class Riesgo
     {
         [Key]
+        [Column("Riesgo_ID")]
+        public int RiesgoId { get; set; }
+
         [Column("Producto_ID")]
         public int ProductoId { get; set; }
 
@@ -14,8 +17,7 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [MaxLength(100)]
         public string? Nombre { get; set; }
 
-        [Column("Pantalla")]
-        [MaxLength(100)]
-        public string? Pantalla { get; set; }
+        [ForeignKey(nameof(ProductoId))]
+        public Producto? Producto { get; set; }
     }
 }

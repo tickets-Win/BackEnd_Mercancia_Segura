@@ -6,22 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 
-
 namespace MercanciaSegura.RestAPI.Controllers.Catalogos
 {
     [ApiController]
-    public abstract class TipoVendedorApiControllerBase : ServiceBaseController
+    public abstract class AseguradoraApiControllerBase : ServiceBaseController
     {
         [HttpGet]
-        [Route("/{version:apiVersion}/tipoVendedor")]
+        [Route("/{version:apiVersion}/tipoAseguradora")]
         [ValidateModelState]
-        [SwaggerOperation("GetTipoVendedorApi")]
+        [SwaggerOperation("GetAseguradora")]
         [SwaggerResponse(statusCode: 200, description: "OK")]
         [SwaggerResponse(statusCode: 400, type: typeof(InlineResponse400))]
         [SwaggerResponse(statusCode: 401, type: typeof(InlineResponse400))]
         [SwaggerResponse(statusCode: 404, type: typeof(InlineResponse400))]
-        public abstract Task<IActionResult> GetTipoVendedorApiAsync(
+        public abstract Task<IActionResult> GetAseguradoraApiAsync(
             [FromRoute][Required] string version);
     }
 }
-

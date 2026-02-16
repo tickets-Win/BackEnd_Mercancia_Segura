@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MercanciaSegura.DOM.ApplicationDbContext;
 using MercanciaSegura.DOM.Modelos.Vendedor;
-using MercanciaSegura.RestAPI.Models;
+using MercanciaSegura.RestAPI.Models.Vendedor;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -71,7 +71,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             vendedor.Observaciones = body.Observaciones;
             vendedor.Comision = body.Comision;
 
-            vendedor.FechaActualizacion = DateTime.Now;
         }
 
         // GET /v1/vendedor
@@ -132,6 +131,9 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 return NotFound();
 
             MapToVendedor(vendedor, body);
+
+            vendedor.FechaActualizacion = DateTime.Now;
+
             await _context.SaveChangesAsync();
 
             return Ok(MapToResponse(vendedor));

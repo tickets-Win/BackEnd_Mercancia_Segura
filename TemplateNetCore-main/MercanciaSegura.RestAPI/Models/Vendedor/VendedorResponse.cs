@@ -1,23 +1,23 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace MercanciaSegura.RestAPI.Models
+namespace MercanciaSegura.RestAPI.Models.Vendedor
 {
     public class VendedorResponse
     {
         public int VendedorId { get; set; }
 
         [MaxLength(60)]
-        public string? ApellidoPaterno { get; set; }
+        public string ApellidoPaterno { get; set; }
 
         [MaxLength(60)]
-        public string? ApellidoMaterno { get; set; }
+        public string ApellidoMaterno { get; set; }
 
         [MaxLength(60)]
-        public string? Nombres { get; set; }
+        public string Nombres { get; set; }
 
         [MaxLength(200)]
-        public string? NombreCompleto { get; set; }
+        public string NombreCompleto { get; set; }
 
         // Llaves foráneas
         public int? TipoPersonaId { get; set; }
@@ -26,34 +26,34 @@ namespace MercanciaSegura.RestAPI.Models
         public bool Estatus { get; set; }
 
         [MaxLength(10)]
-        public string? Clave { get; set; }
+        public string Clave { get; set; }
 
         [MaxLength(13)]
-        public string? Rfc { get; set; }
+        public string Rfc { get; set; }
 
         [MaxLength(300)]
-        public string? Domicilio { get; set; }
+        public string Domicilio { get; set; }
 
         [StringLength(5)]
-        public string? Cp { get; set; }
+        public string Cp { get; set; }
 
         [MaxLength(60)]
-        public string? Colonia { get; set; }
+        public string Colonia { get; set; }
 
         [MaxLength(20)]
-        public string? Estado { get; set; }
+        public string Estado { get; set; }
 
         [StringLength(1)]
-        public string? Genero { get; set; }
+        public string Genero { get; set; }
 
         [MaxLength(13)]
-        public string? Telefono { get; set; }
+        public string Telefono { get; set; }
 
         [MaxLength(200)]
-        public string? CorreoElectronico { get; set; }
+        public string CorreoElectronico { get; set; }
 
         [MaxLength(200)]
-        public string? Observaciones { get; set; }
+        public string Observaciones { get; set; }
 
         public decimal? Comision { get; set; }
 

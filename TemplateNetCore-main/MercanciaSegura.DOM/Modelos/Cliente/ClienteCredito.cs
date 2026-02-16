@@ -13,7 +13,7 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
     {
         [Key]
         [Column("Cliente_Creditos_ID")]
-        public int ClienteCreditosId { get; set; }
+        public int ClienteCreditoId { get; set; }
 
         [Column("Cliente_ID")]
         public int? ClienteId { get; set; }
