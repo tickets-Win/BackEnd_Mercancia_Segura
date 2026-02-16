@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using MercanciaSegura.DOM.ApplicationDbContext;
 using MercanciaSegura.DOM.Modelos.Cliente;
-using MercanciaSegura.RestAPI.Models;
+using MercanciaSegura.RestAPI.Models.Cliente;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +23,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             var correos = await _context.Correos
                 .Where(c => c.ClienteId == clienteId)
                 .Include(c => c.TipoCorreo)
-                .Select(c => new CorreosResponse
+                .Select(c => new CorreoResponse
                 {
                     CorreoId = c.CorreoId,
                     Correo = c.Correo,

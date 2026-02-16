@@ -1,25 +1,33 @@
 {
+  "profiles": {
+    "dev": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "em-api/0.1",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Database": "Mercancia_Segura",
+        "DbUser": "sa",
+        "DbPassword": "winsef2015web",
+        "DbServer": "www.winsefweb.net"
+      },
+      "applicationUrl": "https://localhost:50005"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "em-api/0.1",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  },
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:50352/",
       "sslPort": 0
-    }
-  },
-  "profiles": {
-    "dev": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "em-api/0.1",
-      "applicationUrl": "https://localhost:50005",
-        "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development",
-            "Database": "Mercancia_Segura",
-            "DbUser": "sa",
-            "DbPassword": "winsef2015web",
-            "DbServer": "www.winsefweb.net"
-        }
     }
   }
 }

@@ -3,65 +3,66 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using MercanciaSegura.DOM.Modelos;
 using MercanciaSegura.DOM.Modelos.Cliente;
-namespace MercanciaSegura.RestAPI.Models
+namespace MercanciaSegura.RestAPI.Models.Cliente
 {
     public class ClienteRequest
     {
         // Información fiscal y contacto
         [MaxLength(13)]
-        public string? Rfc { get; set; }
+        public string Rfc { get; set; }
 
         public int? RfcGenericoId { get; set; }
 
         [MaxLength(13)]
-        public string? Telefono { get; set; }
+        public string Telefono { get; set; }
 
         [MaxLength(200)]
-        public string? CorreoElectronico { get; set; }
+        public string CorreoElectronico { get; set; }
 
         [MaxLength(30)]
-        public string? Nacionalidad { get; set; }
+        public string Nacionalidad { get; set; }
 
         // Datos personales
         [MaxLength(60)]
-        public string? ApellidoPaterno { get; set; }
+        public string ApellidoPaterno { get; set; }
 
         [MaxLength(60)]
-        public string? ApellidoMaterno { get; set; }
+        public string ApellidoMaterno { get; set; }
 
         [MaxLength(60)]
-        public string? Nombres { get; set; }
+        public string Nombres { get; set; }
 
         [MaxLength(120)]
-        public string? NombreCompleto { get; set; }
+        public string NombreCompleto { get; set; }
 
         // Dirección
         [MaxLength(120)]
-        public string? Calle { get; set; }
+        public string Calle { get; set; }
 
         [MaxLength(10)]
-        public string? NumeroInt { get; set; }
+        public string NumeroInt { get; set; }
 
         [MaxLength(10)]
-        public string? NumeroExt { get; set; }
+        public string NumeroExt { get; set; }
 
         [MaxLength(50)]
-        public string? Pais { get; set; }
+        public string Pais { get; set; }
 
         [MaxLength(80)]
-        public string? Municipio { get; set; }
+        public string Municipio { get; set; }
 
         [MaxLength(80)]
-        public string? Poblacion { get; set; }
+        public string Poblacion { get; set; }
 
         [MaxLength(60)]
-        public string? Colonia { get; set; }
+        public string Colonia { get; set; }
 
         [MaxLength(20)]
-        public string? Estado { get; set; }
+        public string Estado { get; set; }
 
         [StringLength(5)]
-        public string? Cp { get; set; }
+        [RegularExpression(@"^\d{5}$", ErrorMessage = "El código postal es invalido debe tener 5 dígitos")]
+        public string Cp { get; set; }
 
         // Llaves foráneas
         public int? TipoSeguroId { get; set; }
@@ -77,22 +78,22 @@ namespace MercanciaSegura.RestAPI.Models
         public decimal? CuotaMinimaNacional { get; set; }
         public decimal? CuotaAplicableInternacional { get; set; }
         public decimal? CuotaAplicableNacional { get; set; }
-        public BeneficiarioPreferenteRequest? Beneficiario { get; set; }
 
         [MaxLength(10)]
-        public string? Clave { get; set; }
+        public string Clave { get; set; }
 
         [StringLength(1)]
         [RegularExpression("M|F", ErrorMessage = "Genero debe ser 'M' o 'F'")]
         public string? Genero { get; set; }
+        public List<BeneficiarioPreferenteRequest> BeneficiarioPreferente { get; set; } = new();
 
-        public List<CorreosRequest>? Correos { get; set; }
 
-        public List<CuotaRequest> Cuotas { get; set; }
+        public List<CorreoRequest> Correos { get; set; } = new();
+        public List<CuotaRequest> Cuota { get; set; } = new();
+        public List<ClienteVendedorRequest> ClienteVendedor { get; set; } = new();
 
-        public List<ClienteVendedorRequest>? Vendedores { get; set; }
 
-        public ClienteCreditoRequest? ClienteCredito { get; set; }
+        public ClienteCreditoRequest ClienteCredito { get; set; } = new();
 
     }
 }

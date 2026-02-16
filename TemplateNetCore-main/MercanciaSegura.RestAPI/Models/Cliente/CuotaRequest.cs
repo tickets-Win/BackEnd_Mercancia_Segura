@@ -1,4 +1,4 @@
-﻿namespace MercanciaSegura.RestAPI.Models
+﻿namespace MercanciaSegura.RestAPI.Models.Cliente
 {
     public class CuotaRequest
     {

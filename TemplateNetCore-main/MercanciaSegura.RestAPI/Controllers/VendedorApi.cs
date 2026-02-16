@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MercanciaSegura.RestAPI.Attributes;
 using MercanciaSegura.RestAPI.Controllers.Base;
 using MercanciaSegura.RestAPI.Models;
+using MercanciaSegura.RestAPI.Models.Vendedor;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
