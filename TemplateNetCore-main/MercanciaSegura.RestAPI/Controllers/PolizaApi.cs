@@ -24,14 +24,14 @@ namespace MercanciaSegura.RestAPI.Controllers.Catalogos
             [FromRoute][Required] string version);
 
         [HttpGet]
-        [Route("/{version:apiVersion}/poliza/{polizaId}")]
+        [Route("/{version:apiVersion}/poliza/{idPoliza}")]
         [ValidateModelState]
         [SwaggerOperation("GetPolizaById")]
         [SwaggerResponse(statusCode: 200, type: typeof(PolizaResponse), description: "OK")]
         [SwaggerResponse(statusCode: 404, type: typeof(InlineResponse400))]
         public abstract Task<IActionResult> GetPolizaByIdAsync(
             [FromRoute][Required] string version,
-            [FromRoute][Required] int polizaId);
+            [FromRoute][Required] int idPoliza);
 
         [HttpPost]
         [Route("/{version:apiVersion}/poliza")]
@@ -43,22 +43,22 @@ namespace MercanciaSegura.RestAPI.Controllers.Catalogos
             [FromBody][Required] PolizaRequest body);
 
         [HttpPut]
-        [Route("/{version:apiVersion}/poliza/{polizaId}")]
+        [Route("/{version:apiVersion}/poliza/{idPoliza}")]
         [ValidateModelState]
         [SwaggerOperation("UpdatePoliza")]
         [SwaggerResponse(statusCode: 200, type: typeof(PolizaResponse), description: "Updated")]
         public abstract Task<IActionResult> UpdatePolizaAsync(
             [FromRoute][Required] string version,
-            [FromRoute][Required] int polizaId,
+            [FromRoute][Required] int idPoliza,
             [FromBody][Required] PolizaRequest body);
 
         [HttpDelete]
-        [Route("/{version:apiVersion}/poliza/{polizaId}")]
+        [Route("/{version:apiVersion}/poliza/{idPoliza}")]
         [ValidateModelState]
         [SwaggerOperation("DeletePoliza")]
         [SwaggerResponse(statusCode: 200, description: "Deleted")]
         public abstract Task<IActionResult> DeletePolizaAsync(
             [FromRoute][Required] string version,
-            [FromRoute][Required] int polizaId);
+            [FromRoute][Required] int idPoliza);
     }
 }

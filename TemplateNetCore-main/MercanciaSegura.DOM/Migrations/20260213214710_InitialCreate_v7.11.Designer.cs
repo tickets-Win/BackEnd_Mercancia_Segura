@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260213214710_InitialCreate_v7.11")]
+    partial class InitialCreate_v711
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -616,7 +619,7 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Aseguradora");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Cobertura", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Coberturas", b =>
                 {
                     b.Property<int>("CoberturaId")
                         .ValueGeneratedOnAdd()
@@ -630,21 +633,15 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasColumnName("Nombre");
 
-                    b.Property<int>("PolizaCoberturaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Poliza_Cobertura_ID");
-
                     b.Property<int>("RiesgoId")
                         .HasColumnType("int")
                         .HasColumnName("Riesgo_ID");
 
                     b.HasKey("CoberturaId");
 
-                    b.HasIndex("PolizaCoberturaId");
-
                     b.HasIndex("RiesgoId");
 
-                    b.ToTable("Cobertura");
+                    b.ToTable("Coberturas");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Contratante", b =>
@@ -823,6 +820,10 @@ namespace MercanciaSegura.DOM.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PolizaCoberturaId"));
 
+                    b.Property<int>("CoberturaId")
+                        .HasColumnType("int")
+                        .HasColumnName("Cobertura_ID");
+
                     b.Property<string>("Deducible")
                         .HasMaxLength(350)
                         .HasColumnType("nvarchar(350)")
@@ -841,6 +842,8 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Suma_Asegurada");
 
                     b.HasKey("PolizaCoberturaId");
+
+                    b.HasIndex("CoberturaId");
 
                     b.HasIndex("PolizaId");
 
@@ -1031,7 +1034,7 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Producto");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Riesgo", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Riesgos", b =>
                 {
                     b.Property<int>("RiesgoId")
                         .ValueGeneratedOnAdd()
@@ -1053,7 +1056,7 @@ namespace MercanciaSegura.DOM.Migrations
 
                     b.HasIndex("ProductoId");
 
-                    b.ToTable("Riesgo");
+                    b.ToTable("Riesgos");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.SubRamo", b =>
@@ -1389,23 +1392,15 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Navigation("Vendedor");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Cobertura", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Coberturas", b =>
                 {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.PolizaCobertura", "PolizaCobertura")
-                        .WithMany()
-                        .HasForeignKey("PolizaCoberturaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Riesgo", "Riesgo")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Riesgos", "Riesgos")
                         .WithMany()
                         .HasForeignKey("RiesgoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("PolizaCobertura");
-
-                    b.Navigation("Riesgo");
+                    b.Navigation("Riesgos");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Poliza", b =>
@@ -1449,11 +1444,19 @@ namespace MercanciaSegura.DOM.Migrations
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaCobertura", b =>
                 {
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Coberturas", "Coberturas")
+                        .WithMany()
+                        .HasForeignKey("CoberturaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Poliza", "Poliza")
-                        .WithMany("PolizaCobertura")
+                        .WithMany()
                         .HasForeignKey("PolizaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Coberturas");
 
                     b.Navigation("Poliza");
                 });
@@ -1461,8 +1464,8 @@ namespace MercanciaSegura.DOM.Migrations
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaContenedor", b =>
                 {
                     b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Poliza", "Poliza")
-                        .WithOne("PolizaContenedor")
-                        .HasForeignKey("MercanciaSegura.DOM.Modelos.Poliza.PolizaContenedor", "PolizaId")
+                        .WithMany()
+                        .HasForeignKey("PolizaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1472,15 +1475,15 @@ namespace MercanciaSegura.DOM.Migrations
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", b =>
                 {
                     b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Poliza", "Poliza")
-                        .WithOne("PolizaMercancia")
-                        .HasForeignKey("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", "PolizaId")
+                        .WithMany()
+                        .HasForeignKey("PolizaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Poliza");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Riesgo", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Riesgos", b =>
                 {
                     b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Producto", "Producto")
                         .WithMany()
@@ -1517,15 +1520,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Navigation("Correos");
 
                     b.Navigation("Cuota");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Poliza", b =>
-                {
-                    b.Navigation("PolizaCobertura");
-
-                    b.Navigation("PolizaContenedor");
-
-                    b.Navigation("PolizaMercancia");
                 });
 #pragma warning restore 612, 618
         }

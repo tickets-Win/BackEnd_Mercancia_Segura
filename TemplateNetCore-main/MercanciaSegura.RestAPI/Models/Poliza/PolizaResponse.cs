@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
     namespace MercanciaSegura.RestAPI.Models.Poliza
     {
@@ -25,7 +26,6 @@
             public string FormaPago { get; set; }
 
             public bool? Estatus { get; set; }
-            public string TipoPoliza { get; set; }
             public string NumeroPoliza { get; set; }
 
             public DateTime? VigenciaDel { get; set; }
@@ -41,5 +41,10 @@
 
             public DateTime FechaRegistro { get; set; }
             public DateTime? FechaActualizacion { get; set; }
-        }
+
+            public PolizaContenedorResponse? PolizaContenedor { get; set; }
+            public PolizaMercanciaResponse? PolizaMercancia { get; set; }
+            public List<PolizaCoberturaResponse>? PolizaCobertura { get; set; }
+
     }
+}

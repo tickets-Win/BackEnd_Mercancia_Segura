@@ -23,7 +23,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             var correos = await _context.Correos
                 .Where(c => c.ClienteId == clienteId)
                 .Include(c => c.TipoCorreo)
-                .Select(c => new CorreosResponse
+                .Select(c => new CorreoResponse
                 {
                     CorreoId = c.CorreoId,
                     Correo = c.Correo,

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MercanciaSegura.DOM.Modelos.Cliente;
 
 namespace MercanciaSegura.DOM.Modelos.Poliza
 {
@@ -31,11 +32,6 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
 
         [Column("Estatus")]
         public bool? Estatus { get; set; }
-
-        [Column("Tipo_Poliza")]
-        [MaxLength(200)]
-        public string? TipoPoliza { get; set; }
-
 
         [Column("Numero_Poliza")]
         [MaxLength(30)]
@@ -89,5 +85,11 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
 
         [ForeignKey(nameof(FormaPagoId))]
         public FormaPago? FormaPago { get; set; }
+
+        public PolizaContenedor? PolizaContenedor { get; set; }
+
+        public PolizaMercancia? PolizaMercancia { get; set; }
+
+        public ICollection<PolizaCobertura> PolizaCobertura { get; set; } = new List<PolizaCobertura>();
     }
 }

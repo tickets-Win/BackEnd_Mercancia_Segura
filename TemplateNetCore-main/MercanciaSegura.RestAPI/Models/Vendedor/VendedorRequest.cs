@@ -36,7 +36,7 @@ namespace MercanciaSegura.RestAPI.Models.Vendedor
         public string Domicilio { get; set; }
 
         [StringLength(5)]
-        [RegularExpression(@"^\d{5}$", ErrorMessage = "CP inválido")]
+        [RegularExpression(@"^\d{5}$", ErrorMessage = "El código postal es invalido debe tener 5 dígitos")]
         public string Cp { get; set; }
 
         [MaxLength(60)]

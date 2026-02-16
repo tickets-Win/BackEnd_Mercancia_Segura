@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MercanciaSegura.DOM.ApplicationDbContext;
 using MercanciaSegura.DOM.Modelos;
 using MercanciaSegura.DOM.Modelos.Cliente;
+using MercanciaSegura.RestAPI.Models;
 using MercanciaSegura.RestAPI.Models.Cliente;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -60,8 +61,56 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 Clave = c.Clave,
                 FechaActualizacion = c.FechaActualizacion,
                 Genero = c.Genero,
+
+
+                BeneficiarioPreferente = c.BeneficiarioPreferente != null
+                ? c.BeneficiarioPreferente.Select(x => new BeneficiarioPreferenteResponse
+                {
+                    BeneficiarioPreferenteId = x.BeneficiarioPreferenteId,
+                    Nombre = x.Nombre,
+                    Domicilio = x.Domicilio,
+                    Rfc = x.RFC,
+                }).ToList()
+                : new List<BeneficiarioPreferenteResponse>(),
+
+
+                Correos = c.Correos?.Select(x => new CorreoResponse
+                {
+                    CorreoId = x.CorreoId,
+                    Correo = x.Correo,
+                    TipoCorreoId = x.TipoCorreoId
+                }).ToList() ?? new List<CorreoResponse>(),
+
+                Cuota = c.Cuota?.Select(x => new CuotaResponse
+                {
+                    CuotaId = x.CuotaId,
+                    TipoCuotaId = x.TipoCuotaId,
+                    TipoTarifaId = x.TipoTarifaId,
+                    Monto = x.Monto
+                }).ToList() ?? new List<CuotaResponse>(),
+
+                ClienteVendedor = c.ClienteVendedor?.Select(x => new ClienteVendedorResponse
+                {
+                    ClienteVendedorId = x.ClienteVendedorId,
+                    VendedorId = x.VendedorId,
+                    Comision = x.Comision,
+                }).ToList() ?? new List<ClienteVendedorResponse>(),
+
+
+                ClienteCredito = c.ClienteCredito == null ? null : new ClienteCreditoResponse
+                {
+                    ClienteCreditoId = c.ClienteCredito.ClienteCreditoId,
+                    DiasDeCredito = c.ClienteCredito.DiasDeCredito,
+                    MetodoDePago = c.ClienteCredito.MetodoDePago,
+                    NumeroCuenta = c.ClienteCredito.NumeroCuenta,
+                    LimiteDeCredito = c.ClienteCredito.LimiteDeCredito,
+                    DiasDePago = c.ClienteCredito.DiasDePago,
+                    DiasDeRevision = c.ClienteCredito.DiasDeRevision,
+                    Saldo = c.ClienteCredito.Saldo
+                }
             };
         }
+
 
         // Mapear ClienteRequest → Cliente (para Create/Update)
         private void MapToCliente(Cliente cliente, ClienteRequest body)
@@ -102,8 +151,14 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         public override async Task<IActionResult> GetClientesAsync(string version)
         {
             var clientes = await _context.Cliente
-                .Where(c => !c.FechaBaja.HasValue)
-                .ToListAsync();
+            .Include(c => c.BeneficiarioPreferente)
+            .Include(c => c.Correos)
+            .Include(c => c.Cuota)
+            .Include(c => c.ClienteVendedor)
+            .Include(c => c.ClienteCredito)
+            .Where(c => !c.FechaBaja.HasValue)
+            .ToListAsync();
+
 
             return Ok(clientes.Select(MapToResponse));
         }
@@ -112,16 +167,21 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         public override async Task<IActionResult> GetClienteByIdAsync(string version, int idCliente)
         {
             var cliente = await _context.Cliente
-                .FirstOrDefaultAsync(c =>
-                    c.ClienteId == idCliente &&
-                    !c.FechaBaja.HasValue);
+            .Include(c => c.BeneficiarioPreferente)
+            .Include(c => c.Correos)
+            .Include(c => c.Cuota)
+            .Include(c => c.ClienteVendedor)
+            .Include(c => c.ClienteCredito)
+            .FirstOrDefaultAsync(c =>
+                c.ClienteId == idCliente &&
+                !c.FechaBaja.HasValue);
+
 
             if (cliente == null)
                 return NotFound();
 
             return Ok(MapToResponse(cliente));
         }
-
 
 
         public override async Task<IActionResult> CreateClienteAsync(string version,[FromBody] ClienteRequest body)
@@ -151,18 +211,22 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 await _context.SaveChangesAsync(); // necesario para obtener ClienteId
 
                 // 2️⃣ Beneficiario Preferente
-                if (body.Beneficiario != null)
+                if (body.BeneficiarioPreferente != null && body.BeneficiarioPreferente.Any())
                 {
-                    var beneficiario = new BeneficiarioPreferente
+                    foreach (var item in body.BeneficiarioPreferente)
                     {
-                        ClienteId = nuevoCliente.ClienteId,
-                        Nombre = body.Beneficiario.Nombre,
-                        RFC = body.Beneficiario.RFC,
-                        Domicilio = body.Beneficiario.Domicilio
-                    };
+                        var beneficiario = new BeneficiarioPreferente
+                        {
+                            ClienteId = nuevoCliente.ClienteId,
+                            Nombre = item.Nombre,
+                            RFC = item.RFC,
+                            Domicilio = item.Domicilio
+                        };
 
-                    _context.BeneficiarioPreferente.Add(beneficiario);
+                        _context.BeneficiarioPreferente.Add(beneficiario);
+                    }
                 }
+
 
                 // 3️⃣ Correos (LISTA)
                 if (body.Correos != null && body.Correos.Any())
@@ -180,17 +244,17 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
 
                 // 4️⃣ Cliente - Vendedores (LISTA)
-                if (body.Vendedores != null && body.Vendedores.Any())
+                if (body.ClienteVendedor != null && body.ClienteVendedor.Any())
                 {
-                    var vendedorIds = body.Vendedores
+                    var vendedorIds = body.ClienteVendedor
                         .Select(v => v.VendedorId)
                         .Distinct()
                         .ToList();
 
-                    if (vendedorIds.Count != body.Vendedores.Count)
+                    if (vendedorIds.Count != body.ClienteVendedor.Count)
                         return BadRequest("No se permiten vendedores duplicados");
 
-                    foreach (var v in body.Vendedores)
+                    foreach (var v in body.ClienteVendedor)
                     {
                         // Validar que el vendedor exista
                         var existeVendedor = await _context.Vendedor
@@ -210,9 +274,9 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
 
                 // 5️⃣ Cuotas (LISTA)
-                if (body.Cuotas != null && body.Cuotas.Any())
+                if (body.Cuota != null && body.Cuota.Any())
                 {
-                    foreach (var c in body.Cuotas)
+                    foreach (var c in body.Cuota)
                     {
                         _context.Cuota.Add(new Cuota
                         {
@@ -270,51 +334,56 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             try
             {
-                // 1️⃣ Cliente
+                // 1️⃣ Buscar Cliente Principal
                 var cliente = await _context.Cliente
                     .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
 
                 if (cliente == null)
                     return NotFound();
 
+                // Mapeo de datos básicos
                 MapToCliente(cliente, body);
-
                 cliente.FechaActualizacion = DateTime.Now;
 
+                // --- INICIO DE REEMPLAZO DE LISTAS ---
 
-                // 2️⃣ Beneficiario
-                if (body.Beneficiario != null)
+                // 2️⃣ Beneficiarios
+                var benefActuales = await _context.BeneficiarioPreferente.Where(b => b.ClienteId == idCliente).ToListAsync();
+                _context.BeneficiarioPreferente.RemoveRange(benefActuales);
+
+                // 3️⃣ Correos
+                var correosActuales = await _context.Correos.Where(c => c.ClienteId == idCliente).ToListAsync();
+                _context.Correos.RemoveRange(correosActuales);
+
+                // 4️⃣ Vendedores
+                var vendActuales = await _context.ClienteVendedor.Where(cv => cv.ClienteId == idCliente).ToListAsync();
+                _context.ClienteVendedor.RemoveRange(vendActuales);
+
+                // 5️⃣ Cuotas
+                var cuotasActuales = await _context.Cuota.Where(c => c.ClienteId == idCliente).ToListAsync();
+                _context.Cuota.RemoveRange(cuotasActuales);
+
+                // 💾 Guardado intermedio para limpiar los registros viejos antes de insertar
+                await _context.SaveChangesAsync();
+
+                // --- INSERCIÓN DE NUEVOS DATOS ---
+
+                if (body.BeneficiarioPreferente != null)
                 {
-                    var beneficiario = await _context.BeneficiarioPreferente
-                        .FirstOrDefaultAsync(b => b.ClienteId == idCliente);
-
-                    if (beneficiario != null)
-                    {
-                        beneficiario.Nombre = body.Beneficiario.Nombre;
-                        beneficiario.RFC = body.Beneficiario.RFC;
-                        beneficiario.Domicilio = body.Beneficiario.Domicilio;
-                    }
-                    else
+                    foreach (var b in body.BeneficiarioPreferente)
                     {
                         _context.BeneficiarioPreferente.Add(new BeneficiarioPreferente
                         {
                             ClienteId = idCliente,
-                            Nombre = body.Beneficiario.Nombre,
-                            RFC = body.Beneficiario.RFC,
-                            Domicilio = body.Beneficiario.Domicilio
+                            Nombre = b.Nombre,
+                            RFC = b.RFC,
+                            Domicilio = b.Domicilio
                         });
                     }
                 }
 
-                // 3️⃣ Correos (REEMPLAZAR)
                 if (body.Correos != null)
                 {
-                    var actuales = await _context.Correos
-                        .Where(c => c.ClienteId == idCliente)
-                        .ToListAsync();
-
-                    _context.Correos.RemoveRange(actuales);
-
                     foreach (var c in body.Correos)
                     {
                         _context.Correos.Add(new Correos
@@ -326,19 +395,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     }
                 }
 
-
-                // 4️⃣ Cliente - Vendedores (REEMPLAZAR)
-                if (body.Vendedores != null)
+                if (body.ClienteVendedor != null)
                 {
-                    // Eliminar relaciones actuales
-                    var actuales = await _context.ClienteVendedor
-                        .Where(cv => cv.ClienteId == idCliente)
-                        .ToListAsync();
-
-                    _context.ClienteVendedor.RemoveRange(actuales);
-
-                    // Insertar nuevas
-                    foreach (var v in body.Vendedores)
+                    // Usamos Distinct por VendedorId para evitar error de llave duplicada
+                    foreach (var v in body.ClienteVendedor.GroupBy(x => x.VendedorId).Select(g => g.First()))
                     {
                         _context.ClienteVendedor.Add(new ClienteVendedor
                         {
@@ -349,56 +409,46 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     }
                 }
 
-
-                // 5️⃣ Cuotas (LISTA)
-                if (body.Cuotas != null)
+                if (body.Cuota != null)
                 {
-                    var cuotasActuales = await _context.Cuota
-                        .Where(c => c.ClienteId == idCliente)
-                        .ToListAsync();
-
-                    _context.Cuota.RemoveRange(cuotasActuales);
-
-                    foreach (var c in body.Cuotas)
+                    foreach (var q in body.Cuota)
                     {
                         _context.Cuota.Add(new Cuota
                         {
                             ClienteId = idCliente,
-                            TipoCuotaId = c.TipoCuotaId,
-                            TipoTarifaId = c.TipoTarifaId,
-                            Monto = c.Monto
+                            TipoCuotaId = q.TipoCuotaId,
+                            TipoTarifaId = q.TipoTarifaId,
+                            Monto = q.Monto
                         });
                     }
                 }
 
-
-                // Cliente Crédito (UPDATE / UPSERT)
+                // 6️⃣ Cliente Crédito (Lógica de Upsert se mantiene igual)
                 if (body.ClienteCredito != null)
                 {
-                    var clienteCredito = await _context.ClienteCredito
-                        .FirstOrDefaultAsync(cc => cc.ClienteId == idCliente);
-
-                    if (clienteCredito != null)
+                    var credito = await _context.ClienteCredito.FirstOrDefaultAsync(cc => cc.ClienteId == idCliente);
+                    if (credito != null)
                     {
-                        // 🔁 UPDATE
-                        clienteCredito.DiasDeCredito = body.ClienteCredito.DiasDeCredito;
-                        clienteCredito.MetodoDePago = body.ClienteCredito.MetodoDePago;
-                        clienteCredito.NumeroCuenta = body.ClienteCredito.NumeroCuenta;
-                        clienteCredito.LimiteDeCredito = body.ClienteCredito.LimiteDeCredito;
-                        clienteCredito.DiasDePago = body.ClienteCredito.DiasDePago;
-                        clienteCredito.DiasDeRevision = body.ClienteCredito.DiasDeRevision;
-                        clienteCredito.Saldo = body.ClienteCredito.Saldo;
+                        // Update
+                        credito.DiasDeCredito = body.ClienteCredito.DiasDeCredito;
+                        credito.MetodoDePago = body.ClienteCredito.MetodoDePago;
+                        credito.NumeroCuenta = body.ClienteCredito.NumeroCuenta;
+                        credito.LimiteDeCredito = body.ClienteCredito.LimiteDeCredito;
+                        credito.DiasDePago = body.ClienteCredito.DiasDePago;
+                        credito.DiasDeRevision = body.ClienteCredito.DiasDeRevision;
+                        credito.Saldo = body.ClienteCredito.Saldo;
                     }
                     else
                     {
-                        // ➕ INSERT (solo si no existe)
+
+                        // Insert
                         _context.ClienteCredito.Add(new ClienteCredito
                         {
                             ClienteId = idCliente,
                             DiasDeCredito = body.ClienteCredito.DiasDeCredito,
+                            LimiteDeCredito = body.ClienteCredito.LimiteDeCredito,
                             MetodoDePago = body.ClienteCredito.MetodoDePago,
                             NumeroCuenta = body.ClienteCredito.NumeroCuenta,
-                            LimiteDeCredito = body.ClienteCredito.LimiteDeCredito,
                             DiasDePago = body.ClienteCredito.DiasDePago,
                             DiasDeRevision = body.ClienteCredito.DiasDeRevision,
                             Saldo = body.ClienteCredito.Saldo
@@ -406,9 +456,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     }
                 }
 
-
-
-                // 6️⃣ Guardar TODO
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -417,11 +464,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-
                 return StatusCode(500, new
                 {
-                    message = "Error al actualizar cliente",
-                    error = ex.Message
+                    message = "Error al actualizar",
+                    error = ex.InnerException?.Message ?? ex.Message
                 });
             }
         }

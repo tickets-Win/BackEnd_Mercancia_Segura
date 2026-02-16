@@ -61,6 +61,7 @@ namespace MercanciaSegura.RestAPI.Models.Cliente
         public string Estado { get; set; }
 
         [StringLength(5)]
+        [RegularExpression(@"^\d{5}$", ErrorMessage = "El código postal es invalido debe tener 5 dígitos")]
         public string Cp { get; set; }
 
         // Llaves foráneas
@@ -77,22 +78,22 @@ namespace MercanciaSegura.RestAPI.Models.Cliente
         public decimal? CuotaMinimaNacional { get; set; }
         public decimal? CuotaAplicableInternacional { get; set; }
         public decimal? CuotaAplicableNacional { get; set; }
-        public BeneficiarioPreferenteRequest Beneficiario { get; set; }
 
         [MaxLength(10)]
         public string Clave { get; set; }
 
         [StringLength(1)]
         [RegularExpression("M|F", ErrorMessage = "Genero debe ser 'M' o 'F'")]
-        public string Genero { get; set; }
+        public string? Genero { get; set; }
+        public List<BeneficiarioPreferenteRequest> BeneficiarioPreferente { get; set; } = new();
 
-        public List<CorreosRequest> Correos { get; set; }
 
-        public List<CuotaRequest> Cuotas { get; set; }
+        public List<CorreoRequest> Correos { get; set; } = new();
+        public List<CuotaRequest> Cuota { get; set; } = new();
+        public List<ClienteVendedorRequest> ClienteVendedor { get; set; } = new();
 
-        public List<ClienteVendedorRequest> Vendedores { get; set; }
 
-        public ClienteCreditoRequest ClienteCredito { get; set; }
+        public ClienteCreditoRequest ClienteCredito { get; set; } = new();
 
     }
 }

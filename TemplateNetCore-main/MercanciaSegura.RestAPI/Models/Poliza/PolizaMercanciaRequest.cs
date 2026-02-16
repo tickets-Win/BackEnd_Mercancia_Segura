@@ -19,8 +19,13 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
         [MaxLength(250)]
         public string? BienesSujetosAConsulta { get; set; }
 
+        [Range(0, double.MaxValue)]
         public decimal? TerrestreAereo { get; set; }
+
+        [Range(0, double.MaxValue)]
         public decimal? Maritimo { get; set; }
+
+        [Range(0, double.MaxValue)]
         public decimal? PaqueteriaMensajeria { get; set; }
 
         [MaxLength(350)]
@@ -44,11 +49,19 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
         [MaxLength(300)]
         public string? IndemnizacionOtros { get; set; }
 
+     
         public decimal? Medicamentos { get; set; }
+
+        
         public decimal? CobreAluminioAcero { get; set; }
+
+       
         public decimal? MedicamentosControlados { get; set; }
+
+        
         public decimal? EqContratistas { get; set; }
 
+     
         public decimal? CuotaGeneralPoliza { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MercanciaSegura.RestAPI.Models.Cliente
 {
@@ -50,6 +51,13 @@ namespace MercanciaSegura.RestAPI.Models.Cliente
         public string Clave { get; set; }
 
         public string Genero { get; set; }
+
+        public List<BeneficiarioPreferenteResponse> BeneficiarioPreferente { get; set; } = new();
+        public List<CorreoResponse> Correos { get; set; } = new();
+        public List<CuotaResponse> Cuota { get; set; } = new();
+        public List<ClienteVendedorResponse> ClienteVendedor { get; set; } = new();
+        public ClienteCreditoResponse ClienteCredito { get; set; }
+
 
     }
 }

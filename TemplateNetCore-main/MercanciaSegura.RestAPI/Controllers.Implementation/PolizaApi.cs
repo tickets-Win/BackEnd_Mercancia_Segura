@@ -32,7 +32,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 FormaPagoId = p.FormaPagoId,
 
                 Estatus = p.Estatus,
-                TipoPoliza = p.TipoPoliza,
                 NumeroPoliza = p.NumeroPoliza,
 
                 VigenciaDel = p.VigenciaDel,
@@ -46,9 +45,56 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 IVA = p.IVA,
                 PrimaTotal = p.PrimaTotal,
 
-                FechaRegistro = p.FechaRegistro
+                FechaRegistro = p.FechaRegistro,
+
+                PolizaContenedor = p.PolizaContenedor == null ? null : new PolizaContenedorResponse
+                {
+                    BienesAsegurados = p.PolizaContenedor.BienesAsegurados,
+                    PorContenedor = p.PolizaContenedor.PorContenedor,
+                    Ferrocarril = p.PolizaContenedor.Ferrocarril,
+                    Terrestre = p.PolizaContenedor.Terrestre,
+                    CuotaAplicable = p.PolizaContenedor.CuotaAplicable,
+                    DanioMaterial = p.PolizaContenedor.DanioMaterial,
+                    Robo = p.PolizaContenedor.Robo,
+                    PerdidaParcial = p.PolizaContenedor.PerdidaParcial,
+                    PerdidaTotal = p.PolizaContenedor.PerdidaTotal,
+                    TrayectosAsegurados = p.PolizaContenedor.TrayectosAsegurados,
+                    MedioTransporte = p.PolizaContenedor.MedioTransporte
+                },
+
+                PolizaMercancia = p.PolizaMercancia == null ? null : new PolizaMercanciaResponse
+                {
+                    NombreInternoPoliza = p.PolizaMercancia.NombreInternoPoliza,
+                    FolioPoliza = p.PolizaMercancia.FolioPoliza,
+                    BienesAsegurados = p.PolizaMercancia.BienesAsegurados,
+                    BienesExcluidos = p.PolizaMercancia.BienesExcluidos,
+                    BienesSujetosAConsulta = p.PolizaMercancia.BienesSujetosAConsulta,
+                    TerrestreAereo = p.PolizaMercancia.TerrestreAereo,
+                    Maritimo = p.PolizaMercancia.Maritimo,
+                    PaqueteriaMensajeria = p.PolizaMercancia.PaqueteriaMensajeria,
+                    Deducibles = p.PolizaMercancia.Deducibles,
+                    Compras = p.PolizaMercancia.Compras,
+                    Ventas = p.PolizaMercancia.Ventas,
+                    Maquila = p.PolizaMercancia.Maquila,
+                    BienesUsados = p.PolizaMercancia.BienesUsados,
+                    EmbarqueFiliales = p.PolizaMercancia.EmbarqueFiliales,
+                    IndemnizacionOtros = p.PolizaMercancia.IndemnizacionOtros,
+                    Medicamentos = p.PolizaMercancia.Medicamentos,
+                    CobreAluminioAcero = p.PolizaMercancia.CobreAluminioAcero,
+                    MedicamentosControlados = p.PolizaMercancia.MedicamentosControlados,
+                    EqContratistas = p.PolizaMercancia.EqContratistas,
+                    CuotaGeneralPoliza = p.PolizaMercancia.CuotaGeneralPoliza
+                },
+
+                PolizaCobertura = p.PolizaCobertura?.Select(c => new PolizaCoberturaResponse
+                {
+                    Deducible = c.Deducible,
+                    Prima = c.Prima,
+                    SumaAsegurada = c.SumaAsegurada
+                }).ToList()
             };
         }
+
         private void MapToPoliza(Poliza poliza, PolizaRequest body)
         {
             poliza.ProductoId = body.ProductoId;
@@ -58,7 +104,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             poliza.MonedaId = body.MonedaId;
             poliza.FormaPagoId = body.FormaPagoId;
 
-            poliza.TipoPoliza = body.TipoPoliza;
             poliza.NumeroPoliza = body.NumeroPoliza;
 
             poliza.VigenciaDel = body.VigenciaDel;
@@ -122,7 +167,12 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         public override async Task<IActionResult> GetPolizaAsync(string version)
         {
             var polizas = await _context.Poliza
+                .AsNoTracking()
+                .Include(p => p.PolizaContenedor)
+                .Include(p => p.PolizaMercancia)
+                .Include(p => p.PolizaCobertura)
                 .ToListAsync();
+
 
             return Ok(polizas.Select(MapToResponse));
         }
@@ -131,6 +181,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         public override async Task<IActionResult> GetPolizaByIdAsync(string version, int idPoliza)
         {
             var poliza = await _context.Poliza
+                .AsNoTracking()
+                .Include(p => p.PolizaContenedor)
+                .Include(p => p.PolizaMercancia)
+                .Include(p => p.PolizaCobertura)
                 .FirstOrDefaultAsync(p => p.PolizaId == idPoliza);
 
             if (poliza == null)
@@ -140,8 +194,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         }
 
 
-        public override async Task<IActionResult> CreatePolizaAsync(
-    string version, [FromBody] PolizaRequest body)
+        public override async Task<IActionResult> CreatePolizaAsync(string version, [FromBody] PolizaRequest body)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -172,7 +225,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     MapToPolizaContenedor(contenedor, body.PolizaContenedor);
 
                     _context.PolizaContenedor.Add(contenedor);
-                    await _context.SaveChangesAsync();
                 }
 
                 // 🔹 Crear PolizaMercancia si viene en el request
@@ -186,13 +238,35 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     MapToPolizaMercancia(mercancia, body.PolizaMercancia);
 
                     _context.PolizaMercancia.Add(mercancia);
-                    await _context.SaveChangesAsync();
                 }
 
+                if (body.PolizaCobertura != null && body.PolizaCobertura.Any())
+                {
+                    foreach (var item in body.PolizaCobertura)
+                    {
+                        var cobertura = new PolizaCobertura
+                        {
+                            PolizaId = poliza.PolizaId,
+                            Deducible = item.Deducible,
+                            Prima = item.Prima,
+                            SumaAsegurada = item.SumaAsegurada
+                        };
 
+                        _context.PolizaCobertura.Add(cobertura);
+                    }
+
+                }
+
+                await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return Ok(MapToResponse(poliza));
+                var polizaCreada = await _context.Poliza
+                .Include(p => p.PolizaContenedor)
+                .Include(p => p.PolizaMercancia)
+                .Include(p => p.PolizaCobertura)
+                .FirstOrDefaultAsync(p => p.PolizaId == poliza.PolizaId);
+
+                return Ok(MapToResponse(polizaCreada));
             }
             catch
             {
@@ -202,24 +276,26 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         }
 
 
-        public override async Task<IActionResult> UpdatePolizaAsync(
-    string version, int idPoliza, [FromBody] PolizaRequest body)
+        public override async Task<IActionResult> UpdatePolizaAsync(string version, int idPoliza, [FromBody] PolizaRequest body)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var poliza = await _context.Poliza
+                .Include(p => p.PolizaContenedor)
+                .Include(p => p.PolizaMercancia)
+                .Include(p => p.PolizaCobertura)
                 .FirstOrDefaultAsync(p => p.PolizaId == idPoliza);
 
             if (poliza == null)
                 return NotFound();
 
             MapToPoliza(poliza, body);
+
             await _context.SaveChangesAsync();
 
             return Ok(MapToResponse(poliza));
         }
-
 
         public override async Task<IActionResult> DeletePolizaAsync(string version, int idPoliza)
         {
