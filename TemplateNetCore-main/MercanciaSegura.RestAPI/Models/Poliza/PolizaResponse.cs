@@ -1,17 +1,24 @@
 ﻿using System;
+using MercanciaSegura.DOM.Modelos.Poliza;
 using MercanciaSegura.RestAPI.Models.Poliza;
 
 public class PolizaResponse
 {
     public int PolizaId { get; set; }
-
     public int? ProductoId { get; set; }
+    public string? NombreProducto { get; set; }
     public int? ContratanteId { get; set; }
+    public string? NombreContratante { get; set; }
     public int? AseguradoraId { get; set; }
+    public string? NombreAseguradora { get; set; }
     public int? SubRamoId { get; set; }
+    public string? NombreSubRamo { get; set; }
     public int? MonedaId { get; set; }
+    public string? NombreMoneda { get; set; }
     public int? FormaPagoId { get; set; }
+    public string? NombreFormaPago { get; set; }
     public int? EstatusPolizaId { get; set; }
+    public string? NombreEstatusPoliza { get; set; }
 
     public string? NumeroPoliza { get; set; }
 
@@ -33,4 +40,5 @@ public class PolizaResponse
     public PolizaContenedorResponse? PolizaContenedor { get; set; }
     public PolizaMercanciaResponse? PolizaMercancia { get; set; }
     public PolizaCoberturaResponse? PolizaCobertura { get; set; }
+
 }
