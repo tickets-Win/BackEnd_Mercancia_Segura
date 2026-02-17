@@ -1,4 +1,6 @@
-﻿namespace MercanciaSegura.RestAPI.Models.Poliza
+﻿using System.Collections.Generic;
+
+namespace MercanciaSegura.RestAPI.Models.Poliza
 {
     public class CoberturaResponse
     {
@@ -9,5 +11,6 @@
         public int PolizaCoberturaId { get; set; }
 
         public string? Nombre { get; set; }
+
     }
 }

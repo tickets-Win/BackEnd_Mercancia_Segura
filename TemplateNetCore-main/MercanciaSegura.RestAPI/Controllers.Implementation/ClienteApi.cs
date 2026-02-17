@@ -151,6 +151,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         public override async Task<IActionResult> GetClientesAsync(string version)
         {
             var clientes = await _context.Cliente
+            .AsNoTracking()
             .Include(c => c.BeneficiarioPreferente)
             .Include(c => c.Correos)
             .Include(c => c.Cuota)

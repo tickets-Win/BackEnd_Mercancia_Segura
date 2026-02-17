@@ -1,4 +1,6 @@
-﻿namespace MercanciaSegura.RestAPI.Models.Poliza
+﻿using System.Collections.Generic;
+
+namespace MercanciaSegura.RestAPI.Models.Poliza
 {
     public class PolizaCoberturaResponse
     {
@@ -12,7 +14,7 @@
 
         public decimal? SumaAsegurada { get; set; }
 
-        // Opcional: si quieres mostrar información de la cobertura
-        public string? NombreCobertura { get; set; }
+
+        public List<CoberturaResponse> Cobertura { get; set; } = new();
     }
 }

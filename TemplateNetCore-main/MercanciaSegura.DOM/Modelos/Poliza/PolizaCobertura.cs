@@ -30,5 +30,8 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
 
         [ForeignKey(nameof(PolizaId))]
         public Poliza? Poliza { get; set; }
+
+        public ICollection<Cobertura>? Cobertura { get; set; }
+
     }
 }
