@@ -24,6 +24,10 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
         [MaxLength(30)]
         public string? NumeroPoliza { get; set; }
 
+        public string? ClaveAgente { get; set; }
+
+        public string? FolioPoliza { get; set; }
+
         public DateTime? VigenciaDel { get; set; }
         public DateTime? VigenciaHasta { get; set; }
 

@@ -37,6 +37,15 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [MaxLength(30)]
         public string? NumeroPoliza { get; set; }
 
+        [Column("Clave_Agente")]
+        [MaxLength(50)]
+        public string? ClaveAgente { get; set; }
+
+        [Column("Folio_Poliza")]
+        [MaxLength(20)]
+        public string? FolioPoliza { get; set; }
+
+
         [Column("Vigencia_Del")]
         public DateTime? VigenciaDel { get; set; }
 
