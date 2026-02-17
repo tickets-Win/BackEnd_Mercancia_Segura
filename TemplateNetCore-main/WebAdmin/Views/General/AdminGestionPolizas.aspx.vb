@@ -1,4 +1,7 @@
-﻿Public Class AdminGestionPolizas
+﻿Imports Newtonsoft.Json
+Imports WebAdmin.MercanciaSegura.DOM.Modelos
+
+Public Class AdminGestionPolizas
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -6,6 +9,7 @@
             pnlFormularioPolizas.Visible = False
             pnlNombreInternoPoliza.Visible = False
             pnlContenedor.Visible = False
+            cargarPolizas()
         End If
     End Sub
 
@@ -33,6 +37,15 @@
         End If
     End Sub
 
+    Protected Sub cargarPolizas()
+        Dim api As New ConsumoApi
+        Dim cargarPolizas As String = api.GetCargarPolizas()
+
+        Dim lstPolizas As List(Of Poliza) = JsonConvert.DeserializeObject(Of List(Of Poliza))(cargarPolizas)
+
+        gvPolizas.DataSource = lstPolizas
+        gvPolizas.DataBind()
+    End Sub
     Protected Sub gvPolizas_RowCommand(sender As Object, e As GridViewCommandEventArgs)
 
     End Sub

@@ -30,50 +30,49 @@
         </div>
     </asp:Panel>
 
-    <asp:Panel ID="PnlTabla" runat="server">
-    <div class="card card-shadow p-4 mb-4">
-        <div style="overflow-x: auto; width: 100%;">
-            <asp:GridView ID="gvPolizas" runat="server"
-                CssClass="table table-hover align-middle"
-                AutoGenerateColumns="False"
-                OnRowCommand="gvPolizas_RowCommand"
-                HeaderStyle-CssClass="table-light"
-                DataKeyNames="PolizaId"
-                AllowPaging="True"
-                PageSize="10"
-                OnPageIndexChanged="gvPolizas_PageIndexChanged">
-                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
-                <Columns>
-                    <asp:BoundField DataField="Clave" HeaderText="Clave" />
-                    <asp:BoundField DataField="EstatusId" HeaderText="Estatus" />
-                    <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
-                    <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
-                    <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
+   <asp:Panel ID="PnlTabla" runat="server">
+ <div class="card card-shadow p-4 mb-4">
+     <div style="overflow-x: auto; width: 100%;">
+         <asp:GridView ID="gvPolizas" runat="server"
+             CssClass="table table-hover align-middle"
+             AutoGenerateColumns="False"
+             OnRowCommand="gvPolizas_RowCommand"
+             HeaderStyle-CssClass="table-light"
+             DataKeyNames="PolizaId"
+             AllowPaging="True"
+             PageSize="10"
+             OnPageIndexChanged="gvPolizas_PageIndexChanged">
+             <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+             <Columns>
+                 <asp:BoundField DataField="NumeroPoliza" HeaderText="N° Póliza" />
+                 <asp:BoundField DataField="ContratanteId" HeaderText="Contratante" />              
+                 <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia" DataFormatString="{0:dd/MM/yyyy}" />
+                 <asp:BoundField DataField="EstatusId" HeaderText="Estatus" />
 
-                    <asp:TemplateField HeaderText="Acciones">
-                        <ItemTemplate>
-                            <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("PolizaId") %>'
-                                CssClass="icon-btn action-icon" ToolTip="Editar">
-             <i class="bi bi-pencil"></i>
-                            </asp:LinkButton>
+                 <asp:TemplateField HeaderText="Acciones">
+                     <ItemTemplate>
+                         <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("PolizaId") %>'
+                             CssClass="icon-btn action-icon" ToolTip="Editar">
+          <i class="bi bi-pencil"></i>
+                         </asp:LinkButton>
 
-                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("PolizaId") %>'
-                                CssClass="icon-btn action-icon" ToolTip="Eliminar"
-                                OnClientClick="return confirm('¿Seguro que deseas eliminar esta póliza?');">
-             <i class="bi bi-trash"></i>
-                            </asp:LinkButton>
+                         <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("PolizaId") %>'
+                             CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                             OnClientClick="return confirm('¿Seguro que deseas eliminar esta póliza?');">
+          <i class="bi bi-trash"></i>
+                         </asp:LinkButton>
 
-                            <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("PolizaId") %>'
-                                CssClass="icon-btn" ToolTip="Enviar correo">
-             <i class="bi bi-envelope"></i>
-                            </asp:LinkButton>
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                </Columns>
-            </asp:GridView>
-        </div>
-    </div>
-    </asp:Panel>
+                         <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("PolizaId") %>'
+                             CssClass="icon-btn" ToolTip="Enviar correo">
+          <i class="bi bi-envelope"></i>
+                         </asp:LinkButton>
+                     </ItemTemplate>
+                 </asp:TemplateField>
+             </Columns>
+         </asp:GridView>
+     </div>
+ </div>
+ </asp:Panel>
     <asp:Panel ID="pnlFormularioPolizas" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>
