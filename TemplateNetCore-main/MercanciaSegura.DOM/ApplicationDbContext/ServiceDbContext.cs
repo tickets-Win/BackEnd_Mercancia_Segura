@@ -54,7 +54,7 @@ public class ServiceDbContext : DbContext
     //----------------------------------------------------------
 
     public DbSet<Aseguradora> Aseguradora { get; set; }
-    public DbSet<Cobertura> Coberturas { get; set; }
+    public DbSet<Cobertura> Cobertura { get; set; }
     public DbSet<Contratante> Contratante { get; set; }
     public DbSet<FormaPago> FormaPago { get; set; }
     public DbSet<Moneda> Moneda { get; set; }
@@ -65,6 +65,7 @@ public class ServiceDbContext : DbContext
     public DbSet<Producto> Producto { get; set; }
     public DbSet<Riesgo> Riesgo { get; set; }
     public DbSet<SubRamo> SubRamo { get; set; }
+    public DbSet<EstatusPoliza> EstatusPoliza { get; set; }
 
     //-------------------------------------------------------------
     public DbSet<TipoPersona> TipoPersona { get; set; }

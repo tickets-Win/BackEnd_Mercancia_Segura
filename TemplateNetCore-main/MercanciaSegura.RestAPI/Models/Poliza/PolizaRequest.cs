@@ -6,22 +6,20 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
 {
     public class PolizaRequest
     {
-        
         public int? ProductoId { get; set; }
-
        
         public int? ContratanteId { get; set; }
-
        
         public int? AseguradoraId { get; set; }
-
       
         public int? SubRamoId { get; set; }
 
         public int? MonedaId { get; set; }
-
      
         public int? FormaPagoId { get; set; }
+
+        public int? EstatusPolizaId { get; set; }
+
 
         [MaxLength(30)]
         public string? NumeroPoliza { get; set; }
@@ -32,18 +30,13 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
         [MaxLength(100)]
         public string? OtrosPoliza { get; set; }
 
-        
         public decimal? PrimaNeta { get; set; }
-
         
         public decimal? DerechoPoliza { get; set; }
-
         
         public decimal? Otros { get; set; }
-
         
         public decimal? IVA { get; set; }
-
         
         public decimal? PrimaTotal { get; set; }
 
@@ -51,6 +44,6 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
 
         public PolizaMercanciaRequest? PolizaMercancia { get; set; }
 
-        public List<PolizaCoberturaRequest>? PolizaCobertura { get; set; }
+        public PolizaCoberturaRequest? PolizaCobertura { get; set; }
     }
 }
