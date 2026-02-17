@@ -45,9 +45,9 @@
              <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
              <Columns>
                  <asp:BoundField DataField="NumeroPoliza" HeaderText="N° Póliza" />
-                 <asp:BoundField DataField="ContratanteId" HeaderText="Contratante" />              
+                 <asp:BoundField DataField="Nombre" HeaderText="Contratante" />              
                  <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia" DataFormatString="{0:dd/MM/yyyy}" />
-                 <asp:BoundField DataField="EstatusId" HeaderText="Estatus" />
+                 <asp:BoundField DataField="EstatusPolizaId" HeaderText="Estatus" />
 
                  <asp:TemplateField HeaderText="Acciones">
                      <ItemTemplate>

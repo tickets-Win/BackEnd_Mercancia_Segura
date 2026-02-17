@@ -8,7 +8,7 @@
         Public Property MonedaId As Integer?
         Public Property FormaPagoId As Integer?
 
-        Public Property Estatus As String
+        Public Property EstatusPolizaId As String
         Public Property TipoPoliza As String
         Public Property NumeroPoliza As String
 
@@ -23,7 +23,10 @@
         Public Property PrimaTotal As Decimal?
 
         Public Property FechaActualizacion As DateTime?
+        Public Property FechaBaja As DateTime?
         Public Property FechaRegistro As DateTime = DateTime.Now
+
+        Public Property Contratante As Contratante
 
     End Class
 
