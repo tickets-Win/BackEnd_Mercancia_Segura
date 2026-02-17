@@ -47,6 +47,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 NombreEstatusPoliza = p.EstatusPoliza?.Tipo,
 
                 NumeroPoliza = p.NumeroPoliza,
+                ClaveAgente = p.ClaveAgente,
+                FolioPoliza = p.FolioPoliza,
 
                 VigenciaDel = p.VigenciaDel,
                 VigenciaHasta = p.VigenciaHasta,
@@ -131,6 +133,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             poliza.EstatusPolizaId = body.EstatusPolizaId;
 
             poliza.NumeroPoliza = body.NumeroPoliza;
+            poliza.ClaveAgente = body.ClaveAgente;
+            poliza.FolioPoliza = body.FolioPoliza;
 
             poliza.VigenciaDel = body.VigenciaDel;
             poliza.VigenciaHasta = body.VigenciaHasta;
@@ -259,68 +263,65 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             try
             {
-                // 🔹 Crear la póliza
+                // Crear la póliza
                 var poliza = new Poliza
                 {
                     FechaRegistro = DateTime.Now,
                     FechaActualizacion = DateTime.Now,
                     EstatusPolizaId = body.EstatusPolizaId
                 };
-
                 MapToPoliza(poliza, body);
 
-                _context.Poliza.Add(poliza);
-                await _context.SaveChangesAsync();
-
-                // 🔹 Crear PolizaContenedor si viene en el request
+                // PolizaContenedor
                 if (body.PolizaContenedor != null)
                 {
-                    var contenedor = new PolizaContenedor { PolizaId = poliza.PolizaId };
+                    var contenedor = new PolizaContenedor();
                     MapToPolizaContenedor(contenedor, body.PolizaContenedor);
-                    _context.PolizaContenedor.Add(contenedor);
+                    poliza.PolizaContenedor = contenedor;
                 }
 
-                // 🔹 Crear PolizaMercancia si viene en el request
+                // PolizaMercancia
                 if (body.PolizaMercancia != null)
                 {
-                    var mercancia = new PolizaMercancia { PolizaId = poliza.PolizaId };
+                    var mercancia = new PolizaMercancia();
                     MapToPolizaMercancia(mercancia, body.PolizaMercancia);
-                    _context.PolizaMercancia.Add(mercancia);
+                    poliza.PolizaMercancia = mercancia;
                 }
 
-                // 🔹 Crear PolizaCobertura + lista de Coberturas
+                // PolizaCobertura y Coberturas
                 if (body.PolizaCobertura != null)
                 {
-                    var poco = new PolizaCobertura
-                    {
-                        PolizaId = poliza.PolizaId
-                    };
+                    var poco = new PolizaCobertura();
                     MapToPolizaCobertura(poco, body.PolizaCobertura);
-
-                    _context.PolizaCobertura.Add(poco);
-                    await _context.SaveChangesAsync(); // Guardamos para que PolizaCoberturaId se genere
 
                     if (body.PolizaCobertura.Cobertura != null && body.PolizaCobertura.Cobertura.Any())
                     {
-                        foreach (var c in body.PolizaCobertura.Cobertura)
-                        {
-                            var cobertura = new Cobertura
+                        poco.Cobertura = body.PolizaCobertura.Cobertura
+                            .Select(c => new Cobertura
                             {
-                                PolizaCoberturaId = poco.PolizaCoberturaId,
                                 RiesgoId = c.RiesgoId,
                                 Nombre = c.Nombre
-                            };
-                            _context.Cobertura.Add(cobertura);
-                        }
+                            }).ToList();
                     }
+
+                    poliza.PolizaCobertura = poco;
                 }
 
+                // Insertar todo
+                _context.Poliza.Add(poliza);
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // 🔹 Cargar todo para respuesta
+                // Cargar para respuesta
                 var polizaCreada = await _context.Poliza
                     .AsNoTracking()
+                    .Include(p => p.Producto)
+                    .Include(p => p.Contratante)
+                    .Include(p => p.Aseguradora)
+                    .Include(p => p.SubRamo)
+                    .Include(p => p.Moneda)
+                    .Include(p => p.FormaPago)
+                    .Include(p => p.EstatusPoliza)
                     .Include(p => p.PolizaContenedor)
                     .Include(p => p.PolizaMercancia)
                     .Include(p => p.PolizaCobertura)
@@ -343,6 +344,13 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 return BadRequest(ModelState);
 
             var poliza = await _context.Poliza
+                .Include(p => p.Producto)
+                .Include(p => p.Contratante)
+                .Include(p => p.Aseguradora)
+                .Include(p => p.SubRamo)
+                .Include(p => p.Moneda)
+                .Include(p => p.FormaPago)
+                .Include(p => p.EstatusPoliza)
                 .Include(p => p.PolizaContenedor)
                 .Include(p => p.PolizaMercancia)
                 .Include(p => p.PolizaCobertura)

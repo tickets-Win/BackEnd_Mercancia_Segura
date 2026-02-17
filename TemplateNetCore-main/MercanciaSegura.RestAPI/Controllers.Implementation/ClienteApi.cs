@@ -482,17 +482,17 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             if (cliente == null)
                 return NotFound();
 
+            // Si ya está desactivado
             if (cliente.FechaBaja.HasValue)
-                return BadRequest(new { message = "El cliente se ha eliminado correctamente" });
+                return Ok(new { message = "El cliente ya se encontraba desactivado" });
 
+            // Soft delete
             cliente.FechaBaja = DateTime.Now;
-            cliente.EstatusId = 2;
-
-            _context.Entry(cliente).Property(c => c.FechaBaja).IsModified = true;
+            cliente.EstatusId = 2; // 2 = Desactivado
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "El cliente ya fue eliminado" });
+            return Ok(new { message = "El cliente fue desactivado correctamente" });
         }
 
     }
