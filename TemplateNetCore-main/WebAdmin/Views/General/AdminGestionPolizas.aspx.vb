@@ -53,4 +53,24 @@ Public Class AdminGestionPolizas
     Protected Sub gvPolizas_PageIndexChanged(sender As Object, e As EventArgs)
 
     End Sub
+
+    Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
+        Dim api As New ConsumoApi()
+        Dim ProductoId As Integer = Convert.ToInt32(ddlProducto.SelectedValue)
+
+        Dim poliza As New Poliza With {
+            .ProductoId = ProductoId,
+            .TipoPoliza = txtTipoPoliza.Text,
+            .NumeroPoliza = txtNumeroPoliza.Text,
+            .ContratanteId = ddlContratante.SelectedValue,
+            .AseguradoraId = ddlAseguradora.SelectedValue,
+            .SubRamoId = ddlSubRamo.SelectedValue,
+            .VigenciaDel = Date.Now,
+            .VigenciaHasta = Date.Now,
+            .EstatusPolizaId = ddlEstatus.SelectedValue,
+            .FormaPagoId = ddlFormaPago.SelectedValue,
+            .MonedaId = ddlMoneda.SelectedValue
+            }
+
+    End Sub
 End Class

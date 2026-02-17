@@ -122,13 +122,13 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtTipoPoliza As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtNumeroPóliza.
+    '''Control txtNumeroPoliza.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtNumeroPóliza As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtNumeroPoliza As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control ddlContratante.
@@ -140,22 +140,22 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents ddlContratante As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control txtAseguradora.
+    '''Control ddlAseguradora.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtAseguradora As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlAseguradora As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control txtSubRamo.
+    '''Control ddlSubRamo.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtSubRamo As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlSubRamo As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''Control txtVigenciaDel.
@@ -185,13 +185,13 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents ddlEstatus As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control txtFormaPago.
+    '''Control ddlFormaPago.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtFormaPago As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlFormaPago As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''Control ddlMoneda.

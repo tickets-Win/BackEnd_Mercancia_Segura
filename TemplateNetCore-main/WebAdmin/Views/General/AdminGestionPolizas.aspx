@@ -44,10 +44,13 @@
              OnPageIndexChanged="gvPolizas_PageIndexChanged">
              <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
              <Columns>
+                 <asp:BoundField DataField="Aseguradora" HeaderText="Aseguradora" />
                  <asp:BoundField DataField="NumeroPoliza" HeaderText="N° Póliza" />
-                 <asp:BoundField DataField="Nombre" HeaderText="Contratante" />              
-                 <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia" DataFormatString="{0:dd/MM/yyyy}" />
-                 <asp:BoundField DataField="EstatusPolizaId" HeaderText="Estatus" />
+                 <asp:BoundField DataField="nombreContratante" HeaderText="Contratante" />              
+                 <asp:BoundField DataField="VigenciaDel" HeaderText="Vigencia del" DataFormatString="{0:dd/MM/yyyy}" />
+                 <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia hasta" DataFormatString="{0:dd/MM/yyyy}" />
+                 <asp:BoundField DataField="nombreEstatusPoliza" HeaderText="Estatus" />
+                 <asp:BoundField DataField="Moneda" HeaderText="Moneda" />
 
                  <asp:TemplateField HeaderText="Acciones">
                      <ItemTemplate>
@@ -80,7 +83,7 @@
 
             <div>
                 <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" />
-                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" />
+                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClick="btnGuardar_Click" />
             </div>
         </div>
         <h5 class="border-bottom pb-2">Pólizas</h5>
@@ -98,7 +101,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">N° Póliza</label>
-                <asp:TextBox ID="txtNumeroPóliza" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtNumeroPoliza" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Contratante</label>
@@ -109,11 +112,11 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Aseguradora</label>
-                <asp:TextBox ID="txtAseguradora" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:DropDownList ID="ddlAseguradora" runat="server" CssClass="form-select"></asp:DropDownList>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Sub Ramo</label>
-                <asp:TextBox ID="txtSubRamo" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:DropDownList ID="ddlSubRamo" runat="server" CssClass="form-select"></asp:DropDownList>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Vigencia del</label>
@@ -132,7 +135,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Forma de Pago</label>
-                <asp:TextBox ID="txtFormaPago" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:DropDownList ID="ddlFormaPago" runat="server" CssClass="form-select"></asp:DropDownList>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Moneda</label>
