@@ -96,6 +96,6 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
 
         public PolizaMercancia? PolizaMercancia { get; set; }
 
-        public PolizaCobertura? PolizaCobertura { get; set; }
+        public PolizaCobertura? PolizaCobertura { get; set; } 
     }
 }

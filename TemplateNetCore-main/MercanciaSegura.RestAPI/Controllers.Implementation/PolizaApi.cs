@@ -26,12 +26,25 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 PolizaId = p.PolizaId,
 
                 ProductoId = p.ProductoId,
+                NombreProducto = p.Producto?.Nombre,
+
                 ContratanteId = p.ContratanteId,
+                NombreContratante = p.Contratante?.Nombre,
+
                 AseguradoraId = p.AseguradoraId,
+                NombreAseguradora = p.Aseguradora?.Nombre,
+
                 SubRamoId = p.SubRamoId,
+                NombreSubRamo = p.SubRamo?.Nombre,
+
                 MonedaId = p.MonedaId,
+                NombreMoneda = p.Moneda?.Nombre,
+
                 FormaPagoId = p.FormaPagoId,
+                NombreFormaPago = p.FormaPago?.Nombre,
+
                 EstatusPolizaId = p.EstatusPolizaId,
+                NombreEstatusPoliza = p.EstatusPoliza?.Tipo,
 
                 NumeroPoliza = p.NumeroPoliza,
 
@@ -187,21 +200,29 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         }
 
         public override async Task<IActionResult> GetPolizaAsync(string version)
-        {
-            var polizas = await _context.Poliza
-                .AsNoTracking()
-                .Where(p => p.FechaBaja == null) // Soft delete
-                .Include(p => p.PolizaContenedor)
-                .Include(p => p.PolizaMercancia)
-                .Include(p => p.PolizaCobertura)
-                    .ThenInclude(pc => pc.Cobertura)
-                .OrderByDescending(p => p.FechaRegistro)
-                .ToListAsync();
+{
+    var polizas = await _context.Poliza
+        .AsNoTracking()
+        .Where(p => p.FechaBaja == null) // Soft delete
+        .Include(p => p.Producto)
+        .Include(p => p.Contratante)
+        .Include(p => p.Aseguradora)
+        .Include(p => p.SubRamo)
+        .Include(p => p.Moneda)
+        .Include(p => p.FormaPago)
+        .Include(p => p.EstatusPoliza)
+        .Include(p => p.PolizaContenedor)
+        .Include(p => p.PolizaMercancia)
+        .Include(p => p.PolizaCobertura)
+            .ThenInclude(pc => pc.Cobertura)
+        .OrderByDescending(p => p.FechaRegistro)
+        .ToListAsync();
 
-            var response = polizas.Select(MapToResponse);
+    var response = polizas.Select(MapToResponse);
 
-            return Ok(response);
-        }
+    return Ok(response);
+}
+
 
 
 
@@ -210,6 +231,13 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             var poliza = await _context.Poliza
                 .AsNoTracking()
                 .Where(p => p.FechaBaja == null) // Respeta soft delete
+                .Include(p => p.Producto)
+                .Include(p => p.Contratante)
+                .Include(p => p.Aseguradora)
+                .Include(p => p.SubRamo)
+                .Include(p => p.Moneda)
+                .Include(p => p.FormaPago)
+                .Include(p => p.EstatusPoliza)
                 .Include(p => p.PolizaContenedor)
                 .Include(p => p.PolizaMercancia)
                 .Include(p => p.PolizaCobertura)
