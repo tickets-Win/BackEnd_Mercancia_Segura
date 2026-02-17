@@ -154,7 +154,7 @@
 
             <div class="col-md-4">
                 <label class="form-label">Observaciones</label>
-                <asp:TextBox ID="txtObservaciones" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtObservaciones" runat="server" CssClass="form-control textarea" TextMode="MultiLine" Rows="4" Placeholder="Notas adicionales del vendedor"></asp:TextBox>
             </div>
 
         </div>
