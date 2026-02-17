@@ -30,8 +30,8 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Forma_Pago_ID")]
         public int? FormaPagoId { get; set; }
 
-        [Column("Estatus")]
-        public bool? Estatus { get; set; }
+        [Column("Estatus_Poliza_ID")]
+        public int? EstatusPolizaId { get; set; }
 
         [Column("Numero_Poliza")]
         [MaxLength(30)]
@@ -68,6 +68,9 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Fecha_Registro")]
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
+        [Column("Fecha_Baja")]
+        public DateTime? FechaBaja { get; set; }
+
         [ForeignKey(nameof(ProductoId))]
         public Producto? Producto { get; set; }
 
@@ -86,10 +89,13 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [ForeignKey(nameof(FormaPagoId))]
         public FormaPago? FormaPago { get; set; }
 
+        [ForeignKey(nameof(EstatusPolizaId))]
+        public EstatusPoliza? EstatusPoliza { get; set; }
+
         public PolizaContenedor? PolizaContenedor { get; set; }
 
         public PolizaMercancia? PolizaMercancia { get; set; }
 
-        public ICollection<PolizaCobertura> PolizaCobertura { get; set; } = new List<PolizaCobertura>();
+        public PolizaCobertura? PolizaCobertura { get; set; }
     }
 }
