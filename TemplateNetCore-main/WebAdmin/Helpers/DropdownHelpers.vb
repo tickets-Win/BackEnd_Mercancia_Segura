@@ -128,6 +128,72 @@ Module DropdownHelpers
         ddlTipoCorreo.DataValueField = "TipoCorreoId"
         ddlTipoCorreo.DataBind()
     End Sub
+    Public Sub CargarTipoAseguradora(ddlTipoAseguradora As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim tipoAseguradora As String = api.GetTipoAseguradora()
+
+        Dim listaTipoAseguradora As List(Of Aseguradora) = JsonConvert.DeserializeObject(Of List(Of Aseguradora))(tipoAseguradora)
+
+        ddlTipoAseguradora.DataSource = listaTipoAseguradora
+        ddlTipoAseguradora.DataTextField = "Nombre"
+        ddlTipoAseguradora.DataValueField = "AseguradoraId"
+        ddlTipoAseguradora.DataBind()
+    End Sub
+    Public Sub CargarTipoContratante(ddlTipoContratante As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim tipoContratante As String = api.GetTipoContratante()
+
+        Dim listaTipoContratante As List(Of Contratante) = JsonConvert.DeserializeObject(Of List(Of Contratante))(tipoContratante)
+
+        ddlTipoContratante.DataSource = listaTipoContratante
+        ddlTipoContratante.DataTextField = "Nombre"
+        ddlTipoContratante.DataValueField = "ContratanteId"
+        ddlTipoContratante.DataBind()
+    End Sub
+    Public Sub CargarFormaPago(ddlFormaPago As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim formaPago As String = api.GetFormaPago()
+
+        Dim listaFormaPago As List(Of FormaPago) = JsonConvert.DeserializeObject(Of List(Of FormaPago))(formaPago)
+
+        ddlFormaPago.DataSource = listaFormaPago
+        ddlFormaPago.DataTextField = "Nombre"
+        ddlFormaPago.DataValueField = "FormaPagoId"
+        ddlFormaPago.DataBind()
+    End Sub
+    Public Sub CargarTipoMoneda(ddlTipoMoneda As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim tipoMoneda As String = api.GetMoneda()
+
+        Dim listaTipoMoneda As List(Of Moneda) = JsonConvert.DeserializeObject(Of List(Of Moneda))(tipoMoneda)
+
+        ddlTipoMoneda.DataSource = listaTipoMoneda
+        ddlTipoMoneda.DataTextField = "Nombre"
+        ddlTipoMoneda.DataValueField = "MonedaId"
+        ddlTipoMoneda.DataBind()
+    End Sub
+    Public Sub CargarTipoSubRamo(ddlTipoSubRamo As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim tipoSubRamo As String = api.GetSubRamo()
+
+        Dim listaTipoSubRamo As List(Of SubRamo) = JsonConvert.DeserializeObject(Of List(Of SubRamo))(tipoSubRamo)
+
+        ddlTipoSubRamo.DataSource = listaTipoSubRamo
+        ddlTipoSubRamo.DataTextField = "Nombre"
+        ddlTipoSubRamo.DataValueField = "SubRamoId"
+        ddlTipoSubRamo.DataBind()
+    End Sub
+    Public Sub CargarTipoProducto(ddlProducto As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim tipoProducto As String = api.GetProducto()
+
+        Dim listaProducto As List(Of Producto) = JsonConvert.DeserializeObject(Of List(Of Producto))(tipoProducto)
+
+        ddlProducto.DataSource = listaProducto
+        ddlProducto.DataTextField = "Nombre"
+        ddlProducto.DataValueField = "ProductoId"
+        ddlProducto.DataBind()
+    End Sub
     Public Sub CargarVendedores(ddlNombreVendedor As DropDownList)
         Dim api As New ConsumoApi()
         Dim Vendedores As String = api.GetCargarVendedores()

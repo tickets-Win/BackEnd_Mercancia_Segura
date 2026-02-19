@@ -10,6 +10,12 @@ Public Class AdminGestionPolizas
             pnlNombreInternoPoliza.Visible = False
             pnlContenedor.Visible = False
             cargarPolizas()
+            DropdownHelpers.CargarTipoProducto(ddlProducto)
+            DropdownHelpers.CargarTipoContratante(ddlContratante)
+            DropdownHelpers.CargarTipoAseguradora(ddlAseguradora)
+            DropdownHelpers.CargarTipoSubRamo(ddlSubRamo)
+            DropdownHelpers.CargarFormaPago(ddlFormaPago)
+            DropdownHelpers.CargarTipoMoneda(ddlMoneda)
         End If
     End Sub
 
@@ -21,14 +27,14 @@ Public Class AdminGestionPolizas
     End Sub
 
     Protected Sub ddlProducto_SelectedIndexChanged(sender As Object, e As EventArgs)
-        If ddlProducto.SelectedValue = "Mercancia" Then
+        If ddlProducto.SelectedValue = "1" Then
             pnlNombreInternoPoliza.Visible = False
             pnlMercancia.Visible = True
             pnlContenedor.Visible = False
             pnlMediosTransporte.Visible = False
 
 
-        ElseIf ddlProducto.SelectedValue = "Contenedor" Then
+        ElseIf ddlProducto.SelectedValue = "2" Then
             pnlNombreInternoPoliza.Visible = True
             pnlContenedor.Visible = True
             pnlMercancia.Visible = False
@@ -69,8 +75,27 @@ Public Class AdminGestionPolizas
             .VigenciaHasta = Date.Now,
             .EstatusPolizaId = ddlEstatus.SelectedValue,
             .FormaPagoId = ddlFormaPago.SelectedValue,
-            .MonedaId = ddlMoneda.SelectedValue
+            .MonedaId = ddlMoneda.SelectedValue,
+            .ClaveAgente = txtClaveAgente.Text,
+            .FolioPoliza = txtFolioPoliza.Text
             }
 
+        'Dim polizaMercancia As New PolizaMercancia With {
+        '    .NombreInternoPoliza = txtNombreInternoPoliza.Text,
+        '    .TerrestreAereo = txtTerrestreAereo1.Text
+        '}
+
+        Dim respuesta As String
+        Dim json As String
+
+        json = JsonConvert.SerializeObject(poliza)
+        System.Diagnostics.Debug.WriteLine("JSON enviado a API:" & json)
+
+        respuesta = api.PostPoliza(json)
+
+        cargarPolizas()
+        pnlFormularioPolizas.Visible = False
+        pnlEncabezado.Visible = True
+        PnlTabla.Visible = True
     End Sub
 End Class

@@ -152,7 +152,7 @@
                 <asp:TextBox ID="txtRazonSocial" runat="server" CssClass="form-control"></asp:TextBox>
             </asp:Panel>
 
-            <div class="col-md-4">
+            <div class="col-md-8">
                 <label class="form-label">Observaciones</label>
                 <asp:TextBox ID="txtObservaciones" runat="server" CssClass="form-control textarea" TextMode="MultiLine" Rows="4" Placeholder="Notas adicionales del vendedor"></asp:TextBox>
             </div>
@@ -198,7 +198,7 @@
 
             <div class="col-md-4">
                 <label class="form-label">C.P.</label>
-                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control"></asp:TextBox>                
+                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
 
         </div>

@@ -28,6 +28,12 @@
 
         Public Property nombreContratante As String
         Public Property nombreEstatusPoliza As String
+        Public Property nombreAseguradora As String
+        Public Property nombreSubRamo As String
+        Public Property nombreMoneda As String
+        Public Property nombreFormaPago As String
+        Public Property ClaveAgente As String
+        Public Property FolioPoliza As String
 
     End Class
 

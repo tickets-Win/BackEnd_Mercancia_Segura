@@ -5,7 +5,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="../../Content/site.css" rel="stylesheet" />   
-    <link href="../../Content/site.css" rel="stylesheet" />   
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:Panel ID="pnlEncabezado" runat="server">
@@ -44,13 +43,13 @@
              OnPageIndexChanged="gvPolizas_PageIndexChanged">
              <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
              <Columns>
-                 <asp:BoundField DataField="Aseguradora" HeaderText="Aseguradora" />
+                 <asp:BoundField DataField="nombreAseguradora" HeaderText="Aseguradora" />
                  <asp:BoundField DataField="NumeroPoliza" HeaderText="N° Póliza" />
                  <asp:BoundField DataField="nombreContratante" HeaderText="Contratante" />              
                  <asp:BoundField DataField="VigenciaDel" HeaderText="Vigencia del" DataFormatString="{0:dd/MM/yyyy}" />
                  <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia hasta" DataFormatString="{0:dd/MM/yyyy}" />
                  <asp:BoundField DataField="nombreEstatusPoliza" HeaderText="Estatus" />
-                 <asp:BoundField DataField="Moneda" HeaderText="Moneda" />
+                 <asp:BoundField DataField="nombreMoneda" HeaderText="Moneda" />
 
                  <asp:TemplateField HeaderText="Acciones">
                      <ItemTemplate>
@@ -90,9 +89,7 @@
         <div class="row g-3 mt-2">
             <div class="col-md-4">
                 <label class="form-label">Producto</label>
-                <asp:DropDownList ID="ddlProducto" CssClass="form-select" runat="server" OnSelectedIndexChanged="ddlProducto_SelectedIndexChanged" AutoPostBack="true">
-                    <asp:ListItem Text="Mercancia" Value="Mercancia"></asp:ListItem>
-                    <asp:ListItem Text="Contenedor" Value="Contenedor"></asp:ListItem>
+                <asp:DropDownList ID="ddlProducto" CssClass="form-select" runat="server" OnSelectedIndexChanged="ddlProducto_SelectedIndexChanged" AutoPostBack="true">                   
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -105,9 +102,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Contratante</label>
-                <asp:DropDownList ID="ddlContratante" runat="server" CssClass="form-select">
-                    <asp:ListItem>Contratante1</asp:ListItem>
-                    <asp:ListItem>Contratante2</asp:ListItem>
+                <asp:DropDownList ID="ddlContratante" runat="server" CssClass="form-select">                   
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -128,9 +123,9 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Estatus</label>
-                <asp:DropDownList ID="ddlEstatus" runat="server" CssClass="form-select">
-                    <asp:ListItem>Activa</asp:ListItem>
-                    <asp:ListItem>Vencida</asp:ListItem>
+                <asp:DropDownList ID="ddlEstatus" runat="server" CssClass="form-select">  
+                    <asp:ListItem Text="Activo" Value="1"></asp:ListItem>
+                    <asp:ListItem Text="Suspendido" Value="2"></asp:ListItem>
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -139,9 +134,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Moneda</label>
-                <asp:DropDownList ID="ddlMoneda" runat="server" CssClass="form-select">
-                    <asp:ListItem>Nacional</asp:ListItem>
-                    <asp:ListItem>Dólares</asp:ListItem>
+                <asp:DropDownList ID="ddlMoneda" runat="server" CssClass="form-select">                    
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -157,7 +150,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label">Nombre Interno Póliza</label>
-                        <asp:TextBox ID="txtNombreInternoPoliza1" runat="server" CssClass="form-control"></asp:TextBox>
+                        <asp:TextBox ID="txtNombreInternoPoliza" runat="server" CssClass="form-control"></asp:TextBox>
                     </div>
 
                     <div class="col-md-6">
@@ -203,7 +196,7 @@
                                     <div class="row mt-3 gx-0">
                                         <div class="col-md-12 px-2">
                                             <label class="form-label">Nombre interno Póliza</label>
-                                            <asp:TextBox ID="txtNombreInternoPoliza" runat="server" CssClass="form-control w-100"></asp:TextBox>
+                                            <asp:TextBox ID="txtNombreInternoPoliza1" runat="server" CssClass="form-control w-100"></asp:TextBox>
                                         </div>
                                     </div>
 
@@ -342,7 +335,7 @@
 
                                     <div class="col-md-4">
                                         <label class="form-label">Terrestre y/o Aéreo</label>
-                                        <asp:TextBox ID="txtTerrestreAereo" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtTerrestreAereo1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Marítimo</label>
@@ -1571,7 +1564,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <h6>Terrestre</h6>
-                                            <asp:TextBox ID="txtTerrestre" runat="server" CssClass="form-control"
+                                            <asp:TextBox ID="txtTerrestreMontosPoliza" runat="server" CssClass="form-control"
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                     </div>

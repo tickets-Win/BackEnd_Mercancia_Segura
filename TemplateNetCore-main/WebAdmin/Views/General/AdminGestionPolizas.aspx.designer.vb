@@ -230,13 +230,13 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents pnlNombreInternoPoliza As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''Control txtNombreInternoPoliza1.
+    '''Control txtNombreInternoPoliza.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtNombreInternoPoliza1 As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtNombreInternoPoliza As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtTrayectosAsegurados.
@@ -275,13 +275,13 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents pnlMercancia As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''Control txtNombreInternoPoliza.
+    '''Control txtNombreInternoPoliza1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtNombreInternoPoliza As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtNombreInternoPoliza1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtBienesAsegurados.
@@ -338,13 +338,13 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents btnAgregaBienesSujetosConsulta As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control txtTerrestreAereo.
+    '''Control txtTerrestreAereo1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtTerrestreAereo As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtTerrestreAereo1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtMaritimo.
@@ -1301,13 +1301,13 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtFerrocarril As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtTerrestre.
+    '''Control txtTerrestreMontosPoliza.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtTerrestre As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtTerrestreMontosPoliza As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtCuotaAplicable.

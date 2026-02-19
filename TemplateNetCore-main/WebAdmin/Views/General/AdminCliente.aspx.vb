@@ -218,7 +218,9 @@ Public Class AdminCliente
     }
 
 
-        Dim json As String = JsonConvert.SerializeObject(cliente, Formatting.Indented)
+        Dim json As String
+
+        json = JsonConvert.SerializeObject(cliente, Formatting.Indented)
         System.Diagnostics.Debug.WriteLine("JSON enviado a API:" & json)
 
         Dim respuesta As String = ""
@@ -253,7 +255,6 @@ Public Class AdminCliente
         pnlFormularioCliente.Visible = False
         PnlTabla.Visible = True
         PnlEncabezado.Visible = True
-        PnlTabla.Visible = True
         pnlTabs.Visible = False
         LimpiarFormulario()
 

@@ -343,6 +343,96 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function GetTipoAseguradora() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("TipoAseguradora")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetTipoContratante() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("TipoContratante")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetFormaPago() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("FormaPago")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetMoneda() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("Moneda")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetSubRamo() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("SubRamo")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetProducto() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("Producto")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
 #End Region
 
 #Region "PUT"
