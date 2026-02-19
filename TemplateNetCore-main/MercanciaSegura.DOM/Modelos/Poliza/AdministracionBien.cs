@@ -8,21 +8,15 @@ using System.Threading.Tasks;
 
 namespace MercanciaSegura.DOM.Modelos.Poliza
 {
-    [Table("Cobertura")]
-    public class Cobertura
+    [Table("Administracion_Bien")]
+    public class AdministracionBien
     {
         [Key]
-        [Column("Cobertura_ID")]
-        public int CoberturaId { get; set; }
-
-        [Column("Poliza_Contenedor_ID")]
-        public int PolizaContenedorId { get; set; }
+        [Column("Administracion_Bien_ID")]
+        public int AdministracionBienId { get; set; }
 
         [Column("Nombre")]
-        [MaxLength(200)]
+        [MaxLength(100)]
         public string Nombre { get; set; }
-
-        [ForeignKey(nameof(PolizaContenedorId))]
-        public PolizaContenedor PolizaContenedor { get; set; }
     }
 }

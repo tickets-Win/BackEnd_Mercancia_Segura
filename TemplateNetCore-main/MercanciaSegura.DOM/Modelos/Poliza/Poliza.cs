@@ -37,6 +37,10 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [MaxLength(30)]
         public string? NumeroPoliza { get; set; }
 
+        [Column("Tipo_Poliza")]
+        [MaxLength(150)]
+        public string? TipoPoliza { get; set; }
+
         [Column("Clave_Agente")]
         [MaxLength(50)]
         public string? ClaveAgente { get; set; }
@@ -102,9 +106,9 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         public EstatusPoliza? EstatusPoliza { get; set; }
 
         public PolizaContenedor? PolizaContenedor { get; set; }
+        public ICollection<PolizaMercancia> PolizaMercancia { get; set; } = new List<PolizaMercancia>();
+        public ICollection<Bien> Bien { get; set; } = new List<Bien>();
 
-        public PolizaMercancia? PolizaMercancia { get; set; }
 
-        public PolizaCobertura? PolizaCobertura { get; set; } 
     }
 }

@@ -7,12 +7,15 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
     public class PolizaContenedor
     {
         [Key]
-        [Column("Poliza_ID")]
-        public int PolizaId { get; set; }
+        [Column("Poliza_Contenedor_ID")]
+        public int PolizaContenedorId { get; set; }
 
-        [Column("Bienes_Asegurados")]
-        [MaxLength(250)]
-        public string? BienesAsegurados { get; set; }
+        [Column("Poliza_ID")]
+        public int? PolizaId { get; set; }
+
+        [Column("Nombre_Interno_Poliza")]
+        [MaxLength(80)]
+        public string? NombreInternoPoliza { get; set; }
 
         [Column("Por_Contenedor", TypeName = "decimal(10,2)")]
         public decimal? PorContenedor { get; set; }
@@ -42,11 +45,13 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [MaxLength(250)]
         public string? TrayectosAsegurados { get; set; }
 
-        [Column("Medio_Transporte", TypeName = "decimal(10,2)")]
-        public decimal? MedioTransporte { get; set; }
+        [Column("Medio_Transporte")]
+        [MaxLength(250)]
+        public string? MedioTransporte { get; set; }
 
-        // 🔗 Relación 1 a 1 con Poliza
         [ForeignKey(nameof(PolizaId))]
         public Poliza? Poliza { get; set; }
+        public ICollection<Cobertura>? Cobertura { get; set; } = new List<Cobertura>();
+
     }
 }

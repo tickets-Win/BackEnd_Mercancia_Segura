@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    [Migration("20260217160016_InitialCreate_v8.1")]
-    partial class InitialCreate_v81
+    [Migration("20260219181058_v1.2_Poliza")]
+    partial class v12_Poliza
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -619,6 +619,37 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Aseguradora");
                 });
 
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Bien", b =>
+                {
+                    b.Property<int>("BienId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Bien_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BienId"));
+
+                    b.Property<string>("Nombre")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)")
+                        .HasColumnName("Nombre");
+
+                    b.Property<int>("PolizaId")
+                        .HasColumnType("int")
+                        .HasColumnName("Poliza_ID");
+
+                    b.Property<int>("TipoBienId")
+                        .HasColumnType("int")
+                        .HasColumnName("Tipo_Bien");
+
+                    b.HasKey("BienId");
+
+                    b.HasIndex("PolizaId");
+
+                    b.HasIndex("TipoBienId");
+
+                    b.ToTable("Bien");
+                });
+
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Cobertura", b =>
                 {
                     b.Property<int>("CoberturaId")
@@ -633,19 +664,13 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasColumnName("Nombre");
 
-                    b.Property<int>("PolizaCoberturaId")
+                    b.Property<int>("PolizaContenedorId")
                         .HasColumnType("int")
-                        .HasColumnName("Poliza_Cobertura_ID");
-
-                    b.Property<int>("RiesgoId")
-                        .HasColumnType("int")
-                        .HasColumnName("Riesgo_ID");
+                        .HasColumnName("Poliza_Contenedor_ID");
 
                     b.HasKey("CoberturaId");
 
-                    b.HasIndex("PolizaCoberturaId");
-
-                    b.HasIndex("RiesgoId");
+                    b.HasIndex("PolizaContenedorId");
 
                     b.ToTable("Cobertura");
                 });
@@ -749,6 +774,11 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Aseguradora_ID");
 
+                    b.Property<string>("ClaveAgente")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Clave_Agente");
+
                     b.Property<int?>("ContratanteId")
                         .HasColumnType("int")
                         .HasColumnName("Contratante_ID");
@@ -772,6 +802,11 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("datetime2")
                         .HasColumnName("Fecha_Registro");
+
+                    b.Property<string>("FolioPoliza")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("Folio_Poliza");
 
                     b.Property<int?>("FormaPagoId")
                         .HasColumnType("int")
@@ -815,6 +850,11 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("int")
                         .HasColumnName("SubRamo_ID");
 
+                    b.Property<string>("TipoPoliza")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("Tipo_Poliza");
+
                     b.Property<DateTime?>("VigenciaDel")
                         .HasColumnType("datetime2")
                         .HasColumnName("Vigencia_Del");
@@ -842,50 +882,14 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Poliza");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaCobertura", b =>
-                {
-                    b.Property<int>("PolizaCoberturaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Poliza_Cobertura_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PolizaCoberturaId"));
-
-                    b.Property<string>("Deducible")
-                        .HasMaxLength(350)
-                        .HasColumnType("nvarchar(350)")
-                        .HasColumnName("Deducible");
-
-                    b.Property<int>("PolizaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Poliza_ID");
-
-                    b.Property<decimal?>("Prima")
-                        .HasColumnType("decimal(12,2)")
-                        .HasColumnName("Prima");
-
-                    b.Property<decimal?>("SumaAsegurada")
-                        .HasColumnType("decimal(14,2)")
-                        .HasColumnName("Suma_Asegurada");
-
-                    b.HasKey("PolizaCoberturaId");
-
-                    b.HasIndex("PolizaId")
-                        .IsUnique();
-
-                    b.ToTable("Poliza_Cobertura");
-                });
-
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaContenedor", b =>
                 {
-                    b.Property<int>("PolizaId")
+                    b.Property<int>("PolizaContenedorId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("Poliza_ID");
+                        .HasColumnName("Poliza_Contenedor_ID");
 
-                    b.Property<string>("BienesAsegurados")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)")
-                        .HasColumnName("Bienes_Asegurados");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PolizaContenedorId"));
 
                     b.Property<decimal?>("CuotaAplicable")
                         .HasColumnType("decimal(10,2)")
@@ -900,8 +904,14 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Ferrocarril");
 
                     b.Property<decimal?>("MedioTransporte")
-                        .HasColumnType("decimal(10,2)")
+                        .HasMaxLength(250)
+                        .HasColumnType("decimal(18,2)")
                         .HasColumnName("Medio_Transporte");
+
+                    b.Property<string>("NombreInternoPoliza")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)")
+                        .HasColumnName("Nombre_Interno_Poliza");
 
                     b.Property<decimal?>("PerdidaParcial")
                         .HasColumnType("decimal(10,2)")
@@ -910,6 +920,10 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Property<decimal?>("PerdidaTotal")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("Perdida_Total");
+
+                    b.Property<int>("PolizaId")
+                        .HasColumnType("int")
+                        .HasColumnName("Poliza_ID");
 
                     b.Property<decimal?>("PorContenedor")
                         .HasColumnType("decimal(10,2)")
@@ -928,31 +942,26 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("nvarchar(250)")
                         .HasColumnName("Trayectos_Asegurados");
 
-                    b.HasKey("PolizaId");
+                    b.HasKey("PolizaContenedorId");
+
+                    b.HasIndex("PolizaId")
+                        .IsUnique();
 
                     b.ToTable("Poliza_Contenedor");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", b =>
                 {
-                    b.Property<int>("PolizaId")
+                    b.Property<int>("PolizaMercanciaId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("Poliza_ID");
+                        .HasColumnName("Poliza_Mercancia_ID");
 
-                    b.Property<string>("BienesAsegurados")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)")
-                        .HasColumnName("Bienes_Asegurados");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PolizaMercanciaId"));
 
-                    b.Property<string>("BienesExcluidos")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)")
-                        .HasColumnName("Bienes_Excluidos");
-
-                    b.Property<string>("BienesSujetosAConsulta")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)")
-                        .HasColumnName("Bienes_Sujetos_A_Consulta");
+                    b.Property<int>("AdministracionBienId")
+                        .HasColumnType("int")
+                        .HasColumnName("Administracion_Bien_ID");
 
                     b.Property<string>("BienesUsados")
                         .HasMaxLength(300)
@@ -986,11 +995,6 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("EQ_Contratistas");
 
-                    b.Property<string>("FolioPoliza")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("Folio_Poliza");
-
                     b.Property<string>("IndemnizacionOtros")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)")
@@ -1022,6 +1026,10 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("Paqueteria_Mensajeria");
 
+                    b.Property<int>("PolizaId")
+                        .HasColumnType("int")
+                        .HasColumnName("Poliza_ID");
+
                     b.Property<decimal?>("TerrestreAereo")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("Terrestre_Aereo");
@@ -1031,7 +1039,9 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("nvarchar(300)")
                         .HasColumnName("Ventas");
 
-                    b.HasKey("PolizaId");
+                    b.HasKey("PolizaMercanciaId");
+
+                    b.HasIndex("PolizaId");
 
                     b.ToTable("Poliza_Mercancia");
                 });
@@ -1060,29 +1070,33 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Producto");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Riesgo", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.RiesgoCubierto", b =>
                 {
-                    b.Property<int>("RiesgoId")
+                    b.Property<int>("RiesgoCubiertoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("Riesgo_ID");
+                        .HasColumnName("Riesgo_Cubierto_ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RiesgoId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RiesgoCubiertoId"));
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("Nombre");
 
-                    b.Property<int>("ProductoId")
+                    b.Property<int>("PolizaMercanciaId")
                         .HasColumnType("int")
-                        .HasColumnName("Producto_ID");
+                        .HasColumnName("Poliza_Mercancia_ID");
 
-                    b.HasKey("RiesgoId");
+                    b.Property<int>("TipoRiesgoId")
+                        .HasColumnType("int")
+                        .HasColumnName("Tipo_Riesgo_ID");
 
-                    b.HasIndex("ProductoId");
+                    b.HasKey("RiesgoCubiertoId");
 
-                    b.ToTable("Riesgo");
+                    b.HasIndex("PolizaMercanciaId");
+
+                    b.ToTable("Riesgo_Cubierto");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.SubRamo", b =>
@@ -1102,6 +1116,44 @@ namespace MercanciaSegura.DOM.Migrations
                     b.HasKey("SubRamoId");
 
                     b.ToTable("SubRamo");
+                });
+
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.TipoBien", b =>
+                {
+                    b.Property<int>("TipoBienId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Tipo_Bien_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TipoBienId"));
+
+                    b.Property<string>("Nombre")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Nombre");
+
+                    b.HasKey("TipoBienId");
+
+                    b.ToTable("Tipo_Bien");
+                });
+
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.TipoRiesgo", b =>
+                {
+                    b.Property<int>("TipoRiesgoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Tipo_Riesgo_ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TipoRiesgoId"));
+
+                    b.Property<string>("Nombre")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Nombre");
+
+                    b.HasKey("TipoRiesgoId");
+
+                    b.ToTable("Tipo_Riesgo");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.TipoPersona", b =>
@@ -1418,23 +1470,34 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Navigation("Vendedor");
                 });
 
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Bien", b =>
+                {
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Poliza", "Poliza")
+                        .WithMany("Bien")
+                        .HasForeignKey("PolizaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.TipoBien", "TipoBien")
+                        .WithMany()
+                        .HasForeignKey("TipoBienId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Poliza");
+
+                    b.Navigation("TipoBien");
+                });
+
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Cobertura", b =>
                 {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.PolizaCobertura", "PolizaCobertura")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.PolizaContenedor", "PolizaContenedor")
                         .WithMany("Cobertura")
-                        .HasForeignKey("PolizaCoberturaId")
+                        .HasForeignKey("PolizaContenedorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Riesgo", "Riesgo")
-                        .WithMany()
-                        .HasForeignKey("RiesgoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PolizaCobertura");
-
-                    b.Navigation("Riesgo");
+                    b.Navigation("PolizaContenedor");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Poliza", b =>
@@ -1482,17 +1545,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Navigation("SubRamo");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaCobertura", b =>
-                {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Poliza", "Poliza")
-                        .WithOne("PolizaCobertura")
-                        .HasForeignKey("MercanciaSegura.DOM.Modelos.Poliza.PolizaCobertura", "PolizaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Poliza");
-                });
-
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaContenedor", b =>
                 {
                     b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Poliza", "Poliza")
@@ -1507,23 +1559,21 @@ namespace MercanciaSegura.DOM.Migrations
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", b =>
                 {
                     b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Poliza", "Poliza")
-                        .WithOne("PolizaMercancia")
-                        .HasForeignKey("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", "PolizaId")
+                        .WithMany("PolizaMercancia")
+                        .HasForeignKey("PolizaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Poliza");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Riesgo", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.RiesgoCubierto", b =>
                 {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Producto", "Producto")
-                        .WithMany()
-                        .HasForeignKey("ProductoId")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", null)
+                        .WithMany("RiesgoCubierto")
+                        .HasForeignKey("PolizaMercanciaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Producto");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Vendedor.Vendedor", b =>
@@ -1556,16 +1606,21 @@ namespace MercanciaSegura.DOM.Migrations
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Poliza", b =>
                 {
-                    b.Navigation("PolizaCobertura");
+                    b.Navigation("Bien");
 
                     b.Navigation("PolizaContenedor");
 
                     b.Navigation("PolizaMercancia");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaCobertura", b =>
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaContenedor", b =>
                 {
                     b.Navigation("Cobertura");
+                });
+
+            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", b =>
+                {
+                    b.Navigation("RiesgoCubierto");
                 });
 #pragma warning restore 612, 618
         }
