@@ -59,13 +59,16 @@ public class ServiceDbContext : DbContext
     public DbSet<FormaPago> FormaPago { get; set; }
     public DbSet<Moneda> Moneda { get; set; }
     public DbSet<Poliza> Poliza { get; set; }
-    public DbSet<PolizaCobertura> PolizaCobertura { get; set; }
     public DbSet<PolizaContenedor> PolizaContenedor { get; set; }
     public DbSet<PolizaMercancia> PolizaMercancia { get; set; }
     public DbSet<Producto> Producto { get; set; }
-    public DbSet<Riesgo> Riesgo { get; set; }
+    public DbSet<RiesgoCubierto> RiesgoCubierto { get; set; }
+    public DbSet<TipoRiesgo> TipoRiesgo { get; set; }
     public DbSet<SubRamo> SubRamo { get; set; }
     public DbSet<EstatusPoliza> EstatusPoliza { get; set; }
+    public DbSet<Bien> Bien { get; set; }
+    public DbSet<TipoBien> TipoBien { get; set; }
+    public DbSet<AdministracionBien> AdministracionBien { get; set; }
 
     //-------------------------------------------------------------
     public DbSet<TipoPersona> TipoPersona { get; set; }

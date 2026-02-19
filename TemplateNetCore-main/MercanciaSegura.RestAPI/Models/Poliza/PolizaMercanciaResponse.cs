@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MercanciaSegura.RestAPI.Models.Poliza
 {
     public class PolizaMercanciaResponse
     {
-        public int PolizaId { get; set; }
+        public int PolizaMercanciaId { get; set; }
+        public int? PolizaId { get; set; }
+
+        public int AdministracionBienId { get; set; }
 
         public string? NombreInternoPoliza { get; set; }
-        public string? FolioPoliza { get; set; }
-
-        public string? BienesAsegurados { get; set; }
-        public string? BienesExcluidos { get; set; }
-        public string? BienesSujetosAConsulta { get; set; }
 
         public decimal? TerrestreAereo { get; set; }
         public decimal? Maritimo { get; set; }
         public decimal? PaqueteriaMensajeria { get; set; }
 
         public string? Deducibles { get; set; }
+
         public string? Compras { get; set; }
         public string? Ventas { get; set; }
         public string? Maquila { get; set; }
@@ -31,5 +31,8 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
         public decimal? EqContratistas { get; set; }
 
         public decimal? CuotaGeneralPoliza { get; set; }
+
+        public List<RiesgoCubiertoResponse>? RiesgoCubierto { get; set; }
     }
+
 }
