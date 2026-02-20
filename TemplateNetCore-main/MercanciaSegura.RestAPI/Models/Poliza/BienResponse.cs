@@ -6,6 +6,8 @@
 
         public int? PolizaId { get; set; }
 
+        public int? AdministracionBienId { get; set; }
+
         public int? TipoBienId { get; set; }
         public string? NombreTipoBien { get; set; }
 

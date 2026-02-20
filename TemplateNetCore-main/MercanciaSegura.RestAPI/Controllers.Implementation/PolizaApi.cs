@@ -49,6 +49,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 NumeroPoliza = p.NumeroPoliza,
                 ClaveAgente = p.ClaveAgente,
                 FolioPoliza = p.FolioPoliza,
+                TipoPoliza = p.TipoPoliza,
 
                 VigenciaDel = p.VigenciaDel,
                 VigenciaHasta = p.VigenciaHasta,
@@ -133,6 +134,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         BienId = b.BienId,
         PolizaId = b.PolizaId,
         TipoBienId = b.TipoBienId,
+        AdministracionBienId = b.AdministracionBienId,
         NombreTipoBien = b.TipoBien?.Nombre,
         Nombre = b.Nombre
     }).ToList() ?? new List<BienResponse>()
@@ -158,6 +160,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             poliza.NumeroPoliza = body.NumeroPoliza;
             poliza.ClaveAgente = body.ClaveAgente;
             poliza.FolioPoliza = body.FolioPoliza;
+            poliza.TipoPoliza = body.TipoPoliza;
             poliza.OtrosPoliza = body.OtrosPoliza;
 
             // 📌 Vigencia
@@ -250,6 +253,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             // 📌 Tipo de bien
             bien.TipoBienId = body.TipoBienId;
 
+            bien.AdministracionBienId = body?.AdministracionBienId;
+
             // 📌 Datos generales
             bien.Nombre = body.Nombre;
         }
@@ -327,7 +332,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 var poliza = new Poliza
                 {
                     FechaRegistro = DateTime.Now,
-                    FechaActualizacion = DateTime.Now,
                     EstatusPolizaId = body.EstatusPolizaId
                 };
                 MapToPoliza(poliza, body);

@@ -18,6 +18,9 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Poliza_ID")]
         public int? PolizaId { get; set; }
 
+        [Column("Administracion_Bien_ID")]
+        public int? AdministracionBienId { get; set; }
+
         [Column("Tipo_Bien")]
         public int? TipoBienId { get; set; }
 
@@ -30,5 +33,8 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
 
         [ForeignKey(nameof(TipoBienId))]
         public TipoBien? TipoBien { get; set; }
+
+        [ForeignKey(nameof(AdministracionBienId))]
+        public AdministracionBien? AdministracionBien { get; set; }
     }
 }
