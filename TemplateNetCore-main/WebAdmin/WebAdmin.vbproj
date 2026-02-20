@@ -125,6 +125,8 @@
     <Compile Include="Helpers\DropdownHelpers.vb" />
     <Compile Include="Modelos\Aseguradora.vb" />
     <Compile Include="Modelos\BeneficiarioPreferente.vb" />
+    <Compile Include="Modelos\AdministracionBien.vb" />
+    <Compile Include="Modelos\bien.vb" />
     <Compile Include="Modelos\Cliente.vb" />
     <Compile Include="Modelos\ClienteCredito.vb" />
     <Compile Include="Modelos\ClienteVendedor.vb" />
@@ -140,6 +142,7 @@
     <Compile Include="Modelos\PolizaMercancia.vb" />
     <Compile Include="Modelos\Producto.vb" />
     <Compile Include="Modelos\rfcGenerico.vb" />
+    <Compile Include="Modelos\RiesgoCubierto.vb" />
     <Compile Include="Modelos\SubRamo.vb" />
     <Compile Include="Modelos\TipoCorreo.vb" />
     <Compile Include="Modelos\TipoCuenta.vb" />

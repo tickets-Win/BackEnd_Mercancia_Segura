@@ -12,7 +12,7 @@
         Public Property PerdidaParcial As Decimal?
         Public Property PerdidaTotal As Decimal?
         Public Property TrayectosAsegurados As String
-        Public Property MedioTransporte As Decimal?
+        Public Property MedioTransporte As String
         Public Property Poliza As Poliza
 
     End Class

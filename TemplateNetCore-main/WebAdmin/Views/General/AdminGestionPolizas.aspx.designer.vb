@@ -230,13 +230,13 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents pnlNombreInternoPoliza As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''Control txtNombreInternoPoliza.
+    '''Control txtNombreInternoPolizaContenedor.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtNombreInternoPoliza As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtNombreInternoPolizaContenedor As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtTrayectosAsegurados.
@@ -347,22 +347,22 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtTerrestreAereo1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtMaritimo.
+    '''Control txtMaritimo1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtMaritimo As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtMaritimo1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control TextBox3.
+    '''Control txtPaqueteria1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents TextBox3 As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtPaqueteria1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtViajeCompleto.
@@ -419,112 +419,112 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents btnAgregarCcoberturasAdicionales As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control txtDeducibles.
+    '''Control txtDeducibles1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtDeducibles As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtDeducibles1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtCompras.
+    '''Control txtCompras1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtCompras As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtCompras1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtVentas.
+    '''Control txtVentas1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtVentas As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtVentas1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtMaquila.
+    '''Control txtMaquila1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtMaquila As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtMaquila1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtBienesUsados.
+    '''Control txtBienesUsados1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtBienesUsados As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtBienesUsados1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtEmbarquesEntreFiliales.
+    '''Control txtEmbarquesEntreFiliales1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtEmbarquesEntreFiliales As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtEmbarquesEntreFiliales1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtOtrosBasesIndemnizacion.
+    '''Control txtOtrosBasesIndemnizacion1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtOtrosBasesIndemnizacion As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtOtrosBasesIndemnizacion1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtCuotaGeneralPoliza.
+    '''Control txtCuotaGeneralPoliza1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtCuotaGeneralPoliza As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtCuotaGeneralPoliza1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtMedicamentos.
+    '''Control txtMedicamentos1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtMedicamentos As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtMedicamentos1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtCobreAluminioAcero.
+    '''Control txtCobreAluminioAcero1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtCobreAluminioAcero As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtCobreAluminioAcero1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtMedicamentosControlados.
+    '''Control txtMedicamentosControlados1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtMedicamentosControlados As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtMedicamentosControlados1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtEQ.
+    '''Control txtEQ1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtEQ As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtEQ1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control chkEQAplica.
@@ -536,49 +536,49 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents chkEQAplica As Global.System.Web.UI.HtmlControls.HtmlInputCheckBox
 
     '''<summary>
-    '''Control txtPrimaNetaMercancia.
+    '''Control txtPrimaNetaMercancia1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtPrimaNetaMercancia As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtPrimaNetaMercancia1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtDerechoPolizaMercancia.
+    '''Control txtDerechoPolizaMercancia1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtDerechoPolizaMercancia As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtDerechoPolizaMercancia1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtOtrosMercancia.
+    '''Control txtOtrosMercancia1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtOtrosMercancia As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtOtrosMercancia1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtIVAMercancia.
+    '''Control txtIVAMercancia1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtIVAMercancia As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtIVAMercancia1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtPrimaTotalMercancia.
+    '''Control txtPrimaTotalMercancia1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtPrimaTotalMercancia As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtPrimaTotalMercancia1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtNombreInternoPoliza2.
@@ -1247,13 +1247,13 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtPrimaNeta As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtOtros.
+    '''Control txtOtrosMontosPoliza.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtOtros As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtOtrosMontosPoliza As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtDerechoPoliza.

@@ -1,12 +1,10 @@
 ﻿Namespace MercanciaSegura.DOM.Modelos
 
     Public Class PolizaMercancia
-        Public Property PolizaId As Integer
+        Public Property PolizaMercanciaId As Integer
+        Public Property PolizaId As Integer?
+        Public Property AdministracionBienId As Integer
         Public Property NombreInternoPoliza As String
-        Public Property FolioPoliza As String
-        Public Property BienesAsegurados As String
-        Public Property BienesExcluidos As String
-        Public Property BienesSujetosAConsulta As String
 
         Public Property TerrestreAereo As Decimal?
         Public Property Maritimo As Decimal?
@@ -26,7 +24,7 @@
         Public Property EqContratistas As Decimal?
         Public Property CuotaGeneralPoliza As Decimal?
 
-        Public Property Poliza As Poliza
+        Public Property RiesgoCubierto As New List(Of RiesgoCubierto)
     End Class
 
 End Namespace

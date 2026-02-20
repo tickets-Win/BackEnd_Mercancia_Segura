@@ -4,7 +4,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="../../Content/site.css" rel="stylesheet" />   
+    <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:Panel ID="pnlEncabezado" runat="server">
@@ -29,52 +29,52 @@
         </div>
     </asp:Panel>
 
-   <asp:Panel ID="PnlTabla" runat="server">
- <div class="card card-shadow p-4 mb-4">
-     <div style="overflow-x: auto; width: 100%;">
-         <asp:GridView ID="gvPolizas" runat="server"
-             CssClass="table table-hover align-middle"
-             AutoGenerateColumns="False"
-             OnRowCommand="gvPolizas_RowCommand"
-             HeaderStyle-CssClass="table-light"
-             DataKeyNames="PolizaId"
-             AllowPaging="True"
-             PageSize="10"
-             OnPageIndexChanged="gvPolizas_PageIndexChanged">
-             <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
-             <Columns>
-                 <asp:BoundField DataField="nombreAseguradora" HeaderText="Aseguradora" />
-                 <asp:BoundField DataField="NumeroPoliza" HeaderText="N° Póliza" />
-                 <asp:BoundField DataField="nombreContratante" HeaderText="Contratante" />              
-                 <asp:BoundField DataField="VigenciaDel" HeaderText="Vigencia del" DataFormatString="{0:dd/MM/yyyy}" />
-                 <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia hasta" DataFormatString="{0:dd/MM/yyyy}" />
-                 <asp:BoundField DataField="nombreEstatusPoliza" HeaderText="Estatus" />
-                 <asp:BoundField DataField="nombreMoneda" HeaderText="Moneda" />
+    <asp:Panel ID="PnlTabla" runat="server">
+        <div class="card card-shadow p-4 mb-4">
+            <div style="overflow-x: auto; width: 100%;">
+                <asp:GridView ID="gvPolizas" runat="server"
+                    CssClass="table table-hover align-middle"
+                    AutoGenerateColumns="False"
+                    OnRowCommand="gvPolizas_RowCommand"
+                    HeaderStyle-CssClass="table-light"
+                    DataKeyNames="PolizaId"
+                    AllowPaging="True"
+                    PageSize="10"
+                    OnPageIndexChanged="gvPolizas_PageIndexChanged">
+                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                    <Columns>
+                        <asp:BoundField DataField="nombreAseguradora" HeaderText="Aseguradora" />
+                        <asp:BoundField DataField="NumeroPoliza" HeaderText="N° Póliza" />
+                        <asp:BoundField DataField="nombreContratante" HeaderText="Contratante" />
+                        <asp:BoundField DataField="VigenciaDel" HeaderText="Vigencia del" DataFormatString="{0:dd/MM/yyyy}" />
+                        <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia hasta" DataFormatString="{0:dd/MM/yyyy}" />
+                        <asp:BoundField DataField="nombreEstatusPoliza" HeaderText="Estatus" />
+                        <asp:BoundField DataField="nombreMoneda" HeaderText="Moneda" />
 
-                 <asp:TemplateField HeaderText="Acciones">
-                     <ItemTemplate>
-                         <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("PolizaId") %>'
-                             CssClass="icon-btn action-icon" ToolTip="Editar">
+                        <asp:TemplateField HeaderText="Acciones">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("PolizaId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Editar">
           <i class="bi bi-pencil"></i>
-                         </asp:LinkButton>
+                                </asp:LinkButton>
 
-                         <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("PolizaId") %>'
-                             CssClass="icon-btn action-icon" ToolTip="Eliminar"
-                             OnClientClick="return confirm('¿Seguro que deseas eliminar esta póliza?');">
+                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("PolizaId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                    OnClientClick="return confirm('¿Seguro que deseas eliminar esta póliza?');">
           <i class="bi bi-trash"></i>
-                         </asp:LinkButton>
+                                </asp:LinkButton>
 
-                         <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("PolizaId") %>'
-                             CssClass="icon-btn" ToolTip="Enviar correo">
+                                <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("PolizaId") %>'
+                                    CssClass="icon-btn" ToolTip="Enviar correo">
           <i class="bi bi-envelope"></i>
-                         </asp:LinkButton>
-                     </ItemTemplate>
-                 </asp:TemplateField>
-             </Columns>
-         </asp:GridView>
-     </div>
- </div>
- </asp:Panel>
+                                </asp:LinkButton>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
+    </asp:Panel>
     <asp:Panel ID="pnlFormularioPolizas" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>
@@ -89,7 +89,7 @@
         <div class="row g-3 mt-2">
             <div class="col-md-4">
                 <label class="form-label">Producto</label>
-                <asp:DropDownList ID="ddlProducto" CssClass="form-select" runat="server" OnSelectedIndexChanged="ddlProducto_SelectedIndexChanged" AutoPostBack="true">                   
+                <asp:DropDownList ID="ddlProducto" CssClass="form-select" runat="server" OnSelectedIndexChanged="ddlProducto_SelectedIndexChanged" AutoPostBack="true">
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -102,7 +102,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Contratante</label>
-                <asp:DropDownList ID="ddlContratante" runat="server" CssClass="form-select">                   
+                <asp:DropDownList ID="ddlContratante" runat="server" CssClass="form-select">
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -123,7 +123,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Estatus</label>
-                <asp:DropDownList ID="ddlEstatus" runat="server" CssClass="form-select">  
+                <asp:DropDownList ID="ddlEstatus" runat="server" CssClass="form-select">
                     <asp:ListItem Text="Activo" Value="1"></asp:ListItem>
                     <asp:ListItem Text="Suspendido" Value="2"></asp:ListItem>
                 </asp:DropDownList>
@@ -134,7 +134,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Moneda</label>
-                <asp:DropDownList ID="ddlMoneda" runat="server" CssClass="form-select">                    
+                <asp:DropDownList ID="ddlMoneda" runat="server" CssClass="form-select">
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -150,7 +150,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label">Nombre Interno Póliza</label>
-                        <asp:TextBox ID="txtNombreInternoPoliza" runat="server" CssClass="form-control"></asp:TextBox>
+                        <asp:TextBox ID="txtNombreInternoPolizaContenedor" runat="server" CssClass="form-control"></asp:TextBox>
                     </div>
 
                     <div class="col-md-6">
@@ -226,14 +226,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -269,14 +267,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -312,14 +308,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -339,11 +333,11 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Marítimo</label>
-                                        <asp:TextBox ID="txtMaritimo" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaritimo1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Paquetería y/o Mensajería</label>
-                                        <asp:TextBox ID="TextBox3" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtPaqueteria1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <h5 class="border-bottom pb-2">Riesgos Cubiertos</h5>
                                     <div class="row mt-3 gx-0">
@@ -372,14 +366,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -415,14 +407,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -458,14 +448,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -477,36 +465,36 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Deducibles</label>
-                                        <asp:TextBox ID="txtDeducibles" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtDeducibles1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <h5 class="border-bottom pb-2">Bases de Indemnización</h5>
                                     <div class="col-6">
                                         <label class="form-label">Compras</label>
-                                        <asp:TextBox ID="txtCompras" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtCompras1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Ventas</label>
-                                        <asp:TextBox ID="txtVentas" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtVentas1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Maquila</label>
-                                        <asp:TextBox ID="txtMaquila" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaquila1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Bienes Usados</label>
-                                        <asp:TextBox ID="txtBienesUsados" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtBienesUsados1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Embarques entre Filiales</label>
-                                        <asp:TextBox ID="txtEmbarquesEntreFiliales" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtEmbarquesEntreFiliales1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Otros</label>
-                                        <asp:TextBox ID="txtOtrosBasesIndemnizacion" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtOtrosBasesIndemnizacion1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Cuota General de la Póliza</label>
-                                        <asp:TextBox ID="txtCuotaGeneralPoliza" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtCuotaGeneralPoliza1" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col-md-6">
@@ -515,24 +503,24 @@
                                                 <div class="row mb-3">
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">Medicamentos</h6>
-                                                        <asp:TextBox ID="txtMedicamentos" runat="server" CssClass="form-control"
+                                                        <asp:TextBox ID="txtMedicamentos1" runat="server" CssClass="form-control"
                                                             placeholder="%"></asp:TextBox>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <h6 class="titulo-cuota">Cobre, Aluminio y Acero</h6>
-                                                        <asp:TextBox ID="txtCobreAluminioAcero" runat="server" CssClass="form-control"
+                                                        <asp:TextBox ID="txtCobreAluminioAcero1" runat="server" CssClass="form-control"
                                                             placeholder="%"></asp:TextBox>
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">Medicamentos controlados</h6>
-                                                        <asp:TextBox ID="txtMedicamentosControlados" runat="server" CssClass="form-control"
+                                                        <asp:TextBox ID="txtMedicamentosControlados1" runat="server" CssClass="form-control"
                                                             placeholder="%"></asp:TextBox>
                                                     </div>
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">EQ contratistas</h6>
-                                                        <asp:TextBox ID="txtEQ" runat="server" CssClass="form-control"
+                                                        <asp:TextBox ID="txtEQ1" runat="server" CssClass="form-control"
                                                             placeholder="%"></asp:TextBox>
                                                     </div>
                                                 </div>
@@ -550,30 +538,30 @@
                                                 <div class="row mb-3">
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">Prima Neta</h6>
-                                                        <asp:TextBox ID="txtPrimaNetaMercancia" runat="server" CssClass="form-control"
+                                                        <asp:TextBox ID="txtPrimaNetaMercancia1" runat="server" CssClass="form-control"
                                                             placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <h6 class="titulo-cuota">Derecho de Póliza</h6>
-                                                        <asp:TextBox ID="txtDerechoPolizaMercancia" runat="server" CssClass="form-control"
+                                                        <asp:TextBox ID="txtDerechoPolizaMercancia1" runat="server" CssClass="form-control"
                                                             placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">Otros</h6>
-                                                        <asp:TextBox ID="txtOtrosMercancia" runat="server" CssClass="form-control"
+                                                        <asp:TextBox ID="txtOtrosMercancia1" runat="server" CssClass="form-control"
                                                             placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">IVA</h6>
-                                                        <asp:TextBox ID="txtIVAMercancia" runat="server" CssClass="form-control"
+                                                        <asp:TextBox ID="txtIVAMercancia1" runat="server" CssClass="form-control"
                                                             placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                 </div>
                                                 <div class="col col-md-12">
                                                     <h6 class="titulo-cuota">Prima Total</h6>
-                                                    <asp:TextBox ID="txtPrimaTotalMercancia" runat="server" CssClass="form-control"
+                                                    <asp:TextBox ID="txtPrimaTotalMercancia1" runat="server" CssClass="form-control"
                                                         placeholder="$0.00"></asp:TextBox>
                                                 </div>
                                             </div>
@@ -616,14 +604,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -658,14 +644,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -701,14 +685,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -770,14 +752,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -825,14 +805,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -880,14 +858,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -1034,14 +1010,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -1077,14 +1051,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -1120,14 +1092,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -1189,14 +1159,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -1244,14 +1212,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -1299,14 +1265,12 @@
                                                             <tr>
                                                                 <td>Mercancía General</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Electrónicos</td>
                                                                 <td>
-                                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                                     <button class="btn btn-danger btn-sm">Eliminar</button>
                                                                 </td>
                                                             </tr>
@@ -1464,14 +1428,12 @@
                                                 <tr>
                                                     <td>Mercancía General</td>
                                                     <td>
-                                                        <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                         <button class="btn btn-danger btn-sm">Eliminar</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td>Equipos electrónicos</td>
                                                     <td>
-                                                        <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                         <button class="btn btn-danger btn-sm">Eliminar</button>
                                                     </td>
                                                 </tr>
@@ -1507,14 +1469,12 @@
                                                 <tr>
                                                     <td>Mercancía General</td>
                                                     <td>
-                                                        <button class="btn btn-warning btn-sm me-2">Editar</button>
                                                         <button class="btn btn-danger btn-sm">Eliminar</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td>Electrónicos</td>
-                                                    <td>
-                                                        <button class="btn btn-warning btn-sm me-2">Editar</button>
+                                                    <td>                                                        
                                                         <button class="btn btn-danger btn-sm">Eliminar</button>
                                                     </td>
                                                 </tr>
@@ -1528,21 +1488,37 @@
                             <div class="col col-md-6">
                                 <h5>Montos de la póliza</h5>
                                 <div class="card p-3 shadow-sm">
-                                    <h6>Prima Neta</h6>
-                                    <asp:TextBox ID="txtPrimaNeta" runat="server" CssClass="form-control mb-3"
-                                        placeholder="$0.00"></asp:TextBox>
-                                    <h6>Otros</h6>
-                                    <asp:TextBox ID="txtOtros" runat="server" CssClass="form-control mb-3"
-                                        placeholder="$0.00"></asp:TextBox>
-                                    <h6>Derecho de póliza</h6>
-                                    <asp:TextBox ID="txtDerechoPoliza" runat="server" CssClass="form-control mb-3"
-                                        placeholder="$0.00"></asp:TextBox>
-                                    <h6>IVA</h6>
-                                    <asp:TextBox ID="txtIVA" runat="server" CssClass="form-control mb-3"
-                                        placeholder="$0.00"></asp:TextBox>
-                                    <h6>Total</h6>
-                                    <asp:TextBox ID="txtTotal" runat="server" CssClass="form-control mb-3"
-                                        placeholder="$0.00"></asp:TextBox>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <h6>Prima Neta</h6>
+                                            <asp:TextBox ID="txtPrimaNeta" runat="server" CssClass="form-control mb-3"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Otros</h6>
+                                            <asp:TextBox ID="txtOtrosMontosPoliza" runat="server" CssClass="form-control mb-3"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <h6>Derecho de póliza</h6>
+                                            <asp:TextBox ID="txtDerechoPoliza" runat="server" CssClass="form-control mb-3"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>IVA</h6>
+                                            <asp:TextBox ID="txtIVA" runat="server" CssClass="form-control mb-3"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <h6>Total</h6>
+                                            <asp:TextBox ID="txtTotal" runat="server" CssClass="form-control mb-3"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -1585,11 +1561,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mt-3">
+                        <div class="row mt-1">
                             <div class="col-md-6">
                                 <div class="card p-3 shadow-sm">
                                     <h6>Deducibles</h6>
-                                    <div class="row mb-3">
+                                    <div class="row mb-2">
                                         <div class="col col-md-6">
                                             <h6>Daño Material</h6>
                                             <asp:TextBox ID="txtDañoMaterial" runat="server" CssClass="form-control"
@@ -1636,5 +1612,5 @@
                 icon.classList.add('bi-chevron-down');
             }
         }
-    </script>
+    </script>  
 </asp:Content>

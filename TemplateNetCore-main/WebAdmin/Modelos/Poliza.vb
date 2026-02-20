@@ -35,6 +35,9 @@
         Public Property ClaveAgente As String
         Public Property FolioPoliza As String
 
+        Public Property PolizaMercancia As List(Of PolizaMercancia)
+        Public Property PolizaContenedor As PolizaContenedor
+
     End Class
 
 End Namespace
