@@ -49,6 +49,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 NumeroPoliza = p.NumeroPoliza,
                 ClaveAgente = p.ClaveAgente,
                 FolioPoliza = p.FolioPoliza,
+                TipoPoliza = p.TipoPoliza,
 
                 VigenciaDel = p.VigenciaDel,
                 VigenciaHasta = p.VigenciaHasta,
@@ -158,6 +159,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             poliza.NumeroPoliza = body.NumeroPoliza;
             poliza.ClaveAgente = body.ClaveAgente;
             poliza.FolioPoliza = body.FolioPoliza;
+            poliza.TipoPoliza = body.TipoPoliza;
             poliza.OtrosPoliza = body.OtrosPoliza;
 
             // 📌 Vigencia
