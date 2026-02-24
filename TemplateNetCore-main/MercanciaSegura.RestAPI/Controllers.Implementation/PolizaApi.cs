@@ -54,14 +54,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 VigenciaDel = p.VigenciaDel,
                 VigenciaHasta = p.VigenciaHasta,
 
-                OtrosPoliza = p.OtrosPoliza,
-
-                PrimaNeta = p.PrimaNeta,
-                DerechoPoliza = p.DerechoPoliza,
-                Otros = p.Otros,
-                IVA = p.IVA,
-                PrimaTotal = p.PrimaTotal,
-
                 FechaRegistro = p.FechaRegistro,
                 FechaActualizacion = p.FechaActualizacion,
                 FechaBaja = p.FechaBaja,
@@ -71,6 +63,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     PolizaContenedorId = p.PolizaContenedor.PolizaContenedorId,
                     PolizaId = p.PolizaContenedor.PolizaId,
                     NombreInternoPoliza = p.PolizaContenedor.NombreInternoPoliza,
+                    ManiobrasRescate = p.PolizaContenedor.ManiobrasRescate,
 
                     PorContenedor = p.PolizaContenedor.PorContenedor,
                     Ferrocarril = p.PolizaContenedor.Ferrocarril,
@@ -82,6 +75,11 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     PerdidaTotal = p.PolizaContenedor.PerdidaTotal,
                     TrayectosAsegurados = p.PolizaContenedor.TrayectosAsegurados,
                     MedioTransporte = p.PolizaContenedor.MedioTransporte,
+                    PrimaNeta = p.PolizaContenedor.PrimaNeta,
+                    DerechoPoliza = p.PolizaContenedor.DerechoPoliza,
+                    OtroPrima = p.PolizaContenedor.OtroPrima,
+                    IVA = p.PolizaContenedor.IVA,
+                    PrimaTotal = p.PolizaContenedor.PrimaTotal,
 
                     Cobertura = p.PolizaContenedor.Cobertura?
     .Select(c => new CoberturaResponse
@@ -117,6 +115,12 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         MedicamentosControlados = pm.MedicamentosControlados,
         EqContratistas = pm.EqContratistas,
         CuotaGeneralPoliza = pm.CuotaGeneralPoliza,
+
+        PrimaNeta = pm.PrimaNeta,
+        DerechoPoliza = pm.DerechoPoliza,
+        OtroPrima = pm.OtroPrima,
+        IVA = pm.IVA,
+        PrimaTotal = pm.PrimaTotal,
 
         RiesgoCubierto = pm.RiesgoCubierto?
     .Select(r => new RiesgoCubiertoResponse
@@ -161,18 +165,11 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             poliza.ClaveAgente = body.ClaveAgente;
             poliza.FolioPoliza = body.FolioPoliza;
             poliza.TipoPoliza = body.TipoPoliza;
-            poliza.OtrosPoliza = body.OtrosPoliza;
 
             // 📌 Vigencia
             poliza.VigenciaDel = body.VigenciaDel;
             poliza.VigenciaHasta = body.VigenciaHasta;
 
-            // 📌 Importes
-            poliza.PrimaNeta = body.PrimaNeta;
-            poliza.DerechoPoliza = body.DerechoPoliza;
-            poliza.Otros = body.Otros;
-            poliza.IVA = body.IVA;
-            poliza.PrimaTotal = body.PrimaTotal;
         }
 
         private void MapToPolizaContenedor(PolizaContenedor pc, PolizaContenedorRequest body)
@@ -195,6 +192,13 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             pc.CuotaAplicable = body.CuotaAplicable;
             pc.TrayectosAsegurados = body.TrayectosAsegurados;
             pc.MedioTransporte = body.MedioTransporte;
+            pc.ManiobrasRescate = body.ManiobrasRescate;
+
+            pc.PrimaNeta = body.PrimaNeta;
+            pc.DerechoPoliza = body.DerechoPoliza;
+            pc.OtroPrima = body.OtroPrima;
+            pc.IVA = body.IVA;
+            pc.PrimaTotal = body.PrimaTotal;
 
             // 📌 Lista de Coberturas
             pc.Cobertura = body.Cobertura?
@@ -235,6 +239,12 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             // 📌 Deducibles y cuota
             pm.Deducibles = body.Deducibles;
             pm.CuotaGeneralPoliza = body.CuotaGeneralPoliza;
+
+            pm.PrimaNeta = body.PrimaNeta;
+            pm.DerechoPoliza = body.DerechoPoliza;
+            pm.OtroPrima = body.OtroPrima;
+            pm.IVA = body.IVA;
+            pm.PrimaTotal = body.PrimaTotal;
 
             // 📌 Riesgos cubiertos
             pm.RiesgoCubierto = body.RiesgoCubierto?

@@ -14,26 +14,24 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
         public int? FormaPagoId { get; set; }
         public int? EstatusPolizaId { get; set; }
 
+        [MaxLength(30)]
         public string? NumeroPoliza { get; set; }
+
+        [MaxLength(150)]
         public string? TipoPoliza { get; set; }
+
+        [MaxLength(50)]
         public string? ClaveAgente { get; set; }
+
+        [MaxLength(20)]
         public string? FolioPoliza { get; set; }
 
         public DateTime? VigenciaDel { get; set; }
         public DateTime? VigenciaHasta { get; set; }
 
-        public string? OtrosPoliza { get; set; }
-
-        public decimal? PrimaNeta { get; set; }
-        public decimal? DerechoPoliza { get; set; }
-        public decimal? Otros { get; set; }
-        public decimal? IVA { get; set; }
-        public decimal? PrimaTotal { get; set; }
-
-        // Objetos hijos
+        // Objetos hijos (relaciones)
         public PolizaContenedorRequest? PolizaContenedor { get; set; }
         public List<PolizaMercanciaRequest>? PolizaMercancia { get; set; }
         public List<BienRequest>? Bien { get; set; }
     }
-
 }

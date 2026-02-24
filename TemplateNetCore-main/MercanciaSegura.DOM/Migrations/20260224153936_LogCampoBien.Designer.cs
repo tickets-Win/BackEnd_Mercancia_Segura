@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260224153936_LogCampoBien")]
+    partial class LogCampoBien
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -806,6 +809,10 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Contratante_ID");
 
+                    b.Property<decimal?>("DerechoPoliza")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("Derecho_Poliza");
+
                     b.Property<int?>("EstatusPolizaId")
                         .HasColumnType("int")
                         .HasColumnName("Estatus_Poliza_ID");
@@ -831,6 +838,10 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Forma_Pago_ID");
 
+                    b.Property<decimal?>("IVA")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("IVA");
+
                     b.Property<int?>("MonedaId")
                         .HasColumnType("int")
                         .HasColumnName("Moneda_ID");
@@ -839,6 +850,23 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
                         .HasColumnName("Numero_Poliza");
+
+                    b.Property<decimal?>("Otros")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("Otros");
+
+                    b.Property<string>("OtrosPoliza")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Otros_Poliza");
+
+                    b.Property<decimal?>("PrimaNeta")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("Prima_Neta");
+
+                    b.Property<decimal?>("PrimaTotal")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("Prima_Total");
 
                     b.Property<int?>("ProductoId")
                         .HasColumnType("int")
@@ -897,21 +925,9 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("Danio_Material");
 
-                    b.Property<decimal?>("DerechoPoliza")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Derecho_Poliza");
-
                     b.Property<decimal?>("Ferrocarril")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("Ferrocarril");
-
-                    b.Property<decimal?>("IVA")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("IVA");
-
-                    b.Property<decimal?>("ManiobrasRescate")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Maniobras_Rescate");
 
                     b.Property<string>("MedioTransporte")
                         .HasMaxLength(250)
@@ -922,10 +938,6 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)")
                         .HasColumnName("Nombre_Interno_Poliza");
-
-                    b.Property<decimal?>("OtroPrima")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Otro_Prima");
 
                     b.Property<decimal?>("PerdidaParcial")
                         .HasColumnType("decimal(10,2)")
@@ -942,14 +954,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Property<decimal?>("PorContenedor")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("Por_Contenedor");
-
-                    b.Property<decimal?>("PrimaNeta")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Prima_Neta");
-
-                    b.Property<decimal?>("PrimaTotal")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Prima_Total");
 
                     b.Property<decimal?>("Robo")
                         .HasColumnType("decimal(10,2)")
@@ -987,7 +991,8 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Administracion_Bien_ID");
 
                     b.Property<string>("BienesUsados")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)")
                         .HasColumnName("Bienes_Usados");
 
                     b.Property<decimal?>("CobreAluminioAcero")
@@ -995,7 +1000,8 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Cobre_Aluminio_Acero");
 
                     b.Property<string>("Compras")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)")
                         .HasColumnName("Compras");
 
                     b.Property<decimal?>("CuotaGeneralPoliza")
@@ -1003,31 +1009,27 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Cuota_General_Poliza");
 
                     b.Property<string>("Deducibles")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(350)
+                        .HasColumnType("nvarchar(350)")
                         .HasColumnName("Deducibles");
 
-                    b.Property<decimal?>("DerechoPoliza")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Derecho_Poliza");
-
                     b.Property<string>("EmbarqueFiliales")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)")
                         .HasColumnName("Embarque_Filiales");
 
                     b.Property<decimal?>("EqContratistas")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("EQ_Contratistas");
 
-                    b.Property<decimal?>("IVA")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("IVA");
-
                     b.Property<string>("IndemnizacionOtros")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)")
                         .HasColumnName("Indemnizacion_Otros");
 
                     b.Property<string>("Maquila")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)")
                         .HasColumnName("Maquila");
 
                     b.Property<decimal?>("Maritimo")
@@ -1047,10 +1049,6 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("nvarchar(80)")
                         .HasColumnName("Nombre_Interno_Poliza");
 
-                    b.Property<decimal?>("OtroPrima")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Otro_Prima");
-
                     b.Property<decimal?>("PaqueteriaMensajeria")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("Paqueteria_Mensajeria");
@@ -1059,20 +1057,13 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Poliza_ID");
 
-                    b.Property<decimal?>("PrimaNeta")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Prima_Neta");
-
-                    b.Property<decimal?>("PrimaTotal")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("Prima_Total");
-
                     b.Property<decimal?>("TerrestreAereo")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("Terrestre_Aereo");
 
                     b.Property<string>("Ventas")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)")
                         .HasColumnName("Ventas");
 
                     b.HasKey("PolizaMercanciaId");
@@ -1116,7 +1107,8 @@ namespace MercanciaSegura.DOM.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RiesgoCubiertoId"));
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("Nombre");
 
                     b.Property<int>("PolizaMercanciaId")

@@ -29,32 +29,25 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Paqueteria_Mensajeria", TypeName = "decimal(10,2)")]
         public decimal? PaqueteriaMensajeria { get; set; }
 
-        [Column("Deducibles")]
-        [MaxLength(350)]
+        [Column("Deducibles", TypeName = "nvarchar(max)")]
         public string? Deducibles { get; set; }
 
-        [Column("Compras")]
-        [MaxLength(300)]
+        [Column("Compras", TypeName = "nvarchar(max)")]
         public string? Compras { get; set; }
 
-        [Column("Ventas")]
-        [MaxLength(300)]
+        [Column("Ventas", TypeName = "nvarchar(max)")]
         public string? Ventas { get; set; }
 
-        [Column("Maquila")]
-        [MaxLength(300)]
+        [Column("Maquila", TypeName = "nvarchar(max)")]
         public string? Maquila { get; set; }
 
-        [Column("Bienes_Usados")]
-        [MaxLength(300)]
+        [Column("Bienes_Usados", TypeName = "nvarchar(max)")]
         public string? BienesUsados { get; set; }
 
-        [Column("Embarque_Filiales")]
-        [MaxLength(300)]
+        [Column("Embarque_Filiales", TypeName = "nvarchar(max)")]
         public string? EmbarqueFiliales { get; set; }
 
-        [Column("Indemnizacion_Otros")]
-        [MaxLength(300)]
+        [Column("Indemnizacion_Otros", TypeName = "nvarchar(max)")]
         public string? IndemnizacionOtros { get; set; }
 
         [Column("Medicamentos", TypeName = "decimal(10,2)")]
@@ -71,6 +64,22 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
 
         [Column("Cuota_General_Poliza", TypeName = "decimal(10,2)")]
         public decimal? CuotaGeneralPoliza { get; set; }
+
+        [Column("Prima_Neta", TypeName = "decimal(10,2)")]
+        public decimal? PrimaNeta { get; set; }
+
+        [Column("Derecho_Poliza", TypeName = "decimal(10,2)")]
+        public decimal? DerechoPoliza { get; set; }
+
+        [Column("Otro_Prima", TypeName = "decimal(10,2)")]
+        public decimal? OtroPrima { get; set; }
+
+        [Column("IVA", TypeName = "decimal(10,2)")]
+        public decimal? IVA { get; set; }
+
+        [Column("Prima_Total", TypeName = "decimal(10,2)")]
+        public decimal? PrimaTotal { get; set; }
+
 
         // 🔗 Relación (si existe la tabla Poliza)
         [ForeignKey(nameof(PolizaId))]
