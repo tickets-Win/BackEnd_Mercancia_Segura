@@ -56,25 +56,6 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Vigencia_Hasta")]
         public DateTime? VigenciaHasta { get; set; }
 
-        [Column("Otros_Poliza")]
-        [MaxLength(100)]
-        public string? OtrosPoliza { get; set; }
-
-        [Column("Prima_Neta", TypeName = "decimal(10,2)")]
-        public decimal? PrimaNeta { get; set; }
-
-        [Column("Derecho_Poliza", TypeName = "decimal(10,2)")]
-        public decimal? DerechoPoliza { get; set; }
-
-        [Column("Otros", TypeName = "decimal(10,2)")]
-        public decimal? Otros { get; set; }
-
-        [Column("IVA", TypeName = "decimal(10,2)")]
-        public decimal? IVA { get; set; }
-
-        [Column("Prima_Total", TypeName = "decimal(10,2)")]
-        public decimal? PrimaTotal { get; set; }
-
         [Column("Fecha_Actualizacion")]
         public DateTime? FechaActualizacion { get; set; }
 

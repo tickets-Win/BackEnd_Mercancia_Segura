@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace MercanciaSegura.RestAPI.Models.Poliza
 {
@@ -17,7 +16,6 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
         public decimal? PaqueteriaMensajeria { get; set; }
 
         public string? Deducibles { get; set; }
-
         public string? Compras { get; set; }
         public string? Ventas { get; set; }
         public string? Maquila { get; set; }
@@ -32,7 +30,13 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
 
         public decimal? CuotaGeneralPoliza { get; set; }
 
-        public List<RiesgoCubiertoResponse>? RiesgoCubierto { get; set; }
-    }
+        // Campos financieros
+        public decimal? PrimaNeta { get; set; }
+        public decimal? DerechoPoliza { get; set; }
+        public decimal? OtroPrima { get; set; }
+        public decimal? IVA { get; set; }
+        public decimal? PrimaTotal { get; set; }
 
+        public List<RiesgoCubiertoResponse> RiesgoCubierto { get; set; } = new();
+    }
 }

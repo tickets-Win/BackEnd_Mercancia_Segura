@@ -24,8 +24,7 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Tipo_Bien")]
         public int? TipoBienId { get; set; }
 
-        [Column("Nombre")]
-        [MaxLength(250)]
+        [Column("Nombre", TypeName = "nvarchar(max)")]
         public string? Nombre { get; set; }
 
         [ForeignKey(nameof(PolizaId))]

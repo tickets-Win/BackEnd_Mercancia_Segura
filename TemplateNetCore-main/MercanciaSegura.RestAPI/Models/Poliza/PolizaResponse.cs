@@ -36,14 +36,6 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
         public DateTime? VigenciaDel { get; set; }
         public DateTime? VigenciaHasta { get; set; }
 
-        public string? OtrosPoliza { get; set; }
-
-        public decimal? PrimaNeta { get; set; }
-        public decimal? DerechoPoliza { get; set; }
-        public decimal? Otros { get; set; }
-        public decimal? IVA { get; set; }
-        public decimal? PrimaTotal { get; set; }
-
         public DateTime FechaRegistro { get; set; }
         public DateTime? FechaActualizacion { get; set; }
         public DateTime? FechaBaja { get; set; }
@@ -52,5 +44,4 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
         public List<PolizaMercanciaResponse>? PolizaMercancia { get; set; }
         public List<BienResponse>? Bien { get; set; }
     }
-
 }
