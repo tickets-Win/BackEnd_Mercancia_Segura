@@ -10,8 +10,7 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Riesgo_Cubierto_ID")]
         public int RiesgoCubiertoId { get; set; }
 
-        [Column("Nombre")]
-        [MaxLength(100)]
+        [Column("Nombre", TypeName = "nvarchar(max)")]
         public string? Nombre { get; set; }
 
         [Column("Tipo_Riesgo_ID")]

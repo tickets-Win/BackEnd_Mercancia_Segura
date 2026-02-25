@@ -5,8 +5,11 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
 {
     public class PolizaMercanciaRequest
     {
+        public int? PolizaId { get; set; }
+
         public int AdministracionBienId { get; set; }
 
+        [MaxLength(80)]
         public string? NombreInternoPoliza { get; set; }
 
         public decimal? TerrestreAereo { get; set; }
@@ -14,7 +17,6 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
         public decimal? PaqueteriaMensajeria { get; set; }
 
         public string? Deducibles { get; set; }
-
         public string? Compras { get; set; }
         public string? Ventas { get; set; }
         public string? Maquila { get; set; }
@@ -29,7 +31,12 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
 
         public decimal? CuotaGeneralPoliza { get; set; }
 
-        public List<RiesgoCubiertoRequest>? RiesgoCubierto { get; set; }
-    }
+        public decimal? PrimaNeta { get; set; }
+        public decimal? DerechoPoliza { get; set; }
+        public decimal? OtroPrima { get; set; }
+        public decimal? IVA { get; set; }
+        public decimal? PrimaTotal { get; set; }
 
+        public List<RiesgoCubiertoRequest> RiesgoCubierto { get; set; } = new();
+    }
 }

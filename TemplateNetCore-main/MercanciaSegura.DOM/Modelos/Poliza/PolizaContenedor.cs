@@ -29,6 +29,9 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Cuota_Aplicable", TypeName = "decimal(10,2)")]
         public decimal? CuotaAplicable { get; set; }
 
+        [Column("Maniobras_Rescate", TypeName = "decimal(10,2)")]
+        public decimal? ManiobrasRescate { get; set; }
+
         [Column("Danio_Material", TypeName = "decimal(10,2)")]
         public decimal? DanioMaterial { get; set; }
 
@@ -48,6 +51,21 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Medio_Transporte")]
         [MaxLength(250)]
         public string? MedioTransporte { get; set; }
+
+        [Column("Prima_Neta", TypeName = "decimal(10,2)")]
+        public decimal? PrimaNeta { get; set; }
+
+        [Column("Derecho_Poliza", TypeName = "decimal(10,2)")]
+        public decimal? DerechoPoliza { get; set; }
+
+        [Column("Otro_Prima", TypeName = "decimal(10,2)")]
+        public decimal? OtroPrima { get; set; }
+
+        [Column("IVA", TypeName = "decimal(10,2)")]
+        public decimal? IVA { get; set; }
+
+        [Column("Prima_Total", TypeName = "decimal(10,2)")]
+        public decimal? PrimaTotal { get; set; }
 
         [ForeignKey(nameof(PolizaId))]
         public Poliza? Poliza { get; set; }
