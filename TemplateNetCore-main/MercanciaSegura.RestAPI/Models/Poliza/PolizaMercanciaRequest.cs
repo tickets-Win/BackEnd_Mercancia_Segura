@@ -5,7 +5,6 @@ namespace MercanciaSegura.RestAPI.Models.Poliza
 {
     public class PolizaMercanciaRequest
     {
-        public int? PolizaId { get; set; }
 
         public int AdministracionBienId { get; set; }
 
