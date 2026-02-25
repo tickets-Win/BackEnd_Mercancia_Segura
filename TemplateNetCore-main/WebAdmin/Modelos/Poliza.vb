@@ -16,12 +16,6 @@
         Public Property VigenciaHasta As DateTime?
         Public Property OtrosPoliza As String
 
-        Public Property PrimaNeta As Decimal?
-        Public Property DerechoPoliza As Decimal?
-        Public Property Otros As Decimal?
-        Public Property IVA As Decimal?
-        Public Property PrimaTotal As Decimal?
-
         Public Property FechaActualizacion As DateTime?
         Public Property FechaBaja As DateTime?
         Public Property FechaRegistro As DateTime = DateTime.Now

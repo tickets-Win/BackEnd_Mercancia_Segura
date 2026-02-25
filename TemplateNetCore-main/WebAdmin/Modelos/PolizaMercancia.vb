@@ -2,8 +2,8 @@
 
     Public Class PolizaMercancia
         Public Property PolizaMercanciaId As Integer
-        Public Property PolizaId As Integer?
         Public Property AdministracionBienId As Integer
+
         Public Property NombreInternoPoliza As String
 
         Public Property TerrestreAereo As Decimal?
@@ -22,8 +22,14 @@
         Public Property CobreAluminioAcero As Decimal?
         Public Property MedicamentosControlados As Decimal?
         Public Property EqContratistas As Decimal?
+
         Public Property CuotaGeneralPoliza As Decimal?
 
+        Public Property PrimaNeta As Decimal?
+        Public Property DerechoPoliza As Decimal?
+        Public Property OtroPrima As Decimal?
+        Public Property IVA As Decimal?
+        Public Property PrimaTotal As Decimal?
         Public Property RiesgoCubierto As New List(Of RiesgoCubierto)
     End Class
 

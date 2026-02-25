@@ -1548,31 +1548,31 @@
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <h6>Prima Neta</h6>
-                                            <asp:TextBox ID="txtPrimaNeta" runat="server" CssClass="form-control mb-3"
+                                            <asp:TextBox ID="txtPrimaNetaC" runat="server" CssClass="form-control mb-3"
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                         <div class="col-md-6">
                                             <h6>Otros</h6>
-                                            <asp:TextBox ID="txtOtrosMontosPoliza" runat="server" CssClass="form-control mb-3"
+                                            <asp:TextBox ID="txtOtrosMontosPolizaC" runat="server" CssClass="form-control mb-3"
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <h6>Derecho de póliza</h6>
-                                            <asp:TextBox ID="txtDerechoPoliza" runat="server" CssClass="form-control mb-3"
+                                            <asp:TextBox ID="txtDerechoPolizaC" runat="server" CssClass="form-control mb-3"
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                         <div class="col-md-6">
                                             <h6>IVA</h6>
-                                            <asp:TextBox ID="txtIVA" runat="server" CssClass="form-control mb-3"
+                                            <asp:TextBox ID="txtIVAC" runat="server" CssClass="form-control mb-3"
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-md-12">
                                             <h6>Total</h6>
-                                            <asp:TextBox ID="txtTotal" runat="server" CssClass="form-control mb-3"
+                                            <asp:TextBox ID="txtTotalC" runat="server" CssClass="form-control mb-3"
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                     </div>

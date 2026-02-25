@@ -1436,49 +1436,49 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents GvCoberturasContenedor As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
-    '''Control txtPrimaNeta.
+    '''Control txtPrimaNetaC.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtPrimaNeta As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtPrimaNetaC As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtOtrosMontosPoliza.
+    '''Control txtOtrosMontosPolizaC.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtOtrosMontosPoliza As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtOtrosMontosPolizaC As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtDerechoPoliza.
+    '''Control txtDerechoPolizaC.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtDerechoPoliza As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtDerechoPolizaC As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtIVA.
+    '''Control txtIVAC.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtIVA As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtIVAC As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtTotal.
+    '''Control txtTotalC.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtTotal As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtTotalC As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtDañoMaterial.
