@@ -284,6 +284,15 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtNombreInternoPoliza1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control UpBienesAsegurados1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpBienesAsegurados1 As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtBienesAsegurados.
     '''</summary>
     '''<remarks>
@@ -300,6 +309,24 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnAgregaBienAsegurado As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvBienes.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBienes As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control UpBienesExcluidos1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpBienesExcluidos1 As Global.System.Web.UI.UpdatePanel
 
     '''<summary>
     '''Control txtBienesExcluidos.
@@ -320,6 +347,24 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents btnAgregacollapseBienesExcluidos As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
+    '''Control GvBienesExcluidos1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBienesExcluidos1 As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control UpBienesSujetosConsulta.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpBienesSujetosConsulta As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtbienesSujetosConsulta.
     '''</summary>
     '''<remarks>
@@ -336,6 +381,15 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnAgregaBienesSujetosConsulta As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvBienesSujetosConsulta.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBienesSujetosConsulta As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
     '''Control txtTerrestreAereo1.
@@ -590,6 +644,15 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtNombreInternoPoliza2 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control upBienesAsegurados2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents upBienesAsegurados2 As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtBienesAsegurados2.
     '''</summary>
     '''<remarks>
@@ -606,6 +669,24 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnAgregaBienAsegurado2 As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvBienes2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBienes2 As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control UpBienesExcluidos2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpBienesExcluidos2 As Global.System.Web.UI.UpdatePanel
 
     '''<summary>
     '''Control txtBienesExcluidos2.
@@ -626,6 +707,24 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents btnAgregacollapseBienesExcluidos2 As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
+    '''Control GvBienesExcluidos2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBienesExcluidos2 As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control UpbienesSujetosConsulta2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpbienesSujetosConsulta2 As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtbienesSujetosConsulta2.
     '''</summary>
     '''<remarks>
@@ -642,6 +741,15 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnAgregaBienesSujetosConsulta2 As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvBienesSujetosConsulta2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBienesSujetosConsulta2 As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
     '''Control txtTerrestreAereo2.
@@ -896,6 +1004,15 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtNombreInternoPoliza3 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control upBienesAsegurados3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents upBienesAsegurados3 As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtBienesAsegurados3.
     '''</summary>
     '''<remarks>
@@ -912,6 +1029,24 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnAgregaBienAsegurado3 As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvBienes3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBienes3 As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control UpBienesExluidos3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpBienesExluidos3 As Global.System.Web.UI.UpdatePanel
 
     '''<summary>
     '''Control txtBienesExcluidos3.
@@ -932,6 +1067,24 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents btnAgregacollapseBienesExcluidos3 As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
+    '''Control GvBienesExcluidos3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBienesExcluidos3 As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control UpbienesSujetosConsulta3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpbienesSujetosConsulta3 As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtbienesSujetosConsulta3.
     '''</summary>
     '''<remarks>
@@ -948,6 +1101,15 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnAgregaBienesSujetosConsulta3 As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvBienesSujetosConsulta3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBienesSujetosConsulta3 As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
     '''Control txtTerrestreAereo3.
@@ -1202,6 +1364,15 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents pnlContenedor As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
+    '''Control UpBienesAseguradosContenedor.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpBienesAseguradosContenedor As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtBienesAseguradosContenedor.
     '''</summary>
     '''<remarks>
@@ -1220,13 +1391,31 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents btnAgregarBienAseguradoContenedor As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control txtCoberturas.
+    '''Control GvBienContenedor.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtCoberturas As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents GvBienContenedor As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control UpCoberturas.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpCoberturas As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
+    '''Control txtCoberturaContenedor.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtCoberturaContenedor As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control btnAgregarCobertura.
@@ -1236,6 +1425,15 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnAgregarCobertura As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvCoberturasContenedor.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvCoberturasContenedor As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
     '''Control txtPrimaNeta.
@@ -1283,6 +1481,42 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtTotal As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control txtDañoMaterial.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtDañoMaterial As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtRobo.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtRobo As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtPerdidaTotal.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtPerdidaTotal As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtPerdidaParcial.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtPerdidaParcial As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control txtPorContenedor.
     '''</summary>
     '''<remarks>
@@ -1326,40 +1560,4 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtManiobrasRescateContenedor As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtDañoMaterial.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtDañoMaterial As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtRobo.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtRobo As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtPerdidaTotal.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtPerdidaTotal As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtPerdidaParcial.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtPerdidaParcial As Global.System.Web.UI.WebControls.TextBox
 End Class

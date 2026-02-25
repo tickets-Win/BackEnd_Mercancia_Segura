@@ -126,10 +126,11 @@
     <Compile Include="Modelos\Aseguradora.vb" />
     <Compile Include="Modelos\BeneficiarioPreferente.vb" />
     <Compile Include="Modelos\AdministracionBien.vb" />
-    <Compile Include="Modelos\bien.vb" />
+    <Compile Include="Modelos\Bien.vb" />
     <Compile Include="Modelos\Cliente.vb" />
     <Compile Include="Modelos\ClienteCredito.vb" />
     <Compile Include="Modelos\ClienteVendedor.vb" />
+    <Compile Include="Modelos\Cobertura.vb" />
     <Compile Include="Modelos\Contratante.vb" />
     <Compile Include="Modelos\Correos.vb" />
     <Compile Include="Modelos\Cuota.vb" />

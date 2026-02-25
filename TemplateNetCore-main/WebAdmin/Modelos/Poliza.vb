@@ -37,6 +37,8 @@
 
         Public Property PolizaMercancia As List(Of PolizaMercancia)
         Public Property PolizaContenedor As PolizaContenedor
+        Public Property Bien As New List(Of Bien)
+
 
     End Class
 

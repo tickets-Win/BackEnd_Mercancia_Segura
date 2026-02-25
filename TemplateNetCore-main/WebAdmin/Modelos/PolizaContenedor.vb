@@ -14,6 +14,7 @@
         Public Property TrayectosAsegurados As String
         Public Property MedioTransporte As String
         Public Property Poliza As Poliza
+        Public Property cobertura As List(Of Cobertura)
 
     End Class
 

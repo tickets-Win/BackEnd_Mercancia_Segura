@@ -207,37 +207,42 @@
                                                     <h4 class="mb-0">Bienes Asegurados</h4>
                                                     <i id="icon-bienesAsegurados" class="bi bi-chevron-down"></i>
                                                 </div>
+                                                <asp:UpdatePanel ID="UpBienesAsegurados1" runat="server" UpdateMode="Conditional">
+                                                    <ContentTemplate>
+                                                        <div id="bienesAsegurados" class="collapse-content px-3 pb-3" style="display: none;">
+                                                            <asp:TextBox ID="txtBienesAsegurados" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
-                                                <div id="bienesAsegurados" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtBienesAsegurados" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien"></asp:TextBox>
+                                                            <div class="d-flex justify-content-end mb-3">
+                                                                <asp:Button ID="btnAgregaBienAsegurado" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregaBienAsegurado_Click" />
+                                                            </div>
 
-                                                    <div class="d-flex justify-content-end mb-3">
-                                                        <asp:Button ID="btnAgregaBienAsegurado" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                                    </div>
+                                                            <asp:GridView ID="GvBienes" runat="server" AutoGenerateColumns="False"
+                                                                CssClass="table table-bordered table-hover align-middle"
+                                                                HeaderStyle-CssClass="table-light"
+                                                                DataKeyNames="BienId"
+                                                                OnRowCommand="GvBienes_RowCommand"
+                                                                AllowPaging="True"
+                                                                PageSize="10"
+                                                                OnPageIndexChanging="GvBienes_PageIndexChanging">
+                                                                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
-                                                    <table class="table table-bordered">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Bien Asegurado</th>
-                                                                <th>Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Mercancía General</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Electrónicos</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                                <Columns>
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Asegurado" />
+
+                                                                    <asp:TemplateField HeaderText="Acciones">
+                                                                        <ItemTemplate>
+                                                                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                                                CssClass="btn btn-danger btn-sm"
+                                                                                OnClientClick="return confirm('¿Seguro que deseas eliminar este bien?');">
+                                                                        Eliminar
+                                                                       </asp:LinkButton>
+                                                                        </ItemTemplate>
+                                                                    </asp:TemplateField>
+                                                                </Columns>
+                                                            </asp:GridView>
+                                                        </div>
+                                                    </ContentTemplate>
+                                                </asp:UpdatePanel>
                                             </div>
                                         </div>
                                     </div>
@@ -247,39 +252,43 @@
 
                                                 <div class="d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleCollapse('bienesExcluidos')">
                                                     <h4 class="mb-0">Bienes Excluidos</h4>
-                                                    <i class="bi bi-chevron-down"></i>
+                                                    <i id="icon-bienesExcluidos" class="bi bi-chevron-down"></i>
                                                 </div>
+                                                <asp:UpdatePanel ID="UpBienesExcluidos1" runat="server" UpdateMode="Conditional">
+                                                    <ContentTemplate>
+                                                        <div id="bienesExcluidos" class="collapse-content px-3 pb-3" style="display: none;">
+                                                            <asp:TextBox ID="txtBienesExcluidos" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
-                                                <div id="bienesExcluidos" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtBienesExcluidos" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien"></asp:TextBox>
+                                                            <div class="d-flex justify-content-end mb-3">
+                                                                <asp:Button ID="btnAgregacollapseBienesExcluidos" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregacollapseBienesExcluidos_Click" />
+                                                            </div>
+                                                            <asp:GridView ID="GvBienesExcluidos1" runat="server" AutoGenerateColumns="False"
+                                                                CssClass="table table-bordered table-hover align-middle"
+                                                                HeaderStyle-CssClass="table-light"
+                                                                DataKeyNames="BienId"
+                                                                OnRowCommand="GvBienesExcluidos1_RowCommand"
+                                                                AllowPaging="True"
+                                                                PageSize="10"
+                                                                OnPageIndexChanging="GvBienesExcluidos1_PageIndexChanging">
+                                                                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
-                                                    <div class="d-flex justify-content-end mb-3">
-                                                        <asp:Button ID="btnAgregacollapseBienesExcluidos" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                                    </div>
-                                                    <table class="table table-bordered">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Bien Excluido</th>
-                                                                <th>Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Mercancía General</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Electrónicos</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                                <Columns>
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Excluido" />
 
+                                                                    <asp:TemplateField HeaderText="Acciones">
+                                                                        <ItemTemplate>
+                                                                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                                                CssClass="btn btn-danger btn-sm"
+                                                                                OnClientClick="return confirm('¿Seguro que deseas eliminar este bien?');">
+             Eliminar
+            </asp:LinkButton>
+                                                                        </ItemTemplate>
+                                                                    </asp:TemplateField>
+                                                                </Columns>
+                                                            </asp:GridView>
+                                                        </div>
+                                                    </ContentTemplate>
+                                                </asp:UpdatePanel>
                                             </div>
                                         </div>
                                     </div>
@@ -288,39 +297,43 @@
                                             <div class="card shadow-sm bg-light w-100">
                                                 <div class="d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleCollapse('bienesSujetosConsulta')">
                                                     <h4 class="mb-0">Bienes Sujetos a Consulta</h4>
-                                                    <i class="bi bi-chevron-down"></i>
+                                                    <i id="icon-bienesSujetosConsulta" class="bi bi-chevron-down"></i>
                                                 </div>
+                                                <asp:UpdatePanel ID="UpBienesSujetosConsulta" runat="server" UpdateMode="Conditional">
+                                                    <ContentTemplate>
+                                                        <div id="bienesSujetosConsulta" class="collapse-content px-3 pb-3" style="display: none;">
+                                                            <asp:TextBox ID="txtbienesSujetosConsulta" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
-                                                <div id="bienesSujetosConsulta" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtbienesSujetosConsulta" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien"></asp:TextBox>
+                                                            <div class="d-flex justify-content-end mb-3">
+                                                                <asp:Button ID="btnAgregaBienesSujetosConsulta" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregaBienesSujetosConsulta_Click" />
+                                                            </div>
+                                                            <asp:GridView ID="GvBienesSujetosConsulta" runat="server" AutoGenerateColumns="False"
+                                                                CssClass="table table-bordered table-hover align-middle"
+                                                                HeaderStyle-CssClass="table-light"
+                                                                DataKeyNames="BienId"
+                                                                OnRowCommand="GvBienesSujetosConsulta_RowCommand"
+                                                                AllowPaging="True"
+                                                                PageSize="10"
+                                                                OnPageIndexChanging="GvBienesSujetosConsulta_PageIndexChanging">
+                                                                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
-                                                    <div class="d-flex justify-content-end mb-3">
-                                                        <asp:Button ID="btnAgregaBienesSujetosConsulta" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                                    </div>
-                                                    <table class="table table-bordered">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Bien Sujetos a Consulta</th>
-                                                                <th>Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Mercancía General</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Electrónicos</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                                <Columns>
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Excluido" />
 
+                                                                    <asp:TemplateField HeaderText="Acciones">
+                                                                        <ItemTemplate>
+                                                                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                                                CssClass="btn btn-danger btn-sm"
+                                                                                OnClientClick="return confirm('¿Seguro que deseas eliminar este bien?');">
+ Eliminar
+</asp:LinkButton>
+                                                                        </ItemTemplate>
+                                                                    </asp:TemplateField>
+                                                                </Columns>
+                                                            </asp:GridView>
+                                                        </div>
+                                                    </ContentTemplate>
+                                                </asp:UpdatePanel>
                                             </div>
                                         </div>
                                     </div>
@@ -349,7 +362,7 @@
                                                 </div>
 
                                                 <div id="viajeCompleto" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtViajeCompleto" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese una cobertura"></asp:TextBox>
+                                                    <asp:TextBox ID="txtViajeCompleto" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese una cobertura" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
                                                     <div class="d-flex justify-content-end mb-3">
                                                         <asp:Button ID="BtnAgregarCoberturaV" runat="server" CssClass="btn btn-primary" Text="Agregar" />
@@ -390,7 +403,7 @@
                                                 </div>
 
                                                 <div id="continuacionViaje" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtcontinuacionViajeC" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese una cobertura"></asp:TextBox>
+                                                    <asp:TextBox ID="txtcontinuacionViajeC" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese una cobertura" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
                                                     <div class="d-flex justify-content-end mb-3">
                                                         <asp:Button ID="btnagregarContinuacionViaje" runat="server" CssClass="btn btn-primary" Text="Agregar" />
@@ -431,7 +444,7 @@
                                                 </div>
 
                                                 <div id="coberturasAdicionales" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtcoberturasAdicionales" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese una cobertura"></asp:TextBox>
+                                                    <asp:TextBox ID="txtcoberturasAdicionales" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese una cobertura" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
                                                     <div class="d-flex justify-content-end mb-3">
                                                         <asp:Button ID="btnAgregarCcoberturasAdicionales" runat="server" CssClass="btn btn-primary" Text="Agregar" />
@@ -465,32 +478,32 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Deducibles</label>
-                                        <asp:TextBox ID="txtDeducibles1" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtDeducibles1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                                     </div>
                                     <h5 class="border-bottom pb-2">Bases de Indemnización</h5>
                                     <div class="col-6">
                                         <label class="form-label">Compras</label>
-                                        <asp:TextBox ID="txtCompras1" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtCompras1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Ventas</label>
-                                        <asp:TextBox ID="txtVentas1" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtVentas1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Maquila</label>
-                                        <asp:TextBox ID="txtMaquila1" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaquila1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Bienes Usados</label>
-                                        <asp:TextBox ID="txtBienesUsados1" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtBienesUsados1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Embarques entre Filiales</label>
-                                        <asp:TextBox ID="txtEmbarquesEntreFiliales1" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtEmbarquesEntreFiliales1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Otros</label>
-                                        <asp:TextBox ID="txtOtrosBasesIndemnizacion1" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtOtrosBasesIndemnizacion1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Cuota General de la Póliza</label>
@@ -585,37 +598,42 @@
                                                     <h4 class="mb-0">Bienes Asegurados</h4>
                                                     <i id="icon-bienesAsegurados2" class="bi bi-chevron-down"></i>
                                                 </div>
+                                                <asp:UpdatePanel ID="upBienesAsegurados2" runat="server" UpdateMode="Conditional">
+                                                    <ContentTemplate>
+                                                        <div id="bienesAsegurados2" class="collapse-content px-3 pb-3" style="display: none;">
+                                                            <asp:TextBox ID="txtBienesAsegurados2" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
-                                                <div id="bienesAsegurados2" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtBienesAsegurados2" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien"></asp:TextBox>
+                                                            <div class="d-flex justify-content-end mb-3">
+                                                                <asp:Button ID="btnAgregaBienAsegurado2" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregaBienAsegurado2_Click" />
+                                                            </div>
 
-                                                    <div class="d-flex justify-content-end mb-3">
-                                                        <asp:Button ID="btnAgregaBienAsegurado2" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                                    </div>
+                                                            <asp:GridView ID="GvBienes2" runat="server" AutoGenerateColumns="False"
+                                                                CssClass="table table-bordered table-hover align-middle"
+                                                                HeaderStyle-CssClass="table-light"
+                                                                DataKeyNames="BienId"
+                                                                OnRowCommand="GvBienes2_RowCommand"
+                                                                AllowPaging="True"
+                                                                PageSize="10"
+                                                                OnPageIndexChanging="GvBienes2_PageIndexChanging">
+                                                                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
-                                                    <table class="table table-bordered">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Bien Asegurado</th>
-                                                                <th>Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Mercancía General</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Electrónicos</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                                <Columns>
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Asegurado" />
+
+                                                                    <asp:TemplateField HeaderText="Acciones">
+                                                                        <ItemTemplate>
+                                                                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                                                CssClass="btn btn-danger btn-sm"
+                                                                                OnClientClick="return confirm('¿Seguro que deseas eliminar este bien?');">
+                    Eliminar
+                   </asp:LinkButton>
+                                                                        </ItemTemplate>
+                                                                    </asp:TemplateField>
+                                                                </Columns>
+                                                            </asp:GridView>
+                                                        </div>
+                                                    </ContentTemplate>
+                                                </asp:UpdatePanel>
                                             </div>
                                         </div>
                                     </div>
@@ -624,38 +642,43 @@
                                             <div class="card shadow-sm bg-light w-100">
                                                 <div class="d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleCollapse('bienesExcluidos2')">
                                                     <h4 class="mb-0">Bienes Excluidos</h4>
-                                                    <i class="bi bi-chevron-down"></i>
+                                                    <i id="icon-bienesExcluidos2" class="bi bi-chevron-down"></i>
                                                 </div>
+                                                <asp:UpdatePanel ID="UpBienesExcluidos2" runat="server" UpdateMode="Conditional">
+                                                    <ContentTemplate>
+                                                        <div id="bienesExcluidos2" class="collapse-content px-3 pb-3" style="display: none;">
+                                                            <asp:TextBox ID="txtBienesExcluidos2" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
-                                                <div id="bienesExcluidos2" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtBienesExcluidos2" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien"></asp:TextBox>
+                                                            <div class="d-flex justify-content-end mb-3">
+                                                                <asp:Button ID="btnAgregacollapseBienesExcluidos2" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregacollapseBienesExcluidos2_Click" />
+                                                            </div>
+                                                            <asp:GridView ID="GvBienesExcluidos2" runat="server" AutoGenerateColumns="False"
+                                                                CssClass="table table-bordered table-hover align-middle"
+                                                                HeaderStyle-CssClass="table-light"
+                                                                DataKeyNames="BienId"
+                                                                OnRowCommand="GvBienesExcluidos2_RowCommand"
+                                                                AllowPaging="True"
+                                                                PageSize="10"
+                                                                OnPageIndexChanging="GvBienesExcluidos2_PageIndexChanging">
+                                                                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
-                                                    <div class="d-flex justify-content-end mb-3">
-                                                        <asp:Button ID="btnAgregacollapseBienesExcluidos2" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                                    </div>
-                                                    <table class="table table-bordered">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Bien Excluido</th>
-                                                                <th>Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Mercancía General</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Electrónicos</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                                <Columns>
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Excluido" />
+
+                                                                    <asp:TemplateField HeaderText="Acciones">
+                                                                        <ItemTemplate>
+                                                                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                                                CssClass="btn btn-danger btn-sm"
+                                                                                OnClientClick="return confirm('¿Seguro que deseas eliminar este bien?');">
+ Eliminar
+</asp:LinkButton>
+                                                                        </ItemTemplate>
+                                                                    </asp:TemplateField>
+                                                                </Columns>
+                                                            </asp:GridView>
+                                                        </div>
+                                                    </ContentTemplate>
+                                                </asp:UpdatePanel>
                                             </div>
                                         </div>
                                     </div>
@@ -665,38 +688,43 @@
                                             <div class="card shadow-sm bg-light w-100">
                                                 <div class="d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleCollapse('bienesSujetosConsulta2')">
                                                     <h4 class="mb-0">Bienes Sujetos a Consulta</h4>
-                                                    <i class="bi bi-chevron-down"></i>
+                                                    <i id="icon-bienesSujetosConsulta2" class="bi bi-chevron-down"></i>
                                                 </div>
+                                                <asp:UpdatePanel ID="UpbienesSujetosConsulta2" runat="server" UpdateMode="Conditional">
+                                                    <ContentTemplate>
+                                                        <div id="bienesSujetosConsulta2" class="collapse-content px-3 pb-3" style="display: none;">
+                                                            <asp:TextBox ID="txtbienesSujetosConsulta2" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
-                                                <div id="bienesSujetosConsulta2" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtbienesSujetosConsulta2" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien"></asp:TextBox>
+                                                            <div class="d-flex justify-content-end mb-3">
+                                                                <asp:Button ID="btnAgregaBienesSujetosConsulta2" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregaBienesSujetosConsulta2_Click" />
+                                                            </div>
+                                                            <asp:GridView ID="GvBienesSujetosConsulta2" runat="server" AutoGenerateColumns="False"
+                                                                CssClass="table table-bordered table-hover align-middle"
+                                                                HeaderStyle-CssClass="table-light"
+                                                                DataKeyNames="BienId"
+                                                                OnRowCommand="GvBienesSujetosConsulta2_RowCommand"
+                                                                AllowPaging="True"
+                                                                PageSize="10"
+                                                                OnPageIndexChanging="GvBienesSujetosConsulta2_PageIndexChanging">
+                                                                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
-                                                    <div class="d-flex justify-content-end mb-3">
-                                                        <asp:Button ID="btnAgregaBienesSujetosConsulta2" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                                    </div>
-                                                    <table class="table table-bordered">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Bien Sujetos a Consulta</th>
-                                                                <th>Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Mercancía General</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Electrónicos</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                                <Columns>
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Excluido" />
+
+                                                                    <asp:TemplateField HeaderText="Acciones">
+                                                                        <ItemTemplate>
+                                                                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                                                CssClass="btn btn-danger btn-sm"
+                                                                                OnClientClick="return confirm('¿Seguro que deseas eliminar este bien?');">
+ Eliminar
+</asp:LinkButton>
+                                                                        </ItemTemplate>
+                                                                    </asp:TemplateField>
+                                                                </Columns>
+                                                            </asp:GridView>
+                                                        </div>
+                                                    </ContentTemplate>
+                                                </asp:UpdatePanel>
                                             </div>
                                         </div>
                                     </div>
@@ -731,7 +759,7 @@
                                                 <div id="viajeCompleto2" class="collapse-content px-3 pb-3" style="display: none;">
                                                     <asp:TextBox ID="txtviajeCompleto2" runat="server"
                                                         CssClass="form-control w-100 mb-2"
-                                                        Placeholder="Ingrese una cobertura">
+                                                        Placeholder="Ingrese una cobertura" TextMode="MultiLine" Rows="4">
                                                     </asp:TextBox>
 
                                                     <div class="d-flex justify-content-end mb-3">
@@ -783,7 +811,8 @@
                                                         ID="txtcontinuacionViajeC2"
                                                         runat="server"
                                                         CssClass="form-control w-100 mb-2"
-                                                        Placeholder="Ingrese una cobertura">
+                                                        Placeholder="Ingrese una cobertura"
+                                                        TextMode="MultiLine" Rows="4">
                                                     </asp:TextBox>
 
                                                     <div class="d-flex justify-content-end mb-3">
@@ -836,7 +865,8 @@
                                                         ID="txtcoberturasAdicionales2"
                                                         runat="server"
                                                         CssClass="form-control w-100 mb-2"
-                                                        Placeholder="Ingrese una cobertura">
+                                                        Placeholder="Ingrese una cobertura"
+                                                        TextMode="MultiLine" Rows="4">
                                                     </asp:TextBox>
 
                                                     <div class="d-flex justify-content-end mb-3">
@@ -877,33 +907,33 @@
 
                                     <div class="col-12">
                                         <label class="form-label">Deducibles</label>
-                                        <asp:TextBox ID="txtDeducibles2" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtDeducibles2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                                     </div>
 
                                     <h5 class="border-bottom pb-2">Bases de Indemnización</h5>
                                     <div class="col-6">
                                         <label class="form-label">Compras</label>
-                                        <asp:TextBox ID="txtCompras2" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtCompras2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Ventas</label>
-                                        <asp:TextBox ID="txtVentas2" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtVentas2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Maquila</label>
-                                        <asp:TextBox ID="txtMaquila2" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaquila2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Bienes Usados</label>
-                                        <asp:TextBox ID="txtBienesUsados2" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtBienesUsados2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Embarques entre Filiales</label>
-                                        <asp:TextBox ID="txtEmbarquesEntreFiliales2" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtEmbarquesEntreFiliales2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Otros</label>
-                                        <asp:TextBox ID="txtOtrosBasesIndemnizacion2" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtOtrosBasesIndemnizacion2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Cuota General de la Póliza</label>
@@ -983,7 +1013,6 @@
                                             <asp:TextBox ID="txtNombreInternoPoliza3" runat="server" CssClass="form-control w-100"></asp:TextBox>
                                         </div>
                                     </div>
-
                                     <div class="row mt-3 gx-0">
                                         <div class="col-md-12 px-2">
                                             <div class="card shadow-sm bg-light w-100">
@@ -991,37 +1020,41 @@
                                                     <h4 class="mb-0">Bienes Asegurados</h4>
                                                     <i id="icon-bienesAsegurados3" class="bi bi-chevron-down"></i>
                                                 </div>
+                                                <asp:UpdatePanel ID="upBienesAsegurados3" runat="server" UpdateMode="Conditional">
+                                                    <ContentTemplate>
+                                                        <div id="bienesAsegurados3" class="collapse-content px-3 pb-3" style="display: none;">
+                                                            <asp:TextBox ID="txtBienesAsegurados3" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
-                                                <div id="bienesAsegurados3" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtBienesAsegurados3" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien"></asp:TextBox>
+                                                            <div class="d-flex justify-content-end mb-3">
+                                                                <asp:Button ID="btnAgregaBienAsegurado3" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregaBienAsegurado3_Click" />
+                                                            </div>
 
-                                                    <div class="d-flex justify-content-end mb-3">
-                                                        <asp:Button ID="btnAgregaBienAsegurado3" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                                    </div>
+                                                            <asp:GridView ID="GvBienes3" runat="server" AutoGenerateColumns="False"
+                                                                CssClass="table table-bordered table-hover align-middle"
+                                                                HeaderStyle-CssClass="table-light"
+                                                                DataKeyNames="BienId"
+                                                                OnRowCommand="GvBienes3_RowCommand"
+                                                                AllowPaging="True"
+                                                                PageSize="10"
+                                                                OnPageIndexChanging="GvBienes3_PageIndexChanging">
+                                                                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                                                                <Columns>
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Asegurado" />
 
-                                                    <table class="table table-bordered">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Bien Asegurado</th>
-                                                                <th>Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Mercancía General</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Electrónicos</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                                    <asp:TemplateField HeaderText="Acciones">
+                                                                        <ItemTemplate>
+                                                                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                                                CssClass="btn btn-danger btn-sm"
+                                                                                OnClientClick="return confirm('¿Seguro que deseas eliminar este bien?');">
+ Eliminar
+</asp:LinkButton>
+                                                                        </ItemTemplate>
+                                                                    </asp:TemplateField>
+                                                                </Columns>
+                                                            </asp:GridView>
+                                                        </div>
+                                                    </ContentTemplate>
+                                                </asp:UpdatePanel>
                                             </div>
                                         </div>
                                     </div>
@@ -1031,38 +1064,43 @@
                                             <div class="card shadow-sm bg-light w-100">
                                                 <div class="d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleCollapse('bienesExcluidos3')">
                                                     <h4 class="mb-0">Bienes Excluidos</h4>
-                                                    <i class="bi bi-chevron-down"></i>
+                                                    <i id="icon-bienesExcluidos3" class="bi bi-chevron-down"></i>
                                                 </div>
+                                                <asp:UpdatePanel ID="UpBienesExluidos3" runat="server" UpdateMode="Conditional">
+                                                    <ContentTemplate>
+                                                        <div id="bienesExcluidos3" class="collapse-content px-3 pb-3" style="display: none;">
+                                                            <asp:TextBox ID="txtBienesExcluidos3" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
-                                                <div id="bienesExcluidos3" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtBienesExcluidos3" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien"></asp:TextBox>
+                                                            <div class="d-flex justify-content-end mb-3">
+                                                                <asp:Button ID="btnAgregacollapseBienesExcluidos3" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregacollapseBienesExcluidos3_Click" />
+                                                            </div>
+                                                            <asp:GridView ID="GvBienesExcluidos3" runat="server" AutoGenerateColumns="False"
+                                                                CssClass="table table-bordered table-hover align-middle"
+                                                                HeaderStyle-CssClass="table-light"
+                                                                DataKeyNames="BienId"
+                                                                OnRowCommand="GvBienesExcluidos3_RowCommand"
+                                                                AllowPaging="True"
+                                                                PageSize="10"
+                                                                OnPageIndexChanging="GvBienesExcluidos3_PageIndexChanging">
+                                                                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
-                                                    <div class="d-flex justify-content-end mb-3">
-                                                        <asp:Button ID="btnAgregacollapseBienesExcluidos3" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                                    </div>
-                                                    <table class="table table-bordered">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Bien Excluido</th>
-                                                                <th>Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Mercancía General</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Electrónicos</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                                <Columns>
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Excluido" />
+
+                                                                    <asp:TemplateField HeaderText="Acciones">
+                                                                        <ItemTemplate>
+                                                                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                                                CssClass="btn btn-danger btn-sm"
+                                                                                OnClientClick="return confirm('¿Seguro que deseas eliminar este bien?');">
+ Eliminar
+</asp:LinkButton>
+                                                                        </ItemTemplate>
+                                                                    </asp:TemplateField>
+                                                                </Columns>
+                                                            </asp:GridView>
+                                                        </div>
+                                                    </ContentTemplate>
+                                                </asp:UpdatePanel>
                                             </div>
                                         </div>
                                     </div>
@@ -1072,38 +1110,43 @@
                                             <div class="card shadow-sm bg-light w-100">
                                                 <div class="d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleCollapse('bienesSujetosConsulta3')">
                                                     <h4 class="mb-0">Bienes Sujetos a Consulta</h4>
-                                                    <i class="bi bi-chevron-down"></i>
+                                                    <i id="icon-bienesSujetosConsulta3" class="bi bi-chevron-down"></i>
                                                 </div>
+                                                <asp:UpdatePanel ID="UpbienesSujetosConsulta3" runat="server" UpdateMode="Conditional">
+                                                    <ContentTemplate>
+                                                        <div id="bienesSujetosConsulta3" class="collapse-content px-3 pb-3" style="display: none;">
+                                                            <asp:TextBox ID="txtbienesSujetosConsulta3" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
-                                                <div id="bienesSujetosConsulta3" class="collapse-content px-3 pb-3" style="display: none;">
-                                                    <asp:TextBox ID="txtbienesSujetosConsulta3" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese un bien"></asp:TextBox>
+                                                            <div class="d-flex justify-content-end mb-3">
+                                                                <asp:Button ID="btnAgregaBienesSujetosConsulta3" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregaBienesSujetosConsulta3_Click" />
+                                                            </div>
+                                                            <asp:GridView ID="GvBienesSujetosConsulta3" runat="server" AutoGenerateColumns="False"
+                                                                CssClass="table table-bordered table-hover align-middle"
+                                                                HeaderStyle-CssClass="table-light"
+                                                                DataKeyNames="BienId"
+                                                                OnRowCommand="GvBienesSujetosConsulta3_RowCommand"
+                                                                AllowPaging="True"
+                                                                PageSize="10"
+                                                                OnPageIndexChanging="GvBienesSujetosConsulta3_PageIndexChanging">
+                                                                <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
-                                                    <div class="d-flex justify-content-end mb-3">
-                                                        <asp:Button ID="btnAgregaBienesSujetosConsulta3" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                                    </div>
-                                                    <table class="table table-bordered">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>Bien Sujetos a Consulta</th>
-                                                                <th>Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>Mercancía General</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Electrónicos</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                                <Columns>
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Excluido" />
+
+                                                                    <asp:TemplateField HeaderText="Acciones">
+                                                                        <ItemTemplate>
+                                                                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                                                CssClass="btn btn-danger btn-sm"
+                                                                                OnClientClick="return confirm('¿Seguro que deseas eliminar este bien?');">
+ Eliminar
+</asp:LinkButton>
+                                                                        </ItemTemplate>
+                                                                    </asp:TemplateField>
+                                                                </Columns>
+                                                            </asp:GridView>
+                                                        </div>
+                                                    </ContentTemplate>
+                                                </asp:UpdatePanel>
                                             </div>
                                         </div>
                                     </div>
@@ -1138,7 +1181,8 @@
                                                 <div id="viajeCompleto3" class="collapse-content px-3 pb-3" style="display: none;">
                                                     <asp:TextBox ID="txtviajeCompleto3" runat="server"
                                                         CssClass="form-control w-100 mb-2"
-                                                        Placeholder="Ingrese una cobertura">
+                                                        Placeholder="Ingrese una cobertura"
+                                                        TextMode="MultiLine" Rows="4">
                                                     </asp:TextBox>
 
                                                     <div class="d-flex justify-content-end mb-3">
@@ -1190,7 +1234,8 @@
                                                         ID="txtcontinuacionViajeC3"
                                                         runat="server"
                                                         CssClass="form-control w-100 mb-2"
-                                                        Placeholder="Ingrese una cobertura">
+                                                        Placeholder="Ingrese una cobertura"
+                                                        TextMode="MultiLine" Rows="4">
                                                     </asp:TextBox>
 
                                                     <div class="d-flex justify-content-end mb-3">
@@ -1243,7 +1288,8 @@
                                                         ID="txtcoberturasAdicionales3"
                                                         runat="server"
                                                         CssClass="form-control w-100 mb-2"
-                                                        Placeholder="Ingrese una cobertura">
+                                                        Placeholder="Ingrese una cobertura"
+                                                        TextMode="MultiLine" Rows="4">
                                                     </asp:TextBox>
 
                                                     <div class="d-flex justify-content-end mb-3">
@@ -1283,33 +1329,33 @@
 
                                     <div class="col-12">
                                         <label class="form-label">Deducibles</label>
-                                        <asp:TextBox ID="txtDeducibles3" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtDeducibles3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                                     </div>
 
                                     <h5 class="border-bottom pb-2">Bases de Indemnización</h5>
                                     <div class="col-6">
                                         <label class="form-label">Compras</label>
-                                        <asp:TextBox ID="txtCompras3" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtCompras3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Ventas</label>
-                                        <asp:TextBox ID="txtVentas3" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtVentas3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Maquila</label>
-                                        <asp:TextBox ID="txtMaquila3" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaquila3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Bienes Usados</label>
-                                        <asp:TextBox ID="txtBienesUsados3" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtBienesUsados3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Embarques entre Filiales</label>
-                                        <asp:TextBox ID="txtEmbarquesEntreFiliales3" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtEmbarquesEntreFiliales3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Otros</label>
-                                        <asp:TextBox ID="txtOtrosBasesIndemnizacion3" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtOtrosBasesIndemnizacion3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Cuota General de la Póliza</label>
@@ -1402,44 +1448,50 @@
                                         <h4 class="mb-0">Bienes asegurados</h4>
                                         <i id="icon-BienesAseguradosContenedor" class="bi bi-chevron-down"></i>
                                     </div>
+                                    <asp:UpdatePanel ID="UpBienesAseguradosContenedor" runat="server" UpdateMode="Conditional">
+                                        <ContentTemplate>
+                                            <div id="BienesAseguradosContenedor" class="collapse-content px-3 pb-3" style="display: none;">
+                                                <asp:TextBox ID="txtBienesAseguradosContenedor"
+                                                    runat="server"
+                                                    CssClass="form-control w-100 mb-2"
+                                                    Placeholder="Ingrese un bien asegurado"
+                                                    TextMode="MultiLine" Rows="4">
+                                                </asp:TextBox>
 
-                                    <div id="BienesAseguradosContenedor" class="collapse-content px-3 pb-3" style="display: none;">
-                                        <asp:TextBox ID="txtBienesAseguradosContenedor"
-                                            runat="server"
-                                            CssClass="form-control w-100 mb-2"
-                                            Placeholder="Ingrese un bien asegurado">
-                                        </asp:TextBox>
+                                                <div class="d-flex justify-content-end mb-3">
+                                                    <asp:Button ID="btnAgregarBienAseguradoContenedor"
+                                                        runat="server"
+                                                        CssClass="btn btn-primary"
+                                                        Text="Agregar" OnClick="btnAgregarBienAseguradoContenedor_Click" />
+                                                </div>
 
-                                        <div class="d-flex justify-content-end mb-3">
-                                            <asp:Button ID="btnAgregarBienAseguradoContenedor"
-                                                runat="server"
-                                                CssClass="btn btn-primary"
-                                                Text="Agregar" />
-                                        </div>
+                                                <asp:GridView ID="GvBienContenedor" runat="server" AutoGenerateColumns="False"
+                                                    CssClass="table table-bordered table-hover align-middle"
+                                                    HeaderStyle-CssClass="table-light"
+                                                    DataKeyNames="BienId"
+                                                    OnRowCommand="GvBienContenedor_RowCommand"
+                                                    AllowPaging="True"
+                                                    PageSize="10"
+                                                    OnPageIndexChanging="GvBienContenedor_PageIndexChanging">
+                                                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
-                                        <table class="table table-bordered">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>Bien asegurado</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Mercancía General</td>
-                                                    <td>
-                                                        <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Equipos electrónicos</td>
-                                                    <td>
-                                                        <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                    <Columns>
+                                                        <asp:BoundField DataField="Nombre" HeaderText="Bien Asegurado" />
+
+                                                        <asp:TemplateField HeaderText="Acciones">
+                                                            <ItemTemplate>
+                                                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                                    CssClass="btn btn-danger btn-sm"
+                                                                    OnClientClick="return confirm('¿Seguro que deseas eliminar este bien?');">
+ Eliminar
+</asp:LinkButton>
+                                                            </ItemTemplate>
+                                                        </asp:TemplateField>
+                                                    </Columns>
+                                                </asp:GridView>
+                                            </div>
+                                        </ContentTemplate>
+                                    </asp:UpdatePanel>
                                 </div>
                             </div>
                         </div>
@@ -1450,44 +1502,49 @@
                                         <h4 class="mb-0">Coberturas</h4>
                                         <i id="icon-Coberturas" class="bi bi-chevron-down"></i>
                                     </div>
+                                    <asp:UpdatePanel ID="UpCoberturas" runat="server" UpdateMode="Conditional">
+                                        <ContentTemplate>
+                                            <div id="Coberturas" class="collapse-content px-3 pb-3" style="display: none;">
+                                                <asp:TextBox ID="txtCoberturaContenedor" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese una Cobertura" TextMode="MultiLine" Rows="4"></asp:TextBox>
 
-                                    <div id="Coberturas" class="collapse-content px-3 pb-3" style="display: none;">
-                                        <asp:TextBox ID="txtCoberturas" runat="server" CssClass="form-control w-100 mb-2" Placeholder="Ingrese una Cobertura"></asp:TextBox>
+                                                <div class="d-flex justify-content-end mb-3">
+                                                    <asp:Button ID="btnAgregarCobertura" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregarCobertura_Click" />
+                                                </div>
 
-                                        <div class="d-flex justify-content-end mb-3">
-                                            <asp:Button ID="btnAgregarCobertura" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                        </div>
+                                                <asp:GridView ID="GvCoberturasContenedor" runat="server" AutoGenerateColumns="False"
+                                                    CssClass="table table-bordered table-hover align-middle"
+                                                    HeaderStyle-CssClass="table-light"
+                                                    DataKeyNames="CoberturaId"
+                                                    OnRowCommand="GvCoberturasContenedor_RowCommand"
+                                                    AllowPaging="True"
+                                                    PageSize="10"
+                                                    OnPageIndexChanging="GvCoberturasContenedor_PageIndexChanging">
+                                                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
-                                        <table class="table table-bordered">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>Coberturas</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Mercancía General</td>
-                                                    <td>
-                                                        <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Electrónicos</td>
-                                                    <td>                                                        
-                                                        <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                    <Columns>
+                                                        <asp:BoundField DataField="Nombre" HeaderText="Bien Asegurado" />
+
+                                                        <asp:TemplateField HeaderText="Acciones">
+                                                            <ItemTemplate>
+                                                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("CoberturaId") %>'
+                                                                    CssClass="btn btn-danger btn-sm"
+                                                                    OnClientClick="return confirm('¿Seguro que deseas eliminar está cobertura?');">
+ Eliminar
+</asp:LinkButton>
+                                                            </ItemTemplate>
+                                                        </asp:TemplateField>
+                                                    </Columns>
+                                                </asp:GridView>
+                                            </div>
+                                        </ContentTemplate>
+                                    </asp:UpdatePanel>
                                 </div>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col col-md-6">
-                                <h5>Montos de la póliza</h5>
                                 <div class="card p-3 shadow-sm">
+                                    <h6>Montos Póliza</h6>
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <h6>Prima Neta</h6>
@@ -1513,7 +1570,7 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-md-6">
+                                        <div class="col-md-12">
                                             <h6>Total</h6>
                                             <asp:TextBox ID="txtTotal" runat="server" CssClass="form-control mb-3"
                                                 placeholder="$0.00"></asp:TextBox>
@@ -1522,8 +1579,39 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <h5>Valor Máximo Asegurado</h5>
                                 <div class="card p-3 shadow-sm">
+                                    <h6>Deducibles</h6>
+                                    <div class="row mb-3">
+                                        <div class="col col-md-6">
+                                            <h6>Daño Material</h6>
+                                            <asp:TextBox ID="txtDañoMaterial" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Robo</h6>
+                                            <asp:TextBox ID="txtRobo" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col col-md-6">
+                                            <h6>Pérdida Total</h6>
+                                            <asp:TextBox ID="txtPerdidaTotal" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                        <div class="col col-md-6">
+                                            <h6>Pérdida Parcial</h6>
+                                            <asp:TextBox ID="txtPerdidaParcial" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="card p-3 shadow-sm">
+                                    <h6>Valor Máximo Asegurado</h6>
                                     <h6>Por contenedor</h6>
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
@@ -1561,37 +1649,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mt-1">
-                            <div class="col-md-6">
-                                <div class="card p-3 shadow-sm">
-                                    <h6>Deducibles</h6>
-                                    <div class="row mb-2">
-                                        <div class="col col-md-6">
-                                            <h6>Daño Material</h6>
-                                            <asp:TextBox ID="txtDañoMaterial" runat="server" CssClass="form-control"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h6>Robo</h6>
-                                            <asp:TextBox ID="txtRobo" runat="server" CssClass="form-control"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <h6>Pérdida Total</h6>
-                                            <asp:TextBox ID="txtPerdidaTotal" runat="server" CssClass="form-control"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                        <div class="col col-md-6">
-                                            <h6>Pérdida Parcial</h6>
-                                            <asp:TextBox ID="txtPerdidaParcial" runat="server" CssClass="form-control"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1599,18 +1656,43 @@
     </asp:Panel>
     <script>
         function toggleCollapse(id) {
-            const content = document.getElementById(id);
+            const div = document.getElementById(id);
             const icon = document.getElementById('icon-' + id);
+            if (!div || !icon) return;
 
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
+            if (div.style.display === 'none' || div.style.display === '') {
+                div.style.display = 'block';
                 icon.classList.remove('bi-chevron-down');
                 icon.classList.add('bi-chevron-up');
+
+                localStorage.setItem('openCollapse', id);
             } else {
-                content.style.display = 'none';
+                div.style.display = 'none';
                 icon.classList.remove('bi-chevron-up');
                 icon.classList.add('bi-chevron-down');
+
+                localStorage.removeItem('openCollapse');
             }
         }
-    </script>  
+
+        window.addEventListener('load', () => {
+            const collapsibles = document.querySelectorAll('.collapse-content');
+            const openId = localStorage.getItem('openCollapse');
+
+            collapsibles.forEach(div => {
+                const icon = document.getElementById('icon-' + div.id);
+                if (!icon) return;
+
+                if (div.id === openId) {
+                    div.style.display = 'block';
+                    icon.classList.remove('bi-chevron-down');
+                    icon.classList.add('bi-chevron-up');
+                } else {
+                    div.style.display = 'none';
+                    icon.classList.remove('bi-chevron-up');
+                    icon.classList.add('bi-chevron-down');
+                }
+            });
+        });
+    </script>
 </asp:Content>
