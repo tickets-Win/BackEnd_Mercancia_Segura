@@ -132,8 +132,6 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         [StringLength(1)]
         public string? Genero { get; set; }
 
-
-
         //Llaves foraneas
 
         [ForeignKey(nameof(TipoSeguroId))]
@@ -160,7 +158,7 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         [ForeignKey(nameof(RfcGenericoId))]
         public RfcGenerico? RfcGenerico { get; set; }
 
-        public ICollection<BeneficiarioPreferente> BeneficiarioPreferente { get; set; } = new List<BeneficiarioPreferente>();
+        public ICollection<ClienteBeneficiario> ClienteBeneficiario { get; set; } = new List<ClienteBeneficiario>();
 
         public ClienteCredito? ClienteCredito { get; set; }
 

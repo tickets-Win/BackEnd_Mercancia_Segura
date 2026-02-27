@@ -5,7 +5,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using MercanciaSegura.DOM.Modelos.Vendedor;
 using MercanciaSegura.RestAPI.Controllers.Catalogos;
 using MercanciaSegura.RestAPI.Models;
-using MercanciaSegura.RestAPI.Models.Catalogos;
+using MercanciaSegura.RestAPI.Models.Vendedor;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

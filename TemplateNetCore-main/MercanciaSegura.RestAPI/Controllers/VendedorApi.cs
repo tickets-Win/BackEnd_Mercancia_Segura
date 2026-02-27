@@ -41,6 +41,21 @@ namespace MercanciaSegura.RestAPI.Controllers
             [FromRoute][Required] string version,
             [FromRoute][Required] int idVendedor);
 
+        [HttpGet]
+        [Route("/{version:apiVersion}/vendedor/tipo{tipoVendedorId}")]
+        [ValidateModelState]
+        [SwaggerOperation("GetVendedorById")]
+        [SwaggerResponse(statusCode: 200, type: typeof(VendedorRequest), description: "OK")]
+        [SwaggerResponse(statusCode: 400, type: typeof(InlineResponse400),
+            description: "Response to client error status code")]
+        [SwaggerResponse(statusCode: 401, type: typeof(InlineResponse400),
+            description: "Response to client error status code")]
+        [SwaggerResponse(statusCode: 404, type: typeof(InlineResponse400),
+            description: "Response to client error status code")]
+        public abstract Task<IActionResult> GetVendedorByTipoAsync(
+            [FromRoute][Required] string version,
+            [FromRoute][Required] int tipoVendedorId);
+
         [HttpPost]
         [Route("/{version:apiVersion}/vendedor")]
         [ValidateModelState]
