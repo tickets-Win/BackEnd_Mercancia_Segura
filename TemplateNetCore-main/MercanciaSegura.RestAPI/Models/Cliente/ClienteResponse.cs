@@ -52,7 +52,7 @@ namespace MercanciaSegura.RestAPI.Models.Cliente
 
         public string Genero { get; set; }
 
-        public List<BeneficiarioPreferenteResponse> BeneficiarioPreferente { get; set; } = new();
+        public List<ClienteBeneficiarioResponse> ClienteBeneficiario { get; set; } = new();
         public List<CorreoResponse> Correos { get; set; } = new();
         public List<CuotaResponse> Cuota { get; set; } = new();
         public List<ClienteVendedorResponse> ClienteVendedor { get; set; } = new();

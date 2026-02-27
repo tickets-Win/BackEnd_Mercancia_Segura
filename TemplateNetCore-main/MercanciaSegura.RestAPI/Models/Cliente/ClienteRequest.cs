@@ -85,7 +85,7 @@ namespace MercanciaSegura.RestAPI.Models.Cliente
         [StringLength(1)]
         [RegularExpression("M|F", ErrorMessage = "Genero debe ser 'M' o 'F'")]
         public string? Genero { get; set; }
-        public List<BeneficiarioPreferenteRequest> BeneficiarioPreferente { get; set; } = new();
+        public List<ClienteBeneficiarioRequest> ClienteBeneficiario { get; set; } = new();
 
 
         public List<CorreoRequest> Correos { get; set; } = new();
