@@ -17,12 +17,11 @@ Public Class AdminCliente
             DropdownHelpers.CargarTipoSector(ddlSector)
             DropdownHelpers.CargarRFCGenerico(ddlRFCGenerico)
             DropdownHelpers.CargarTipoCorreo(ddlTipoCorreo)
-            CargarVendedores()
-            DropdownHelpers.CargarEstados(ddlEstado, ddlPais.SelectedValue)
             Dim tipoPersonaId As Integer = If(ddlTipoPersona.SelectedValue IsNot Nothing, Convert.ToInt32(ddlTipoPersona.SelectedValue), 1)
             DropdownHelpers.CargarRegimenFiscal(ddlRegimenFiscal, tipoPersonaId)
             DropdownHelpers.CargarTipoTarifa(ddlTipoTarifaSecos, ddlTipoRefrigerados, ddlTipoIsotaques)
             cargarClientes()
+            CargarTiposVendedores()
             txtFechaRegistro.Text = DateTime.Now.ToString("yyyy-MM-dd")
 
             ActualizarEstadoCampos(chkHabilitarCampos.Checked)
@@ -161,7 +160,7 @@ Public Class AdminCliente
         .Nacionalidad = txtNacionalidad.Text,
         .Genero = ddlGenero.SelectedValue,
         .Pais = ddlPais.SelectedValue,
-        .Estado = ddlEstado.SelectedValue,
+        .Estado = txtEstado.Text,
         .Municipio = txtMunicipio.Text,
         .Colonia = txtColonia.Text,
         .Calle = txtCalle.Text,
@@ -260,14 +259,6 @@ Public Class AdminCliente
 
     End Sub
 
-    Protected Sub ddlPais_SelectedIndexChanged(sender As Object, e As EventArgs)
-        DropdownHelpers.CargarEstados(ddlEstado, ddlPais.SelectedValue)
-
-    End Sub
-
-    Protected Sub ddlEstado_SelectedIndexChanged(sender As Object, e As EventArgs)
-    End Sub
-
     Protected Sub gvListaVendedores_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
             Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
@@ -285,7 +276,11 @@ Public Class AdminCliente
     End Sub
 
     Protected Sub btnAgregarCorreo_Click(sender As Object, e As EventArgs)
+        txtCorreoAdicional.Text = ""
+        ddlTipoCorreo.SelectedIndex = 0
 
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "abrirModal",
+       "var myModal = new bootstrap.Modal(document.getElementById('modalCorreo')); myModal.show();", True)
     End Sub
     Public Sub CargarVendedores(Optional cliente As Cliente = Nothing)
         Dim api As New ConsumoApi()
@@ -312,21 +307,6 @@ Public Class AdminCliente
         Next
     End Sub
 
-
-
-    Protected Sub ddlNombreVendedor_SelectedIndexChanged(sender As Object, e As EventArgs)
-        If ddlNombreVendedor.SelectedValue = "0" Then
-            txtComision.Text = ""
-        Else
-            Dim parts() As String = ddlNombreVendedor.SelectedValue.Split("|"c)
-            Dim comision As String = parts(1)
-            txtComision.Text = comision
-        End If
-
-        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "abrirModal",
-        "var myModal = new bootstrap.Modal(document.getElementById('modalAgregarVendedor')); myModal.show();", True)
-    End Sub
-
     Protected Sub btnGuardarVendedor_Click(sender As Object, e As EventArgs)
         Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
         If cliente Is Nothing Then cliente = New Cliente()
@@ -336,7 +316,7 @@ Public Class AdminCliente
         Dim parts() As String = ddlNombreVendedor.SelectedValue.Split("|"c)
         Dim vendedorId As Integer = Convert.ToInt32(parts(0))
         Dim comision As Decimal = Convert.ToDecimal(parts(1))
-        Dim tipoVendedorId As Integer = Convert.ToInt32(parts(2))
+        Dim tipoVendedorId As Integer = Convert.ToInt32(ddlTipoVendedor.SelectedValue)
         Dim nombreVendedor As String = ddlNombreVendedor.SelectedItem.Text
 
         Dim api As New ConsumoApi()
@@ -371,6 +351,16 @@ Public Class AdminCliente
         Dim api As New ConsumoApi()
         Dim jsonTipos As String = api.GetTipoVendedor()
         Dim listaTipos As List(Of TipoVendedor) = JsonConvert.DeserializeObject(Of List(Of TipoVendedor))(jsonTipos)
+
+        ddlTipoVendedor.Items.Clear()
+        ddlTipoVendedor.Items.Add(New ListItem("Selecciona un tipo", "0"))
+
+        For Each t In listaTipos
+            ddlTipoVendedor.Items.Add(New ListItem(t.Tipo, t.TipoVendedorId.ToString()))
+        Next
+
+        ddlTipoVendedor.SelectedIndex = 0
+
     End Sub
 
     Public Sub CargarGridVendedores()
@@ -494,6 +484,7 @@ if (myModalEl) {{
         Dim correo As New Correos With {
         .CorreoId = nuevoId,
         .TipoCorreoId = Convert.ToInt32(ddlTipoCorreo.SelectedValue),
+        .TipoCorreo = ddlTipoCorreo.SelectedItem.Text,
         .Correo = txtCorreoAdicional.Text
         }
 
@@ -545,6 +536,7 @@ if (myModalEl) {{
         txtDiasRevision.Text = ""
         txtSaldo.Text = ""
         txtMunicipio.Text = ""
+        txtEstado.Text = ""
 
         ddlTipoPersona.SelectedIndex = 0
         ddlEstatus.SelectedIndex = 0
@@ -555,8 +547,6 @@ if (myModalEl) {{
         ddlSector.SelectedIndex = 0
         ddlGenero.SelectedIndex = 0
         ddlPais.SelectedIndex = 0
-        ddlEstado.Items.Clear()
-        ddlEstado.Items.Add(New ListItem("Selecciona un estado", ""))
         ddlRFCGenerico.SelectedIndex = 0
         ddlTipoTarifaSecos.SelectedIndex = 0
         ddlTipoRefrigerados.SelectedIndex = 0
@@ -602,6 +592,7 @@ if (myModalEl) {{
         txtNumeroExterior.Text = cliente.NumeroExt
         txtPoblacion.Text = cliente.Poblacion
         txtMunicipio.Text = cliente.Municipio
+        txtEstado.Text = cliente.Estado
         txtCuotaInternacional.Text = If(cliente.CuotaAplicableInternacional IsNot Nothing, cliente.CuotaAplicableInternacional.ToString(), "")
         txtCuotaNacional.Text = If(cliente.CuotaAplicableNacional IsNot Nothing, cliente.CuotaAplicableNacional.ToString(), "")
         txtMinimoInternacional.Text = If(cliente.CuotaMinimaInternacional IsNot Nothing, cliente.CuotaMinimaInternacional.ToString(), "")
@@ -663,12 +654,6 @@ if (myModalEl) {{
        ddlPais.Items.FindByValue(cliente.Pais) IsNot Nothing Then
 
             ddlPais.SelectedValue = cliente.Pais
-            DropdownHelpers.CargarEstados(ddlEstado, cliente.Pais)
-
-            If Not String.IsNullOrEmpty(cliente.Estado) AndAlso
-           ddlEstado.Items.FindByValue(cliente.Estado) IsNot Nothing Then
-                ddlEstado.SelectedValue = cliente.Estado
-            End If
         End If
 
         DropdownHelpers.CargarRegimenFiscal(ddlRegimenFiscal, cliente.TipoPersonaId)
@@ -795,5 +780,66 @@ if (myModalEl) {{
 
     Protected Sub ddlTipoEstatusCliente_SelectedIndexChanged(sender As Object, e As EventArgs)
         filtrarClientes()
+    End Sub
+
+    Private Sub btnAgregarBeneficiario_Click(sender As Object, e As EventArgs) Handles btnAgregarBeneficiario.Click
+        txtNombreBeneficiarioP.Text = ""
+        txtDomicilioBeneficiario.Text = ""
+        txtRFCBeneficiario.Text = ""
+
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "abrirModal",
+       "var myModal = new bootstrap.Modal(document.getElementById('modalAgregarBeneficiario')); myModal.show();", True)
+    End Sub
+
+    Private Sub btnAgregarVendedor_Click(sender As Object, e As EventArgs) Handles btnAgregarVendedor.Click
+        ddlNombreVendedor.SelectedIndex = 0
+        txtComision.Text = ""
+
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(),
+"abrirModal",
+"setTimeout(function () {
+    var modalElement = document.getElementById('modalAgregarVendedor');
+    var modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+    modalInstance.show();
+}, 200);",
+True)
+    End Sub
+
+    <System.Web.Services.WebMethod()>
+    Public Shared Function ObtenerVendedores(tipoId As Integer) As Object
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetVendedorPorTipo(tipoId)
+
+        Return JsonConvert.DeserializeObject(json)
+
+    End Function
+
+    Protected Sub ddlTipoVendedor_SelectedIndexChanged(sender As Object, e As EventArgs)
+        Dim tipoId As Integer = Convert.ToInt32(ddlTipoVendedor.SelectedValue)
+
+        ddlNombreVendedor.Items.Clear()
+        ddlNombreVendedor.Items.Add(New ListItem("Selecciona un vendedor", "0"))
+
+        If tipoId = 0 Then Return
+
+        Dim api As New ConsumoApi()
+        Dim jsonVendedores As String = api.GetVendedorPorTipo(tipoId)
+
+        Dim listaVendedores As List(Of Vendedor) = JsonConvert.DeserializeObject(Of List(Of Vendedor))(jsonVendedores)
+
+        For Each v In listaVendedores
+            ddlNombreVendedor.Items.Add(New ListItem(v.NombreCompleto & " (" & v.Comision & "%)", v.VendedorId & "|" & v.Comision))
+        Next
+
+        ScriptManager.RegisterStartupScript(
+    Me,
+    Me.GetType(),
+    "ReabrirModal",
+    "
+    var modal = new bootstrap.Modal(document.getElementById('modalAgregarVendedor'));
+    modal.show();
+    ",
+    True)
     End Sub
 End Class

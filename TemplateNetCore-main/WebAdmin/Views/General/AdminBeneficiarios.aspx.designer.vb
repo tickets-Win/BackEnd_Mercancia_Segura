@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class AdminVendedor
+Partial Public Class AdminBeneficiarios
 
     '''<summary>
     '''Control PnlEncabezado.
@@ -23,76 +23,31 @@ Partial Public Class AdminVendedor
     Protected WithEvents PnlEncabezado As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''Control btnAgregarVendedor.
+    '''Control btnAgregarBeneficiarios.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents btnAgregarVendedor As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents btnAgregarBeneficiarios As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control txtBuscarVendedor.
+    '''Control txtBuscarBeneficiarios.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtBuscarVendedor As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtBuscarBeneficiarios As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control ddlTipoEstatusCliente.
+    '''Control pnlFormularioBeneficiario.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents ddlTipoEstatusCliente As Global.System.Web.UI.WebControls.DropDownList
-
-    '''<summary>
-    '''Control PnlTabla.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents PnlTabla As Global.System.Web.UI.WebControls.Panel
-
-    '''<summary>
-    '''Control gvVendedores.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents gvVendedores As Global.System.Web.UI.WebControls.GridView
-
-    '''<summary>
-    '''Control pnlFormularioVendedor.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents pnlFormularioVendedor As Global.System.Web.UI.WebControls.Panel
-
-    '''<summary>
-    '''Control hfVendedorId.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents hfVendedorId As Global.System.Web.UI.WebControls.HiddenField
-
-    '''<summary>
-    '''Control hfTipoPersona.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents hfTipoPersona As Global.System.Web.UI.WebControls.HiddenField
+    Protected WithEvents pnlFormularioBeneficiario As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
     '''Control lblMensaje.
@@ -131,22 +86,22 @@ Partial Public Class AdminVendedor
     Protected WithEvents ddlTipoPersona As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control ddlEstatus.
+    '''Control txtClave.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents ddlEstatus As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtClave As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control ddlTipoVendedor.
+    '''Control txtNacionalidad.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents ddlTipoVendedor As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtNacionalidad As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control pnlDatosFisica.
@@ -203,33 +158,6 @@ Partial Public Class AdminVendedor
     Protected WithEvents txtNombreCompleto As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtClave.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtClave As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtRFC.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtRFC As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtFechaRegistro.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtFechaRegistro As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
     '''Control pnlRazonSocial.
     '''</summary>
     '''<remarks>
@@ -248,58 +176,58 @@ Partial Public Class AdminVendedor
     Protected WithEvents txtRazonSocial As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtObservaciones.
+    '''Control txtRFC.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtObservaciones As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtRFC As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtTelefono.
+    '''Control ddlRFCGenerico.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtTelefono As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlRFCGenerico As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control txtCorreo.
+    '''Control ddlPais.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtCorreo As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlPais As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control pnlGenero.
+    '''Control txtCalle.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents pnlGenero As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents txtCalle As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control ddlGenero.
+    '''Control txtNumeroInt.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents ddlGenero As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtNumeroInt As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtEstado.
+    '''Control txtNumeroExt.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtEstado As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtNumeroExt As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtColonia.
@@ -311,15 +239,6 @@ Partial Public Class AdminVendedor
     Protected WithEvents txtColonia As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtDomicilio.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtDomicilio As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
     '''Control txtCP.
     '''</summary>
     '''<remarks>
@@ -329,11 +248,11 @@ Partial Public Class AdminVendedor
     Protected WithEvents txtCP As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtComision.
+    '''Control txtPoblacion.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtComision As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtPoblacion As Global.System.Web.UI.WebControls.TextBox
 End Class

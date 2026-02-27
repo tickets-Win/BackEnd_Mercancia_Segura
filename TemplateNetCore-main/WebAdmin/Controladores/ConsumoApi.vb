@@ -149,6 +149,20 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function GetVendedorPorTipo(TipoId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = $"{ConfigurationManager.AppSettings("VendedorTipo")}/tipo{TipoId}"
+                Dim response As HttpResponseMessage = client.GetAsync(url).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
     Public Function GetClienteId(clienteId As Integer) As String
         Try
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12

@@ -2,6 +2,7 @@
 
     Public Class PolizaMercancia
         Public Property PolizaMercanciaId As Integer
+        Public Property PolizaId As Integer?
         Public Property AdministracionBienId As Integer
 
         Public Property NombreInternoPoliza As String

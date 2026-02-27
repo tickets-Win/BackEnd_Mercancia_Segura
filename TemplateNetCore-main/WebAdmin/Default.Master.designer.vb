@@ -59,6 +59,15 @@ Partial Public Class _Default
     Protected WithEvents hlHome As Global.System.Web.UI.WebControls.HyperLink
 
     '''<summary>
+    '''Control hlBeneficiarios.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hlBeneficiarios As Global.System.Web.UI.WebControls.HyperLink
+
+    '''<summary>
     '''Control hlVendedores.
     '''</summary>
     '''<remarks>

@@ -50,7 +50,7 @@ Public Class AdminVendedor
         Dim tipoVendedorId As Integer = Convert.ToInt32(ddlTipoVendedor.SelectedValue)
 
         Dim comisionValue As Decimal = 0
-        Decimal.TryParse(txtComisión.Text.Replace("$", "").Trim(), comisionValue)
+        Decimal.TryParse(txtComision.Text.Replace("$", "").Trim(), comisionValue)
 
         If comisionValue > 100 Then comisionValue = 100
         If comisionValue < 0 Then comisionValue = 0
@@ -164,7 +164,7 @@ Public Class AdminVendedor
         txtTelefono.Text = ""
         txtCorreo.Text = ""
         txtObservaciones.Text = ""
-        txtComisión.Text = ""
+        txtComision.Text = ""
     End Sub
 
     Protected Sub gvVendedores_RowCommand(sender As Object, e As GridViewCommandEventArgs)
@@ -232,7 +232,7 @@ Public Class AdminVendedor
         txtTelefono.Text = vendedor.Telefono
         txtCorreo.Text = vendedor.CorreoElectronico
         txtObservaciones.Text = vendedor.Observaciones
-        txtComisión.Text = vendedor.Comision.ToString()
+        txtComision.Text = vendedor.Comision.ToString()
         ddlEstatus.SelectedValue = If(vendedor.Estatus, "1", "0")
         ddlEstatus.Enabled = True
         ddlTipoPersona.Enabled = False

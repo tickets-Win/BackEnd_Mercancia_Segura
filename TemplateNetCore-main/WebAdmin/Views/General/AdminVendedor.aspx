@@ -207,7 +207,7 @@
 
         <div class="col-md-4">
             <label class="form-label">Comisión</label>
-            <asp:TextBox ID="txtComisión" runat="server" CssClass="form-control required"></asp:TextBox>
+            <asp:TextBox ID="txtComision" runat="server" CssClass="form-control required"></asp:TextBox>
         </div>
 
     </asp:Panel>
@@ -217,7 +217,7 @@
             limpiarValidacion();
 
             const ddl = document.getElementById('<%= ddlTipoVendedor.ClientID %>');
-            const txtComision = document.getElementById('<%= txtComisión.ClientID %>');
+            const txtComision = document.getElementById('<%= txtComision.ClientID %>');
 
             if (ddl.value === "1") {
                 txtComision.disabled = false;
@@ -233,7 +233,7 @@
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
             var ddlTipoVendedor = document.getElementById('<%= ddlTipoVendedor.ClientID %>');
-            var txtComision = document.getElementById('<%= txtComisión.ClientID %>');
+            var txtComision = document.getElementById('<%= txtComision.ClientID %>');
 
             function toggleComision() {
                 var tipoSeleccionado = ddlTipoVendedor.options[ddlTipoVendedor.selectedIndex].text;
@@ -320,4 +320,27 @@
     </script>
 
     <div id="alertPlaceholder" class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;"></div>
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var txtComision = document.getElementById('<%= txtComision.ClientID %>');
+
+            txtComision.addEventListener('blur', function () {
+                var valor = txtComision.value.trim();
+
+                valor = valor.replace(",", ".");
+
+                if (valor !== "" && !isNaN(valor)) {
+                    var numero = parseFloat(valor).toFixed(2);
+                    txtComision.value = numero + "%";
+                } else {
+                    txtComision.value = "";
+                }
+            });
+
+            txtComision.addEventListener('focus', function () {
+                txtComision.value = txtComision.value.replace("%", "");
+            });
+        });
+    </script>
 </asp:Content>
