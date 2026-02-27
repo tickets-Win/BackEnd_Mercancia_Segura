@@ -63,15 +63,14 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 Genero = c.Genero,
 
 
-                BeneficiarioPreferente = c.BeneficiarioPreferente != null
-                ? c.BeneficiarioPreferente.Select(x => new BeneficiarioPreferenteResponse
+                ClienteBeneficiario = c.ClienteBeneficiario != null
+                ? c.ClienteBeneficiario.Select(x => new ClienteBeneficiarioResponse
                 {
-                    BeneficiarioPreferenteId = x.BeneficiarioPreferenteId,
-                    Nombre = x.Nombre,
-                    Domicilio = x.Domicilio,
-                    Rfc = x.RFC,
+                    ClienteBeneficiarioId = x.ClienteBeneficiarioId,
+                    ClienteId = x.ClienteId,
+                    BeneficiarioPreferenteId = x.BeneficiarioPreferenteId
                 }).ToList()
-                : new List<BeneficiarioPreferenteResponse>(),
+                : new List<ClienteBeneficiarioResponse>(),
 
 
                 Correos = c.Correos?.Select(x => new CorreoResponse
@@ -152,7 +151,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         {
             var clientes = await _context.Cliente
             .AsNoTracking()
-            .Include(c => c.BeneficiarioPreferente)
+            .Include(c => c.ClienteBeneficiario)
             .Include(c => c.Correos)
             .Include(c => c.Cuota)
             .Include(c => c.ClienteVendedor)
@@ -168,7 +167,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         public override async Task<IActionResult> GetClienteByIdAsync(string version, int idCliente)
         {
             var cliente = await _context.Cliente
-            .Include(c => c.BeneficiarioPreferente)
+            .Include(c => c.ClienteBeneficiario)
             .Include(c => c.Correos)
             .Include(c => c.Cuota)
             .Include(c => c.ClienteVendedor)
@@ -212,19 +211,17 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 await _context.SaveChangesAsync(); // necesario para obtener ClienteId
 
                 // 2️⃣ Beneficiario Preferente
-                if (body.BeneficiarioPreferente != null && body.BeneficiarioPreferente.Any())
+                if (body.ClienteBeneficiario != null && body.ClienteBeneficiario.Any())
                 {
-                    foreach (var item in body.BeneficiarioPreferente)
+                    foreach (var item in body.ClienteBeneficiario)
                     {
-                        var beneficiario = new BeneficiarioPreferente
+                        var clientebeneficiario = new ClienteBeneficiario
                         {
                             ClienteId = nuevoCliente.ClienteId,
-                            Nombre = item.Nombre,
-                            RFC = item.RFC,
-                            Domicilio = item.Domicilio
+                            BeneficiarioPreferenteId = item.BeneficiarioPreferenteId,
                         };
 
-                        _context.BeneficiarioPreferente.Add(beneficiario);
+                        _context.ClienteBeneficiario.Add(clientebeneficiario);
                     }
                 }
 
@@ -349,8 +346,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 // --- INICIO DE REEMPLAZO DE LISTAS ---
 
                 // 2️⃣ Beneficiarios
-                var benefActuales = await _context.BeneficiarioPreferente.Where(b => b.ClienteId == idCliente).ToListAsync();
-                _context.BeneficiarioPreferente.RemoveRange(benefActuales);
+                var clienteBeneficiario = await _context.ClienteBeneficiario.Where(b => b.ClienteId == idCliente).ToListAsync();
+                _context.ClienteBeneficiario.RemoveRange(clienteBeneficiario);
 
                 // 3️⃣ Correos
                 var correosActuales = await _context.Correos.Where(c => c.ClienteId == idCliente).ToListAsync();
@@ -369,16 +366,14 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                 // --- INSERCIÓN DE NUEVOS DATOS ---
 
-                if (body.BeneficiarioPreferente != null)
+                if (body.ClienteBeneficiario != null)
                 {
-                    foreach (var b in body.BeneficiarioPreferente)
+                    foreach (var b in body.ClienteBeneficiario)
                     {
-                        _context.BeneficiarioPreferente.Add(new BeneficiarioPreferente
+                        _context.ClienteBeneficiario.Add(new ClienteBeneficiario
                         {
                             ClienteId = idCliente,
-                            Nombre = b.Nombre,
-                            RFC = b.RFC,
-                            Domicilio = b.Domicilio
+                            BeneficiarioPreferenteId = b.BeneficiarioPreferenteId
                         });
                     }
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MercanciaSegura.DOM.ApplicationDbContext;
@@ -98,6 +99,20 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             return Ok(MapToResponse(vendedor));
         }
 
+        // GET /v1/vendedor/By/Tipo
+        public override async Task<IActionResult> GetVendedorByTipoAsync(string version,int tipoVendedorId)
+        {
+            var vendedores = await _context.Vendedor
+                .Where(v =>
+                    v.TipoVendedorId == tipoVendedorId &&
+                    !v.FechaBaja.HasValue)
+                .ToListAsync();
+
+            if (!vendedores.Any())
+                return NotFound();
+
+            return Ok(vendedores.Select(MapToResponse));
+        }
 
         // POST /v1/vendedor
         public override async Task<IActionResult> CreateVendedorAsync(string version, [FromBody] VendedorRequest body)

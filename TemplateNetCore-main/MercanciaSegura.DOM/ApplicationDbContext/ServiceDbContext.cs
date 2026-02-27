@@ -43,13 +43,13 @@ public class ServiceDbContext : DbContext
 
     public DbSet<TipoTarifa> TipoTarifa { get; set; }
 
-    public DbSet<TipoCorreo> tipoCorreo { get; set; }
-
     public DbSet<Correos> Correos { get; set; }
 
     public DbSet<Cuota> Cuota { get; set; }
 
     public DbSet<ClienteCredito> ClienteCredito { get; set; }
+
+    public DbSet<ClienteBeneficiario> ClienteBeneficiario { get; set; }
 
     //----------------------------------------------------------
 
