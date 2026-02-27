@@ -79,6 +79,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         {
             var vendedores = await _context.Vendedor
                 .Where(v => !v.FechaBaja.HasValue)
+                .OrderByDescending(p => p.FechaRegistro)
                 .ToListAsync();
 
             return Ok(vendedores.Select(MapToResponse));

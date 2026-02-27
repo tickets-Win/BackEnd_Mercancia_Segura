@@ -6,6 +6,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using MercanciaSegura.DOM.Modelos;
 using MercanciaSegura.DOM.Modelos.Cliente;
 using MercanciaSegura.RestAPI.Models;
+using MercanciaSegura.RestAPI.Models.Catalogos;
 using MercanciaSegura.RestAPI.Models.Cliente;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -64,12 +65,19 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
 
                 ClienteBeneficiario = c.ClienteBeneficiario != null
-                ? c.ClienteBeneficiario.Select(x => new ClienteBeneficiarioResponse
-                {
-                    ClienteBeneficiarioId = x.ClienteBeneficiarioId,
-                    ClienteId = x.ClienteId,
-                    BeneficiarioPreferenteId = x.BeneficiarioPreferenteId
-                }).ToList()
+? c.ClienteBeneficiario.Select(x => new ClienteBeneficiarioResponse
+{
+    ClienteBeneficiarioId = x.ClienteBeneficiarioId,
+    ClienteId = x.ClienteId,
+    BeneficiarioPreferenteId = x.BeneficiarioPreferenteId,
+    NombreCliente = x.Cliente != null ? x.Cliente.NombreCompleto : null,
+
+    NombreBeneficiarioPreferente = x.BeneficiarioPreferente != null
+        ? x.BeneficiarioPreferente.NombreCompleto
+        : null
+
+        
+}).ToList()
                 : new List<ClienteBeneficiarioResponse>(),
 
 
@@ -77,7 +85,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 {
                     CorreoId = x.CorreoId,
                     Correo = x.Correo,
-                    TipoCorreoId = x.TipoCorreoId
+                    TipoCorreoId = x.TipoCorreoId,
+                    TipoCorreo = x.TipoCorreo != null ? x.TipoCorreo.Tipo : null
                 }).ToList() ?? new List<CorreoResponse>(),
 
                 Cuota = c.Cuota?.Select(x => new CuotaResponse
@@ -85,7 +94,11 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     CuotaId = x.CuotaId,
                     TipoCuotaId = x.TipoCuotaId,
                     TipoTarifaId = x.TipoTarifaId,
-                    Monto = x.Monto
+                    Monto = x.Monto,
+
+                    TipoCuota = x.TipoCuota != null ? x.TipoCuota.Tipo : null,
+                    TipoTarifa = x.TipoTarifa != null ? x.TipoTarifa.Tarifa : null
+
                 }).ToList() ?? new List<CuotaResponse>(),
 
                 ClienteVendedor = c.ClienteVendedor?.Select(x => new ClienteVendedorResponse
@@ -93,6 +106,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     ClienteVendedorId = x.ClienteVendedorId,
                     VendedorId = x.VendedorId,
                     Comision = x.Comision,
+                    NombreVendedor = x.Vendedor != null ? x.Vendedor.NombreCompleto : null
                 }).ToList() ?? new List<ClienteVendedorResponse>(),
 
 
@@ -150,15 +164,29 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         public override async Task<IActionResult> GetClientesAsync(string version)
         {
             var clientes = await _context.Cliente
-            .AsNoTracking()
-            .Include(c => c.ClienteBeneficiario)
-            .Include(c => c.Correos)
-            .Include(c => c.Cuota)
-            .Include(c => c.ClienteVendedor)
-            .Include(c => c.ClienteCredito)
-            .Where(c => !c.FechaBaja.HasValue)
-            .ToListAsync();
+                .AsNoTracking()
+                .Where(c => !c.FechaBaja.HasValue)
 
+                .Include(c => c.ClienteBeneficiario)
+                    .ThenInclude(cb => cb.BeneficiarioPreferente)
+
+                .Include(c => c.Correos)
+                    .ThenInclude(co => co.TipoCorreo)
+
+                .Include(c => c.Cuota)
+                    .ThenInclude(q => q.TipoCuota)
+
+                .Include(c => c.Cuota)
+                    .ThenInclude(q => q.TipoTarifa)
+
+                .Include(c => c.ClienteVendedor)
+                    .ThenInclude(cv => cv.Vendedor)
+
+                .Include(c => c.ClienteCredito)
+
+                .OrderByDescending(p => p.FechaRegistro)
+
+                .ToListAsync();
 
             return Ok(clientes.Select(MapToResponse));
         }
@@ -167,15 +195,26 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         public override async Task<IActionResult> GetClienteByIdAsync(string version, int idCliente)
         {
             var cliente = await _context.Cliente
-            .Include(c => c.ClienteBeneficiario)
-            .Include(c => c.Correos)
-            .Include(c => c.Cuota)
-            .Include(c => c.ClienteVendedor)
-            .Include(c => c.ClienteCredito)
-            .FirstOrDefaultAsync(c =>
-                c.ClienteId == idCliente &&
-                !c.FechaBaja.HasValue);
+                .Where(c => !c.FechaBaja.HasValue && c.ClienteId == idCliente)
 
+                .Include(c => c.ClienteBeneficiario)
+                    .ThenInclude(cb => cb.BeneficiarioPreferente)
+
+                .Include(c => c.Correos)
+                    .ThenInclude(co => co.TipoCorreo)
+
+                .Include(c => c.Cuota)
+                    .ThenInclude(q => q.TipoCuota)
+
+                .Include(c => c.Cuota)
+                    .ThenInclude(q => q.TipoTarifa)
+
+                .Include(c => c.ClienteVendedor)
+                    .ThenInclude(cv => cv.Vendedor)
+
+                .Include(c => c.ClienteCredito)
+
+                .FirstOrDefaultAsync();
 
             if (cliente == null)
                 return NotFound();
@@ -308,7 +347,21 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return Ok(MapToResponse(nuevoCliente));
+                var clienteCreado = await _context.Cliente
+                    .Include(c => c.ClienteBeneficiario)
+                        .ThenInclude(cb => cb.BeneficiarioPreferente)
+                    .Include(c => c.Correos)
+                        .ThenInclude(co => co.TipoCorreo)
+                    .Include(c => c.Cuota)
+                        .ThenInclude(q => q.TipoCuota)
+                    .Include(c => c.Cuota)
+                        .ThenInclude(q => q.TipoTarifa)
+                    .Include(c => c.ClienteVendedor)
+                        .ThenInclude(cv => cv.Vendedor)
+                    .Include(c => c.ClienteCredito)
+                    .FirstOrDefaultAsync(c => c.ClienteId == nuevoCliente.ClienteId);
+
+                return Ok(MapToResponse(clienteCreado));
             }
             catch (Exception ex)
             {
@@ -455,7 +508,21 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return Ok(MapToResponse(cliente));
+                var clienteActualizado = await _context.Cliente
+    .Include(c => c.ClienteBeneficiario)
+        .ThenInclude(cb => cb.BeneficiarioPreferente)
+    .Include(c => c.Correos)
+        .ThenInclude(co => co.TipoCorreo)
+    .Include(c => c.Cuota)
+        .ThenInclude(q => q.TipoCuota)
+    .Include(c => c.Cuota)
+        .ThenInclude(q => q.TipoTarifa)
+    .Include(c => c.ClienteVendedor)
+        .ThenInclude(cv => cv.Vendedor)
+    .Include(c => c.ClienteCredito)
+    .FirstOrDefaultAsync(c => c.ClienteId == idCliente);
+
+                return Ok(MapToResponse(clienteActualizado));
             }
             catch (Exception ex)
             {
