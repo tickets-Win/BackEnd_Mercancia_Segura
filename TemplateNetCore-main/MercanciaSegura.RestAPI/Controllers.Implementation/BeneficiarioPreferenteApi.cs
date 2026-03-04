@@ -84,12 +84,12 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         }
 
         // GET BY ID
-        public override async Task<IActionResult> GetBeneficiarioPreferenteByIdAsync(string version, int id)
+        public override async Task<IActionResult> GetBeneficiarioPreferenteByIdAsync(string version, int idBeneficiarioPreferente)
         {
             var entity = await _context.BeneficiarioPreferente
                 .Include(b => b.TipoPersona)
                 .Include(b => b.RfcGenerico)
-                .FirstOrDefaultAsync(b => b.BeneficiarioPreferenteId == id);
+                .FirstOrDefaultAsync(b => b.BeneficiarioPreferenteId == idBeneficiarioPreferente);
 
             if (entity == null)
                 return NotFound();
@@ -117,13 +117,13 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         }
 
         // UPDATE
-        public override async Task<IActionResult> UpdateBeneficiarioPreferenteAsync(string version, int id, [FromBody] BeneficiarioPreferenteRequest body)
+        public override async Task<IActionResult> UpdateBeneficiarioPreferenteAsync(string version, int idBeneficiarioPreferente, [FromBody] BeneficiarioPreferenteRequest body)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var entity = await _context.BeneficiarioPreferente
-                .FirstOrDefaultAsync(b => b.BeneficiarioPreferenteId == id);
+                .FirstOrDefaultAsync(b => b.BeneficiarioPreferenteId == idBeneficiarioPreferente);
 
             if (entity == null)
                 return NotFound();
@@ -137,10 +137,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         }
 
         // DELETE (Hard Delete porque no tienes FechaBaja)
-        public override async Task<IActionResult> DeleteBeneficiarioPreferenteAsync(string version, int id)
+        public override async Task<IActionResult> DeleteBeneficiarioPreferenteAsync(string version, int idBeneficiarioPreferente)
         {
             var entity = await _context.BeneficiarioPreferente
-                .FirstOrDefaultAsync(b => b.BeneficiarioPreferenteId == id);
+                .FirstOrDefaultAsync(b => b.BeneficiarioPreferenteId == idBeneficiarioPreferente);
 
             if (entity == null)
                 return NotFound();

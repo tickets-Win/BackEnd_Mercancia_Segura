@@ -37,7 +37,7 @@ namespace MercanciaSegura.RestAPI.Controllers
         [SwaggerResponse(statusCode: 404, type: typeof(InlineResponse400), description: "Not Found")]
         public abstract Task<IActionResult> GetBeneficiarioPreferenteByIdAsync(
             [FromRoute][Required] string version,
-            [FromRoute][Required] int id);
+            [FromRoute][Required] int idBeneficiarioPreferente);
 
 
         // POST
@@ -64,7 +64,7 @@ namespace MercanciaSegura.RestAPI.Controllers
         [SwaggerResponse(statusCode: 404, type: typeof(InlineResponse400), description: "Not Found")]
         public abstract Task<IActionResult> UpdateBeneficiarioPreferenteAsync(
             [FromRoute][Required] string version,
-            [FromRoute][Required] int id,
+            [FromRoute][Required] int idBeneficiarioPreferente,
             [FromBody][Required] BeneficiarioPreferenteRequest body);
 
 
@@ -79,6 +79,6 @@ namespace MercanciaSegura.RestAPI.Controllers
         [SwaggerResponse(statusCode: 404, type: typeof(InlineResponse400), description: "Not Found")]
         public abstract Task<IActionResult> DeleteBeneficiarioPreferenteAsync(
             [FromRoute][Required] string version,
-            [FromRoute][Required] int id);
+            [FromRoute][Required] int idBeneficiarioPreferente);
     }
 }

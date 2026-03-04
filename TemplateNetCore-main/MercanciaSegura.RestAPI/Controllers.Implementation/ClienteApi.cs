@@ -71,9 +71,11 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
     ClienteId = x.ClienteId,
     BeneficiarioPreferenteId = x.BeneficiarioPreferenteId,
     NombreCliente = x.Cliente != null ? x.Cliente.NombreCompleto : null,
-
-    NombreBeneficiarioPreferente = x.BeneficiarioPreferente != null
-        ? x.BeneficiarioPreferente.NombreCompleto
+    ClaveBP = x.BeneficiarioPreferente != null ? x.BeneficiarioPreferente.Clave : null,
+    RFCBP = x.BeneficiarioPreferente != null ? x.BeneficiarioPreferente.RFC : null,
+    RFCGenericoBP = x.BeneficiarioPreferente.RfcGenerico != null ? x.BeneficiarioPreferente.RfcGenerico.Tipo : null,
+    PaisBP = x.BeneficiarioPreferente != null ? x.BeneficiarioPreferente.Pais : null,
+    NombreCompletoBP = x.BeneficiarioPreferente != null ? x.BeneficiarioPreferente.NombreCompleto
         : null
 
         
@@ -169,6 +171,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                 .Include(c => c.ClienteBeneficiario)
                     .ThenInclude(cb => cb.BeneficiarioPreferente)
+                    .ThenInclude(bp => bp.RfcGenerico)
 
                 .Include(c => c.Correos)
                     .ThenInclude(co => co.TipoCorreo)
@@ -199,6 +202,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                 .Include(c => c.ClienteBeneficiario)
                     .ThenInclude(cb => cb.BeneficiarioPreferente)
+                    .ThenInclude(bp => bp.RfcGenerico)
 
                 .Include(c => c.Correos)
                     .ThenInclude(co => co.TipoCorreo)
@@ -350,6 +354,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 var clienteCreado = await _context.Cliente
                     .Include(c => c.ClienteBeneficiario)
                         .ThenInclude(cb => cb.BeneficiarioPreferente)
+                        .ThenInclude(bp => bp.RfcGenerico)
                     .Include(c => c.Correos)
                         .ThenInclude(co => co.TipoCorreo)
                     .Include(c => c.Cuota)
@@ -511,6 +516,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 var clienteActualizado = await _context.Cliente
     .Include(c => c.ClienteBeneficiario)
         .ThenInclude(cb => cb.BeneficiarioPreferente)
+        .ThenInclude(bp => bp.RfcGenerico)
     .Include(c => c.Correos)
         .ThenInclude(co => co.TipoCorreo)
     .Include(c => c.Cuota)
