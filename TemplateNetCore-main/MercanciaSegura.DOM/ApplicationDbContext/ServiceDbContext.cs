@@ -75,4 +75,9 @@ public class ServiceDbContext : DbContext
     public DbSet<Usuario> Usuario { get; set; }
     public DbSet<ClienteVendedor> ClienteVendedor { get; set; }
 
+    //------------------------------------------------------------
+    //public DbSet<Cotizacion> Cotizacion { get; set; }
+    //public DbSet<CotizacionMercancia> CotizacionMercancia { get; set; }
+    //public DbSet<CotizacionContenedor> CotizacionContenedor { get; set; }
+
 }
