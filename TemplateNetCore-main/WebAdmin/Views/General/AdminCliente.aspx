@@ -94,8 +94,9 @@
     <asp:HiddenField ID="hfTRFCGenerico" runat="server" />
     <div class="tab-content">
         <div class="tab-pane fade show active" id="panel-datos" role="tabpanel">
-            <asp:Panel ID="pnlFormularioCliente" runat="server" CssClass="card p-4 mt-4" Visible="false">
+            <asp:Panel ID="pnlFormularioCliente" runat="server" CssClass="card p-4 mt-4">
                 <asp:HiddenField ID="hfClienteId" runat="server" />
+                <asp:HiddenField ID="hfVendedorSeleccionado" runat="server" />
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>
                         <asp:Label ID="lblMensaje" runat="server"></asp:Label></h2>
@@ -478,12 +479,12 @@
                                                             <div class="modal-body">
                                                                 <div class="mb-3">
                                                                     <h6>Selecciona tipo</h6>
-                                                                    <asp:DropDownList ID="ddlTipoVendedor" runat="server" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoVendedor_SelectedIndexChanged">
+                                                                    <asp:DropDownList ID="ddlTipoVendedor" ClientIDMode="Static" runat="server" CssClass="form-select" onchange="cargarVendedores(this.value)">
                                                                     </asp:DropDownList>
                                                                 </div>
                                                                 <div class="mb-3">
                                                                     <h6>Selecciona un vendedor</h6>
-                                                                    <asp:DropDownList ID="ddlNombreVendedor" runat="server" CssClass="form-select"
+                                                                    <asp:DropDownList ID="ddlNombreVendedor" ClientIDMode="Static" runat="server" CssClass="form-select"
                                                                         onchange="actualizarComision(this);">
                                                                     </asp:DropDownList>
                                                                 </div>
@@ -495,12 +496,12 @@
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                                                 <asp:Button ID="btnGuardarVendedor" runat="server" CssClass="btn btn-primary"
-                                                                    Text="Guardar" OnClick="btnGuardarVendedor_Click" />
+                                                                    Text="Guardar" OnClick="btnGuardarVendedor_Click" UseSubmitBehavior="true" />
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </ContentTemplate>                                          
+                                            </ContentTemplate>
                                         </asp:UpdatePanel>
                                     </div>
                                 </div>
@@ -531,9 +532,10 @@
                                                     OnPageIndexChanging="GvBeneficiarioPreferente_PageIndexChanging">
                                                     <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
                                                     <Columns>
-                                                        <asp:BoundField DataField="Nombre" HeaderText="Nombre/Razón Social" />
-                                                        <asp:BoundField DataField="Domicilio" HeaderText="Domicilio" />
+                                                        <asp:BoundField DataField="Clave" HeaderText="Clave" />
+                                                        <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
                                                         <asp:BoundField DataField="RFC" HeaderText="RFC" />
+                                                        <asp:BoundField DataField="Pais" HeaderText="País" />
                                                         <asp:TemplateField HeaderText="Acciones">
                                                             <ItemTemplate>
                                                                 <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BeneficiarioPreferenteId") %>'
@@ -554,29 +556,19 @@
                                                             </div>
                                                             <div class="modal-body">
                                                                 <div class="mb-3">
-                                                                    <h6>Nombre/Razón Social</h6>
-                                                                    <asp:TextBox ID="txtNombreBeneficiarioP" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <h6>Domicilio</h6>
-                                                                    <asp:TextBox ID="txtDomicilioBeneficiario" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <h6>RFC</h6>
-                                                                    <asp:TextBox ID="txtRFCBeneficiario" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
+                                                                    <h6>Selecciona un beneficiario</h6>
+                                                                    <asp:DropDownList ID="ddlBeneficiario" runat="server" CssClass="form-select">
+                                                                    </asp:DropDownList>
                                                                 </div>
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                <asp:Button ID="btnGuardarBeneficiario" runat="server" CssClass="btn btn-primary" Text="Guardar" OnClick="btnGuardarBeneficiario_Click" />
+                                                                <asp:Button ID="btnGuardarBeneficiario" runat="server" CssClass="btn btn-primary" Text="Guardar" UseSubmitBehavior="true" OnClick="btnGuardarBeneficiario_Click" />
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </ContentTemplate>
-                                            <Triggers>
-                                                <asp:AsyncPostBackTrigger ControlID="ddlTipoVendedor" EventName="SelectedIndexChanged" />
-                                            </Triggers>
                                         </asp:UpdatePanel>
                                     </div>
                                 </div>
@@ -673,43 +665,94 @@
             </asp:UpdatePanel>
         </div>
     </div>
-    <script type="text/javascript">
+    <script>
+        function cargarVendedores(tipoId) {
+            let ddl = document.getElementById("<%= ddlNombreVendedor.ClientID %>");
+            ddl.innerHTML = "";
+
+            let defaultOption = document.createElement("option");
+            defaultOption.text = "Selecciona un vendedor";
+            defaultOption.value = "0";
+            ddl.add(defaultOption);
+
+            if (!tipoId || tipoId == 0) return;
+
+            fetch('AdminCliente.aspx/ObtenerVendedores', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tipoId: parseInt(tipoId) })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    let vendedores = data.d || [];
+
+                    vendedores.forEach(v => {
+                        let option = document.createElement("option");
+                        option.text = v.NombreCompleto;
+                        option.value = v.VendedorId + "|" + v.Comision;
+                        ddl.add(option);
+                    });
+
+                    ddl.addEventListener("change", function () {
+                        actualizarComision(this);
+                    });
+                })
+                .catch(err => console.error("Error cargando vendedores:", err));
+        }
+
         function actualizarComision(select) {
-            var selectedValue = select.value;
-            if (!selectedValue) {
-                document.getElementById('<%= txtComision.ClientID %>').value = '';
-                    return;
-                }
-                var parts = selectedValue.split('|');
-                document.getElementById('<%= txtComision.ClientID %>').value = parts[1];
+            var selectedValue = select.value || "";
+            var parts = selectedValue.split('|');
+
+            document.getElementById('<%= txtComision.ClientID %>').value = parts[1] || '';
+
+            document.getElementById('<%= hfVendedorSeleccionado.ClientID %>').value = selectedValue;
         }
     </script>
     <script>
-        const ddlMes = document.getElementById('<%= ddlFiltroMes.ClientID %>');
-        const meses = ["-- Mes --", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-        meses.forEach((mes, index) => {
-            const option = document.createElement("option");
-            option.text = mes;
-            option.value = index;
-            ddlMes.add(option);
-        });
+        function inicializarFiltros() {
 
-        const ddlAño = document.getElementById('<%= ddlFiltroAño.ClientID %>');
-        const añoActual = new Date().getFullYear();
-        const rango = 10;
-        ddlAño.add(new Option("-- Año --", "0"));
-        for (let año = añoActual - rango; año <= añoActual + rango; año++) {
-            ddlAño.add(new Option(año, año));
+            const ddlMes = document.getElementById('<%= ddlFiltroMes.ClientID %>');
+            if (ddlMes && ddlMes.options.length === 0) {
+
+                const meses = ["-- Mes --", "Enero", "Febrero", "Marzo", "Abril", "Mayo",
+                    "Junio", "Julio", "Agosto", "Septiembre", "Octubre",
+                    "Noviembre", "Diciembre"];
+
+                meses.forEach((mes, index) => {
+                    const option = document.createElement("option");
+                    option.text = mes;
+                    option.value = index;
+                    ddlMes.add(option);
+                });
+            }
+
+            const ddlAño = document.getElementById('<%= ddlFiltroAño.ClientID %>');
+            if (ddlAño && ddlAño.options.length === 0) {
+
+                const añoActual = new Date().getFullYear();
+                const rango = 10;
+
+                ddlAño.add(new Option("-- Año --", "0"));
+
+                for (let año = añoActual - rango; año <= añoActual + rango; año++) {
+                    ddlAño.add(new Option(año, año));
+                }
+            }
         }
+
+        Sys.Application.add_load(function () {
+            inicializarFiltros();
+        });
     </script>
     <script type="text/javascript">
         function llenarNombreCompleto() {
             var nombre = document.getElementById('<%= txtNombre.ClientID %>').value;
-                var apellidoP = document.getElementById('<%= txtApellidoP.ClientID %>').value;
-                var apellidoM = document.getElementById('<%= txtApellidoM.ClientID %>').value;
+            var apellidoP = document.getElementById('<%= txtApellidoP.ClientID %>').value;
+            var apellidoM = document.getElementById('<%= txtApellidoM.ClientID %>').value;
 
-                var nombreCompleto = nombre + ' ' + apellidoP + ' ' + apellidoM;
-                document.getElementById('<%= txtNombreCompleto.ClientID %>').value = nombreCompleto.trim();
+            var nombreCompleto = nombre + ' ' + apellidoP + ' ' + apellidoM;
+            document.getElementById('<%= txtNombreCompleto.ClientID %>').value = nombreCompleto.trim();
         }
     </script>
     <script>

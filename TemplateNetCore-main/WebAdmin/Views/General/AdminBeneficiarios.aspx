@@ -17,15 +17,59 @@
                 placeholder="🔍 Buscar beneficiarios..." AutoPostBack="true" OnTextChanged="txtBuscarBeneficiarios_TextChanged"></asp:TextBox>
         </div>
     </asp:Panel>
+    <asp:Panel ID="PnlTabla" runat="server">
+        <div class="card card-shadow p-4 mb-4">
+            <div style="overflow-x: auto; width: 100%;">
+                <asp:GridView ID="gvBeneficiariosPreferentes" runat="server"
+                    CssClass="table table-hover align-middle"
+                    AutoGenerateColumns="False"
+                    OnRowCommand="gvBeneficiariosPreferentes_RowCommand"
+                    HeaderStyle-CssClass="table-light"
+                    DataKeyNames="BeneficiarioPreferenteId"
+                    AllowPaging="True"
+                    PageSize="10"
+                    OnPageIndexChanging="gvBeneficiariosPreferentes_PageIndexChanging">
+                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                    <Columns>
+                        <asp:BoundField DataField="Clave" HeaderText="Clave" />
+                        <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
+                        <asp:BoundField DataField="RFC" HeaderText="RFC" />
+                        <asp:BoundField DataField="Pais" HeaderText="País" />
+
+                        <asp:TemplateField HeaderText="Acciones">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("BeneficiarioPreferenteId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Editar">
+                                <i class="bi bi-pencil"></i>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BeneficiarioPreferenteId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                    OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
+                                <i class="bi bi-trash"></i>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("BeneficiarioPreferenteId") %>'
+                                    CssClass="icon-btn" ToolTip="Enviar correo">
+                                <i class="bi bi-envelope"></i>
+                                </asp:LinkButton>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
+    </asp:Panel>
     <asp:Panel ID="pnlFormularioBeneficiario" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
+            <asp:HiddenField ID="hfBeneficiarioId" runat="server" />
             <h2>
                 <asp:Label ID="lblMensaje" runat="server"></asp:Label>
             </h2>
 
             <div>
                 <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" />
-                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClientClick="return validarCampos();" />
+                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClientClick="return validarCampos();" OnClick="btnGuardar_Click" />
             </div>
         </div>
 
@@ -127,6 +171,17 @@
                 <label class="form-label">Población</label>
                 <asp:TextBox ID="txtPoblacion" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
-            </div>
+        </div>
     </asp:Panel>
+
+     <script type="text/javascript">
+     function llenarNombreCompleto() {
+         var nombre = document.getElementById('<%= txtNombre.ClientID %>').value;
+         var apellidoP = document.getElementById('<%= txtApellidoP.ClientID %>').value;
+         var apellidoM = document.getElementById('<%= txtApellidoM.ClientID %>').value;
+
+         var nombreCompleto = nombre + ' ' + apellidoP + ' ' + apellidoM;
+         document.getElementById('<%= txtNombreCompleto.ClientID %>').value = nombreCompleto.trim();
+     }
+     </script>
 </asp:Content>

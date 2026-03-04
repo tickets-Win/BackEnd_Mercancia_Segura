@@ -129,6 +129,7 @@
     <Compile Include="Modelos\AdministracionBien.vb" />
     <Compile Include="Modelos\Bien.vb" />
     <Compile Include="Modelos\Cliente.vb" />
+    <Compile Include="Modelos\ClienteBeneficiario.vb" />
     <Compile Include="Modelos\ClienteCredito.vb" />
     <Compile Include="Modelos\ClienteVendedor.vb" />
     <Compile Include="Modelos\Cobertura.vb" />

@@ -85,6 +85,23 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function PostBeneficiario(body As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim content As New StringContent(body, Encoding.UTF8, "application/json")
+
+                Dim response As HttpResponseMessage =
+                    client.PostAsync(ConfigurationManager.AppSettings("Beneficiarios"), content).Result
+
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
 
 
 #End Region
@@ -357,6 +374,21 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function GetCargarBeneficiarios() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("CargarBeneficiarios")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
     Public Function GetTipoAseguradora() As String
         Try
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
@@ -532,6 +564,20 @@ Public Class ConsumoApi
 
             Using client As New HttpClient()
                 Dim url As String = $"{ConfigurationManager.AppSettings("EliminarPoliza")}/{polizaId}"
+                Dim response As HttpResponseMessage = client.DeleteAsync(url).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function DeleteBeneficiario(beneficiarioId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = $"{ConfigurationManager.AppSettings("EliminarBeneficiario")}/{beneficiarioId}"
                 Dim response As HttpResponseMessage = client.DeleteAsync(url).Result
                 Return response.Content.ReadAsStringAsync().Result
             End Using

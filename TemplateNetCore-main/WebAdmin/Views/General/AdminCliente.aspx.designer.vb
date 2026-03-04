@@ -113,6 +113,15 @@ Partial Public Class AdminCliente
     Protected WithEvents hfClienteId As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
+    '''Control hfVendedorSeleccionado.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfVendedorSeleccionado As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
     '''Control lblMensaje.
     '''</summary>
     '''<remarks>
@@ -671,31 +680,13 @@ Partial Public Class AdminCliente
     Protected WithEvents GvBeneficiarioPreferente As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
-    '''Control txtNombreBeneficiarioP.
+    '''Control ddlBeneficiario.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtNombreBeneficiarioP As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtDomicilioBeneficiario.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtDomicilioBeneficiario As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtRFCBeneficiario.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtRFCBeneficiario As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlBeneficiario As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''Control btnGuardarBeneficiario.

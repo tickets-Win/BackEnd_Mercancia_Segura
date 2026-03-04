@@ -46,7 +46,7 @@ Namespace MercanciaSegura.DOM.Modelos
         Public Property Genero As String
         Public Property Correos As New List(Of Correos)
         Public Property Cuota As New List(Of Cuota)
-        Public Property BeneficiarioPreferente As New List(Of BeneficiarioPreferente)
+        Public Property ClienteBeneficiario As New List(Of ClienteBeneficiario)
         Public Property ClienteVendedor As New List(Of ClienteVendedor)
         Public Property ClienteCredito As ClienteCredito
 

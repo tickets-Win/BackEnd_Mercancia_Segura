@@ -41,6 +41,24 @@ Partial Public Class AdminBeneficiarios
     Protected WithEvents txtBuscarBeneficiarios As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control PnlTabla.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents PnlTabla As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control gvBeneficiariosPreferentes.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents gvBeneficiariosPreferentes As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
     '''Control pnlFormularioBeneficiario.
     '''</summary>
     '''<remarks>
@@ -48,6 +66,15 @@ Partial Public Class AdminBeneficiarios
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents pnlFormularioBeneficiario As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control hfBeneficiarioId.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfBeneficiarioId As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
     '''Control lblMensaje.

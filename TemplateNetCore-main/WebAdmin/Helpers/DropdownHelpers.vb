@@ -194,18 +194,18 @@ Module DropdownHelpers
         ddlProducto.DataValueField = "ProductoId"
         ddlProducto.DataBind()
     End Sub
-    Public Sub CargarVendedores(ddlNombreVendedor As DropDownList)
+    Public Sub CargarBeneficiario(ddlBeneficiario As DropDownList)
         Dim api As New ConsumoApi()
-        Dim Vendedores As String = api.GetCargarVendedores()
+        Dim beneficiarios As String = api.GetCargarBeneficiarios()
 
-        Dim lstVendedores As List(Of Vendedor) = JsonConvert.DeserializeObject(Of List(Of Vendedor))(Vendedores)
+        Dim lstBeneficiarios As List(Of BeneficiarioPreferente) = JsonConvert.DeserializeObject(Of List(Of BeneficiarioPreferente))(beneficiarios)
 
-        ddlNombreVendedor.DataSource = lstVendedores
-        ddlNombreVendedor.DataTextField = "Nombres"
-        ddlNombreVendedor.DataValueField = "VendedorId"
-        ddlNombreVendedor.DataBind()
+        ddlBeneficiario.DataSource = lstBeneficiarios
+        ddlBeneficiario.DataTextField = "NombreCompleto"
+        ddlBeneficiario.DataValueField = "BeneficiarioPreferenteId"
+        ddlBeneficiario.DataBind()
 
-        ddlNombreVendedor.Items.Insert(0, New ListItem("Selecciona un vendedor", "0"))
+        ddlBeneficiario.Items.Insert(0, New ListItem("Selecciona un beneficiario", "0"))
     End Sub
     Public Sub CargarTipoTarifa(ParamArray ddls() As DropDownList)
         Dim api As New ConsumoApi()

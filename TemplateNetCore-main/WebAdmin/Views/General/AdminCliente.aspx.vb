@@ -9,6 +9,7 @@ Public Class AdminCliente
             pnlTabs.Visible = False
             pnlGestionarCredito.Visible = False
             pnlEstadoCuenta.Visible = False
+            pnlFormularioCliente.Visible = False
             DropdownHelpers.CargarTipoPersona(ddlTipoPersona)
             DropdownHelpers.CargarTipoEstatus(ddlEstatus)
             DropdownHelpers.CargarTipoSeguro(ddlSeguroContrata)
@@ -22,6 +23,7 @@ Public Class AdminCliente
             DropdownHelpers.CargarTipoTarifa(ddlTipoTarifaSecos, ddlTipoRefrigerados, ddlTipoIsotaques)
             cargarClientes()
             CargarTiposVendedores()
+            CargarBeneficiario(ddlBeneficiario)
             txtFechaRegistro.Text = DateTime.Now.ToString("yyyy-MM-dd")
 
             ActualizarEstadoCampos(chkHabilitarCampos.Checked)
@@ -134,7 +136,7 @@ Public Class AdminCliente
             ScriptManager.RegisterStartupScript(Me, Me.GetType(), "toast", "showToast('Debe agregar al menos un vendedor', 'danger');", True)
             Exit Sub
         End If
-        If sessionCliente.BeneficiarioPreferente.Count = 0 Then
+        If sessionCliente.ClienteBeneficiario.Count = 0 Then
             ScriptManager.RegisterStartupScript(Me, Me.GetType(), "toast", "showToast('Debe agregar al menos un beneficiario preferente', 'danger');", True)
             Exit Sub
         End If
@@ -173,7 +175,7 @@ Public Class AdminCliente
         .CuotaMinimaInternacional = If(String.IsNullOrWhiteSpace(txtMinimoInternacional.Text), Nothing, Convert.ToDecimal(txtMinimoInternacional.Text)),
         .CuotaMinimaNacional = If(String.IsNullOrWhiteSpace(txtMinimoNacional.Text), Nothing, Convert.ToDecimal(txtMinimoNacional.Text)),
         .Correos = sessionCliente.Correos,
-        .BeneficiarioPreferente = sessionCliente.BeneficiarioPreferente,
+        .ClienteBeneficiario = sessionCliente.ClienteBeneficiario,
         .ClienteVendedor = sessionCliente.ClienteVendedor
         }
 
@@ -311,13 +313,15 @@ Public Class AdminCliente
         Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
         If cliente Is Nothing Then cliente = New Cliente()
 
-        If ddlNombreVendedor.SelectedIndex <= 0 Then Exit Sub
+        Dim value As String = hfVendedorSeleccionado.Value
+        If String.IsNullOrEmpty(value) Then Exit Sub
 
-        Dim parts() As String = ddlNombreVendedor.SelectedValue.Split("|"c)
+        Dim parts() As String = value.Split("|"c)
         Dim vendedorId As Integer = Convert.ToInt32(parts(0))
         Dim comision As Decimal = Convert.ToDecimal(parts(1))
+
         Dim tipoVendedorId As Integer = Convert.ToInt32(ddlTipoVendedor.SelectedValue)
-        Dim nombreVendedor As String = ddlNombreVendedor.SelectedItem.Text
+        Dim nombreVendedor As String = ddlNombreVendedor.SelectedItem?.Text
 
         Dim api As New ConsumoApi()
         Dim jsonTipos As String = api.GetTipoVendedor()
@@ -341,11 +345,11 @@ Public Class AdminCliente
         Session("Cliente") = cliente
 
         CargarGridVendedores()
-        LimpiarCamposVendedor()
 
+        LimpiarCamposVendedor()
+        hfVendedorSeleccionado.Value = String.Empty
         CerrarModal("modalAgregarVendedor")
     End Sub
-
 
     Public Sub CargarTiposVendedores()
         Dim api As New ConsumoApi()
@@ -388,8 +392,11 @@ Public Class AdminCliente
     End Sub
 
     Private Sub LimpiarCamposVendedor()
-        ddlNombreVendedor.SelectedIndex = 0
-        txtComision.Text = ""
+        ddlTipoVendedor.SelectedIndex = 0
+        ddlNombreVendedor.Items.Clear()
+        ddlNombreVendedor.Items.Add(New ListItem("Selecciona un vendedor", "0"))
+        txtComision.Text = String.Empty
+        hfVendedorSeleccionado.Value = ""
     End Sub
 
     Private Sub CerrarModal(modalId As String)
@@ -416,14 +423,12 @@ if (myModalEl) {{
         True
     )
     End Sub
-
-
     Protected Sub GvBeneficiarioPreferente_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
             Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
-            If cliente IsNot Nothing AndAlso cliente.BeneficiarioPreferente IsNot Nothing Then
+            If cliente IsNot Nothing AndAlso cliente.ClienteBeneficiario IsNot Nothing Then
                 Dim beneficiarioId As Integer = Convert.ToInt32(e.CommandArgument)
-                cliente.BeneficiarioPreferente.RemoveAll(Function(b) b.BeneficiarioPreferenteId = beneficiarioId)
+                cliente.ClienteBeneficiario.RemoveAll(Function(b) b.ClienteBeneficiarioId = beneficiarioId)
                 Session("Cliente") = cliente
                 CargarGridBeneficiarios()
             End If
@@ -434,37 +439,9 @@ if (myModalEl) {{
 
     End Sub
 
-    Protected Sub btnGuardarBeneficiario_Click(sender As Object, e As EventArgs)
-        Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
-        If cliente Is Nothing Then cliente = New Cliente()
-
-        Dim beneficiario As New BeneficiarioPreferente With {
-        .Nombre = txtNombreBeneficiarioP.Text.Trim(),
-        .Domicilio = txtDomicilioBeneficiario.Text.Trim(),
-        .RFC = txtRFCBeneficiario.Text.Trim()
-        }
-
-        If cliente.BeneficiarioPreferente Is Nothing Then
-            cliente.BeneficiarioPreferente = New List(Of BeneficiarioPreferente)
-        End If
-
-        If cliente.BeneficiarioPreferente.Any(Function(b) b.RFC = beneficiario.RFC) Then Exit Sub
-
-        cliente.BeneficiarioPreferente.Add(beneficiario)
-
-        Session("Cliente") = cliente
-
-        txtNombreBeneficiarioP.Text = ""
-        txtDomicilioBeneficiario.Text = ""
-        txtRFCBeneficiario.Text = ""
-
-        CargarGridBeneficiarios()
-        CerrarModal("modalAgregarBeneficiario")
-    End Sub
-
     Public Sub CargarGridBeneficiarios()
         Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
-        GvBeneficiarioPreferente.DataSource = If(cliente?.BeneficiarioPreferente, Nothing)
+        GvBeneficiarioPreferente.DataSource = If(cliente?.ClienteBeneficiario, Nothing)
         GvBeneficiarioPreferente.DataBind()
     End Sub
 
@@ -782,64 +759,79 @@ if (myModalEl) {{
         filtrarClientes()
     End Sub
 
-    Private Sub btnAgregarBeneficiario_Click(sender As Object, e As EventArgs) Handles btnAgregarBeneficiario.Click
-        txtNombreBeneficiarioP.Text = ""
-        txtDomicilioBeneficiario.Text = ""
-        txtRFCBeneficiario.Text = ""
+    'Private Sub btnAgregarBeneficiario_Click(sender As Object, e As EventArgs) Handles btnAgregarBeneficiario.Click
+    '    ddlBeneficiario.SelectedIndex = 0
 
-        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "abrirModal",
-       "var myModal = new bootstrap.Modal(document.getElementById('modalAgregarBeneficiario')); myModal.show();", True)
-    End Sub
+    '    ScriptManager.RegisterStartupScript(Me, Me.GetType(), "abrirModal",
+    '   "var myModal = new bootstrap.Modal(document.getElementById('modalAgregarBeneficiario')); myModal.show();", True)
+    'End Sub
 
-    Private Sub btnAgregarVendedor_Click(sender As Object, e As EventArgs) Handles btnAgregarVendedor.Click
-        ddlNombreVendedor.SelectedIndex = 0
-        txtComision.Text = ""
+    '    Private Sub btnAgregarVendedor_Click(sender As Object, e As EventArgs) Handles btnAgregarVendedor.Click
+    '        ddlNombreVendedor.SelectedIndex = 0
+    '        txtComision.Text = ""
 
-        ScriptManager.RegisterStartupScript(Me, Me.GetType(),
-"abrirModal",
-"setTimeout(function () {
-    var modalElement = document.getElementById('modalAgregarVendedor');
-    var modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
-    modalInstance.show();
-}, 200);",
-True)
-    End Sub
+    '        ScriptManager.RegisterStartupScript(Me, Me.GetType(),
+    '"abrirModal",
+    '"setTimeout(function () {
+    '    var modalElement = document.getElementById('modalAgregarVendedor');
+    '    var modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+    '    modalInstance.show();
+    '}, 200);",
+    'True)
+    '    End Sub
 
-    <System.Web.Services.WebMethod()>
+
+    <System.Web.Services.WebMethod(EnableSession:=True)>
     Public Shared Function ObtenerVendedores(tipoId As Integer) As Object
-
-        Dim api As New ConsumoApi()
-        Dim json As String = api.GetVendedorPorTipo(tipoId)
-
-        Return JsonConvert.DeserializeObject(json)
-
-    End Function
-
-    Protected Sub ddlTipoVendedor_SelectedIndexChanged(sender As Object, e As EventArgs)
-        Dim tipoId As Integer = Convert.ToInt32(ddlTipoVendedor.SelectedValue)
-
-        ddlNombreVendedor.Items.Clear()
-        ddlNombreVendedor.Items.Add(New ListItem("Selecciona un vendedor", "0"))
-
-        If tipoId = 0 Then Return
 
         Dim api As New ConsumoApi()
         Dim jsonVendedores As String = api.GetVendedorPorTipo(tipoId)
 
-        Dim listaVendedores As List(Of Vendedor) = JsonConvert.DeserializeObject(Of List(Of Vendedor))(jsonVendedores)
+        Dim listaVendedores As List(Of Vendedor) =
+        JsonConvert.DeserializeObject(Of List(Of Vendedor))(jsonVendedores)
 
-        For Each v In listaVendedores
-            ddlNombreVendedor.Items.Add(New ListItem(v.NombreCompleto & " (" & v.Comision & "%)", v.VendedorId & "|" & v.Comision))
-        Next
+        Dim cliente As Cliente =
+        CType(HttpContext.Current.Session("Cliente"), Cliente)
 
-        ScriptManager.RegisterStartupScript(
-    Me,
-    Me.GetType(),
-    "ReabrirModal",
-    "
-    var modal = new bootstrap.Modal(document.getElementById('modalAgregarVendedor'));
-    modal.show();
-    ",
-    True)
+        If cliente IsNot Nothing AndAlso cliente.ClienteVendedor IsNot Nothing Then
+
+            Dim vendedoresAgregados = cliente.ClienteVendedor.
+            Select(Function(v) v.VendedorId).ToList()
+
+            listaVendedores = listaVendedores.
+            Where(Function(v) Not vendedoresAgregados.Contains(v.VendedorId)).
+            ToList()
+
+        End If
+
+        Return listaVendedores
+
+    End Function
+
+    Protected Sub btnGuardarBeneficiario_Click(sender As Object, e As EventArgs)
+        Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
+        If cliente Is Nothing Then cliente = New Cliente()
+
+        If cliente.ClienteBeneficiario Is Nothing Then
+            cliente.ClienteBeneficiario = New List(Of ClienteBeneficiario)
+        End If
+
+        Dim nuevoId As Integer = 1
+        If cliente.ClienteBeneficiario.Count > 0 Then
+            nuevoId = cliente.ClienteBeneficiario.Max(Function(c) c.ClienteBeneficiarioId) + 1
+        End If
+
+        Dim beneficiario As New ClienteBeneficiario With {
+        .ClienteBeneficiarioId = nuevoId,
+        .BeneficiarioPreferenteId = Convert.ToInt32(ddlBeneficiario.SelectedValue)
+        }
+
+
+        cliente.ClienteBeneficiario.Add(beneficiario)
+
+        Session("Cliente") = cliente
+
+        CargarGridBeneficiarios()
+        CerrarModal("modalAgregarBeneficiario")
     End Sub
 End Class
