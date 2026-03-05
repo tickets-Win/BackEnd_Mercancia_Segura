@@ -42,7 +42,7 @@
                     <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
                     <Columns>
                         <asp:BoundField DataField="Clave" HeaderText="Clave" />
-                        <asp:BoundField DataField="EstatusId" HeaderText="Estatus" />
+                        <asp:BoundField DataField="estatus" HeaderText="Estatus" />
                         <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
                         <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
                         <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
@@ -120,7 +120,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label">Clave</label>
-                        <asp:TextBox ID="txtClave" runat="server" CssClass="form-control required"></asp:TextBox>
+                        <asp:TextBox ID="txtClave" runat="server" CssClass="form-control required clave-15"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
@@ -158,12 +158,12 @@
 
                     <div class="col-md-4">
                         <label class="form-label">RFC</label>
-                        <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control"></asp:TextBox>
+                        <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control rfc-format"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">RFC Génerico</label>
-                        <asp:DropDownList ID="ddlRFCGenerico" CssClass="form-select required" runat="server">
+                        <asp:DropDownList ID="ddlRFCGenerico" CssClass="form-select" runat="server">
                         </asp:DropDownList>
                     </div>
                     <asp:Panel ID="pnlRazonSocial" runat="server" CssClass="col-md-4" Visible="false">
@@ -213,7 +213,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label">Correo</label>
-                        <asp:TextBox ID="txtCorreo" TextMode="Email" runat="server" CssClass="form-control required"></asp:TextBox>
+                        <asp:TextBox ID="txtCorreo" TextMode="Email" runat="server" CssClass="form-control required email-format"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
@@ -260,7 +260,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label">C.P.</label>
-                        <asp:TextBox ID="txtCP" runat="server" CssClass="form-control"></asp:TextBox>
+                        <asp:TextBox ID="txtCP" runat="server" CssClass="form-control only-numbers"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
@@ -279,6 +279,81 @@
                     </div>
 
                     <h5 class="border-bottom pb-2 mt-4"></h5>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h5>Cuota Aplicable Contenedor</h5>
+                            <div class="card p-3 shadow-sm">
+                                <h6>Contenedores Secos</h6>
+                                <div class="row mb-3">
+                                    <div class="col col-md-6">
+                                        <label class="form-label" for="txtCuotaSecos">Cuota (%)</label>
+                                        <asp:TextBox ID="txtCuotaSecos" runat="server" CssClass="form-control"
+                                            placeholder="Cuota (%)" data-format="percent"></asp:TextBox>
+                                    </div>
+                                    <div class="col col-md-6">
+                                        <label class="form-label" for="ddlTipoTarifaSecos">Tipo Tarifa</label>
+                                        <asp:DropDownList ID="ddlTipoTarifaSecos" runat="server" CssClass="form-select">
+                                        </asp:DropDownList>
+                                    </div>
+                                </div>
+
+                                <h6>Contenedores Refrigerados</h6>
+                                <div class="row mb-3">
+                                    <div class="col col-md-6">
+                                        <label class="form-label" for="txtCuotaRefrigerados">Cuota (%)</label>
+                                        <asp:TextBox ID="txtCuotaRefrigerados" runat="server" CssClass="form-control"
+                                            placeholder="Cuota (%)" data-format="percent"></asp:TextBox>
+                                    </div>
+                                    <div class="col col-md-6">
+                                        <label class="form-label" for="ddlTipoRefrigerados">Tipo Tarifa</label>
+                                        <asp:DropDownList ID="ddlTipoRefrigerados" runat="server" CssClass="form-select">
+                                        </asp:DropDownList>
+                                    </div>
+                                </div>
+
+                                <h6>Isotanques</h6>
+                                <div class="row mb-3">
+                                    <div class="col col-md-6">
+                                        <label class="form-label" for="txtCuotaIsotanques">Cuota (%)</label>
+                                        <asp:TextBox ID="txtCuotaIsotanques" runat="server" CssClass="form-control"
+                                            placeholder="Cuota (%)" data-format="percent"></asp:TextBox>
+                                    </div>
+                                    <div class="col col-md-6">
+                                        <label class="form-label" for="ddlTipoIsotaques">Tipo Tarifa</label>
+                                        <asp:DropDownList ID="ddlTipoIsotaques" runat="server" CssClass="form-select">
+                                        </asp:DropDownList>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Cuotas</h5>
+                            <div class="card p-3 shadow-sm">
+                                <h6>Cuota Aplicable</h6>
+                                <div class="row mb-3">
+                                    <div class="col col-md-6">
+                                        <asp:TextBox ID="txtCuotaNacional" runat="server" CssClass="form-control"
+                                            placeholder="Nacional (%)" data-format="percent"></asp:TextBox>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <asp:TextBox ID="txtCuotaInternacional" runat="server" CssClass="form-control"
+                                            placeholder="Internacional (%)" data-format="percent"></asp:TextBox>
+                                    </div>
+                                </div>
+                                <h6>Cuota Mínima</h6>
+                                <div class="row mb-3">
+                                    <div class="col col-md-6">
+                                        <asp:TextBox ID="txtMinimoNacional" runat="server" CssClass="form-control"
+                                            placeholder="Nacional $0.00" data-format="money-mn"></asp:TextBox>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <asp:TextBox ID="txtMinimoInternacional" runat="server" CssClass="form-control"
+                                            placeholder="Internacional $0.00" data-format="money-usd"></asp:TextBox>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <h5>Correos</h5>
@@ -351,83 +426,6 @@
                                         </div>
                                     </ContentTemplate>
                                 </asp:UpdatePanel>
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-6">
-                            <h5>Cuotas</h5>
-                            <div class="card p-3 shadow-sm">
-                                <h6>Cuota Aplicable</h6>
-                                <div class="row mb-3">
-                                    <div class="col col-md-6">
-                                        <asp:TextBox ID="txtCuotaNacional" runat="server" CssClass="form-control"
-                                            placeholder="Nacional (%)" data-format="percent"></asp:TextBox>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <asp:TextBox ID="txtCuotaInternacional" runat="server" CssClass="form-control"
-                                            placeholder="Internacional (%)" data-format="percent"></asp:TextBox>
-                                    </div>
-                                </div>
-                                <h6>Cuota Mínima</h6>
-                                <div class="row mb-3">
-                                    <div class="col col-md-6">
-                                        <asp:TextBox ID="txtMinimoNacional" runat="server" CssClass="form-control"
-                                            placeholder="Nacional $0.00" data-format="money-mn"></asp:TextBox>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <asp:TextBox ID="txtMinimoInternacional" runat="server" CssClass="form-control"
-                                            placeholder="Internacional $0.00" data-format="money-usd"></asp:TextBox>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <h5>Cuota Aplicable Contenedor</h5>
-                                <div class="card p-3 shadow-sm">
-                                    <h6>Contenedores Secos</h6>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <label class="form-label" for="txtCuotaSecos">Cuota (%)</label>
-                                            <asp:TextBox ID="txtCuotaSecos" runat="server" CssClass="form-control"
-                                                placeholder="Cuota (%)" data-format="percent"></asp:TextBox>
-                                        </div>
-                                        <div class="col col-md-6">
-                                            <label class="form-label" for="ddlTipoTarifaSecos">Tipo Tarifa</label>
-                                            <asp:DropDownList ID="ddlTipoTarifaSecos" runat="server" CssClass="form-select">
-                                            </asp:DropDownList>
-                                        </div>
-                                    </div>
-
-                                    <h6>Contenedores Refrigerados</h6>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <label class="form-label" for="txtCuotaRefrigerados">Cuota (%)</label>
-                                            <asp:TextBox ID="txtCuotaRefrigerados" runat="server" CssClass="form-control"
-                                                placeholder="Cuota (%)" data-format="percent"></asp:TextBox>
-                                        </div>
-                                        <div class="col col-md-6">
-                                            <label class="form-label" for="ddlTipoRefrigerados">Tipo Tarifa</label>
-                                            <asp:DropDownList ID="ddlTipoRefrigerados" runat="server" CssClass="form-select">
-                                            </asp:DropDownList>
-                                        </div>
-                                    </div>
-
-                                    <h6>Isotanques</h6>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <label class="form-label" for="txtCuotaIsotanques">Cuota (%)</label>
-                                            <asp:TextBox ID="txtCuotaIsotanques" runat="server" CssClass="form-control"
-                                                placeholder="Cuota (%)" data-format="percent"></asp:TextBox>
-                                        </div>
-                                        <div class="col col-md-6">
-                                            <label class="form-label" for="ddlTipoIsotaques">Tipo Tarifa</label>
-                                            <asp:DropDownList ID="ddlTipoIsotaques" runat="server" CssClass="form-select">
-                                            </asp:DropDownList>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -532,10 +530,10 @@
                                                     OnPageIndexChanging="GvBeneficiarioPreferente_PageIndexChanging">
                                                     <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
                                                     <Columns>
-                                                        <asp:BoundField DataField="Clave" HeaderText="Clave" />
-                                                        <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
-                                                        <asp:BoundField DataField="RFC" HeaderText="RFC" />
-                                                        <asp:BoundField DataField="Pais" HeaderText="País" />
+                                                        <asp:BoundField DataField="claveBP" HeaderText="Clave" />
+                                                        <asp:BoundField DataField="nombreCompletoBP" HeaderText="Nombre" />
+                                                        <asp:BoundField DataField="RFCAMostrar" HeaderText="RFC" />
+                                                        <asp:BoundField DataField="paisBP" HeaderText="País" />
                                                         <asp:TemplateField HeaderText="Acciones">
                                                             <ItemTemplate>
                                                                 <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BeneficiarioPreferenteId") %>'
@@ -755,42 +753,96 @@
             document.getElementById('<%= txtNombreCompleto.ClientID %>').value = nombreCompleto.trim();
         }
     </script>
-    <script>
-        function validarCampos() {
+     <script>
+         function validarCampos() {
 
-            limpiarValidacion()
-            let campos = document.querySelectorAll('.required');
-            let valido = true;
+             limpiarValidacion();
+             let valido = true;
 
-            campos.forEach(function (campo) {
-                if (campo.disabled) return;
+             document.querySelectorAll('.required').forEach(function (campo) {
+                 if (campo.disabled) return;
 
-                if (!campo.value.trim()) {
-                    campo.classList.add('is-invalid');
-                    valido = false;
-                } else {
-                    campo.classList.remove('is-invalid');
-                }
-            });
+                 if (!campo.value.trim()) {
+                     marcarError(campo, "Este campo es obligatorio");
+                     valido = false;
+                 }
+             });
 
-            if (!valido) {
-                showToast('Completa todos los campos obligatorios', 'danger');
-            }
+             document.querySelectorAll('.only-numbers').forEach(function (campo) {
+                 if (campo.value) {
+                     if (!/^\d+$/.test(campo.value)) {
+                         marcarError(campo, "Solo se permiten números");
+                         valido = false;
+                     }
+                     else if (campo.value.length !== 5) {
+                         marcarError(campo, "El código postal debe tener exactamente 5 dígitos");
+                         valido = false;
+                     }
 
-            return valido;
+                 }
+             });
 
+             document.querySelectorAll('.rfc-format').forEach(function (campo) {
+                 if (campo.value) {
+                     let rfcRegex = /^([A-ZÑ&]{3,4})\d{6}([A-Z\d]{3})$/;
+                     if (!rfcRegex.test(campo.value.toUpperCase())) {
+                         marcarError(campo, "RFC no válido");
+                         valido = false;
+                     }
+                 }
+             });
 
-        }
-    </script>
-    <script>
-        function limpiarValidacion() {
-            let campos = document.querySelectorAll('.required');
-            campos.forEach(function (campo) {
-                campo.classList.remove('is-invalid');
-            });
-        }
+             document.querySelectorAll('.clave-15').forEach(function (campo) {
+                 if (campo.value) {
+                     let regex = /^[a-zA-Z0-9]{1,15}$/;
 
-    </script>
+                     if (!regex.test(campo.value)) {
+                         marcarError(campo, "La clave debe tener letras o números");
+                         valido = false;
+                     }
+                 }
+             });           
+
+             document.querySelectorAll('.email-format').forEach(function (campo) {
+                 if (campo.value) {
+                     let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+                     if (!emailRegex.test(campo.value.trim())) {
+                         marcarError(campo, "Ingresa un correo electrónico válido");
+                         valido = false;
+                     }
+                 }
+             });         
+
+             if (!valido) {
+                 showToast('Corrige los campos marcados', 'danger');
+             }
+
+             return valido;
+         }
+
+         function marcarError(campo, mensaje) {
+             campo.classList.add('is-invalid');
+
+             let feedback = document.createElement("div");
+             feedback.className = "invalid-feedback";
+             feedback.innerText = mensaje;
+
+             if (!campo.nextElementSibling || !campo.nextElementSibling.classList.contains("invalid-feedback")) {
+                 campo.parentNode.appendChild(feedback);
+             }
+         }
+
+         function limpiarValidacion() {
+             document.querySelectorAll('.is-invalid').forEach(function (campo) {
+                 campo.classList.remove('is-invalid');
+             });
+
+             document.querySelectorAll('.invalid-feedback').forEach(function (msg) {
+                 msg.remove();
+             });
+         }
+     </script>
 
     <script>
         function showToast(message, type) {
@@ -853,4 +905,47 @@
             });
         });
     </script>
+    <script>
+        window.onload = function () {
+            const rfcInput = document.getElementById('<%= txtRFC.ClientID %>');
+            const rfcGenericoSelect = document.getElementById('<%= ddlRFCGenerico.ClientID %>');
+
+            function actualizarEstadoCampos() {
+                if (rfcInput.value.trim() !== '') {
+                    rfcGenericoSelect.disabled = true;
+                } else {
+                    rfcGenericoSelect.disabled = false;
+                }
+
+                if (rfcGenericoSelect.value !== '0') {
+                    rfcInput.disabled = true;
+                } else {
+                    rfcInput.disabled = false;
+                }
+            }
+
+            rfcInput.addEventListener('input', actualizarEstadoCampos);
+            rfcGenericoSelect.addEventListener('change', actualizarEstadoCampos);
+
+            actualizarEstadoCampos();
+        };
+    </script>
+     <script>
+         document.addEventListener("DOMContentLoaded", function () {
+
+             document.querySelectorAll("input").forEach(function (input) {
+
+                 input.addEventListener("keydown", function (e) {
+
+                     if (e.key === "Enter") {
+                         e.preventDefault();
+                         return false;
+                     }
+
+                 });
+
+             });
+
+         });
+     </script>
 </asp:Content>

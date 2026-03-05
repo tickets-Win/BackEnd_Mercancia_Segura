@@ -4,10 +4,24 @@
         Public Property ClienteId As Integer
         Public Property BeneficiarioPreferenteId As Integer
 
-        Public Property Clave As String
-        Public Property NombreCompleto As String
-        Public Property RFC As String
-        Public Property RFCGenerico As String
-        Public Property Pais As String
+        Public Property claveBP As String
+        Public Property nombreCompletoBP As String
+        Public Property rfcbp As String
+        Public Property rfcGenericoBP As String
+        Public Property paisBP As String
+
+        Public ReadOnly Property RFCAMostrar As String
+            Get
+                If Not String.IsNullOrEmpty(Me.rfcbp) Then
+                    Return Me.rfcbp
+                End If
+
+                If Not String.IsNullOrEmpty(Me.rfcGenericoBP) Then
+                    Return Me.rfcGenericoBP
+                End If
+
+                Return String.Empty
+            End Get
+        End Property
     End Class
 End Namespace

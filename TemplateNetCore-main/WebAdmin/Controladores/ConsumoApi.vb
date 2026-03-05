@@ -208,6 +208,20 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function GetBeneficiarioId(beneficiarioId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = $"{ConfigurationManager.AppSettings("ConsultarBeneficiarioId")}/{beneficiarioId}"
+                Dim response As HttpResponseMessage = client.GetAsync(url).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
 
     Public Function GetTipoEstatus() As String
         Try
@@ -518,6 +532,21 @@ Public Class ConsumoApi
 
             Using client As New HttpClient()
                 Dim url As String = $"{ConfigurationManager.AppSettings("EditarPoliza")}/{polizaId}"
+                Dim content As New StringContent(json, Encoding.UTF8, "application/json")
+                Dim response As HttpResponseMessage = client.PutAsync(url, content).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function PutEditarBeneficiario(beneficiarioId As Integer, json As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = $"{ConfigurationManager.AppSettings("EditarBeneficiario")}/{beneficiarioId}"
                 Dim content As New StringContent(json, Encoding.UTF8, "application/json")
                 Dim response As HttpResponseMessage = client.PutAsync(url, content).Result
                 Return response.Content.ReadAsStringAsync().Result

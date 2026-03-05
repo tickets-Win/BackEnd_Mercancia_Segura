@@ -21,7 +21,20 @@ Public Class AdminBeneficiarios
     End Sub
 
     Protected Sub txtBuscarBeneficiarios_TextChanged(sender As Object, e As EventArgs)
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCargarBeneficiarios()
 
+        Dim lista As List(Of BeneficiarioPreferente) =
+        JsonConvert.DeserializeObject(Of List(Of BeneficiarioPreferente))(json)
+
+        Dim texto As String = txtBuscarBeneficiarios.Text.Trim().ToLower()
+
+        Dim filtrados = lista.Where(Function(v) _
+            v.NombreCompleto.ToLower().Contains(texto) OrElse
+            v.Rfc.ToLower().Contains(texto)).ToList()
+
+        gvBeneficiariosPreferentes.DataSource = filtrados
+        gvBeneficiariosPreferentes.DataBind()
     End Sub
 
     Protected Sub ddlTipoPersona_SelectedIndexChanged(sender As Object, e As EventArgs)
@@ -39,6 +52,16 @@ Public Class AdminBeneficiarios
     End Sub
 
     Protected Sub gvBeneficiariosPreferentes_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Editar" Then
+            Dim beneficiarioId As Integer = Convert.ToInt32(e.CommandArgument)
+            pnlFormularioBeneficiario.Visible = True
+            PnlTabla.Visible = False
+            PnlEncabezado.Visible = False
+            lblMensaje.Text = "Editar beneficiario"
+
+            EditarBeneficiario(beneficiarioId)
+        End If
+
         If e.CommandName = "Eliminar" Then
             Dim api As New ConsumoApi()
             Dim beneficiarioId As Integer = Convert.ToInt32(e.CommandArgument)
@@ -67,7 +90,8 @@ Public Class AdminBeneficiarios
     End Sub
 
     Protected Sub gvBeneficiariosPreferentes_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
-
+        gvBeneficiariosPreferentes.PageIndex = e.NewPageIndex
+        CargarBeneficiarios()
     End Sub
 
     Protected Sub CargarBeneficiarios()
@@ -120,9 +144,9 @@ Public Class AdminBeneficiarios
         Dim mensajeToast As String = ""
 
         If Not String.IsNullOrEmpty(hfBeneficiarioId.Value) Then
-            'Dim clienteId As Integer = Convert.ToInt32(hfBeneficiarioId.Value)
-            'respuesta = api.PutEditarCliente(clienteId, json)
-            'mensajeToast = "Cliente editado correctamente"
+            Dim beneficiarioId As Integer = Convert.ToInt32(hfBeneficiarioId.Value)
+            respuesta = api.PutEditarBeneficiario(beneficiarioId, json)
+            mensajeToast = "Beneficiario editado correctamente"
         Else
             respuesta = api.PostBeneficiario(json)
             mensajeToast = "Beneficiario agregado correctamente"
@@ -149,6 +173,37 @@ Public Class AdminBeneficiarios
         LimpiarFormulario()
     End Sub
 
+    Protected Sub EditarBeneficiario(beneficiarioId As Integer)
+        Dim api As New ConsumoApi()
+        Dim objBeneficiario As String = api.GetBeneficiarioId(beneficiarioId)
+
+        Dim beneficiario As BeneficiarioPreferente = JsonConvert.DeserializeObject(Of BeneficiarioPreferente)(objBeneficiario)
+
+        hfBeneficiarioId.Value = beneficiario.BeneficiarioPreferenteId.ToString()
+
+        ddlTipoPersona.SelectedValue = beneficiario.TipoPersonaId.ToString()
+        txtClave.Text = beneficiario.Clave
+        txtNacionalidad.Text = beneficiario.Nacionalidad
+        txtApellidoP.Text = beneficiario.ApellidoPaterno
+        txtApellidoM.Text = beneficiario.ApellidoMaterno
+        txtNombre.Text = beneficiario.Nombre
+        txtRazonSocial.Text = If(beneficiario.TipoPersonaId = 2, beneficiario.NombreCompleto, "")
+        txtNombreCompleto.Text = If(beneficiario.TipoPersonaId = 1, beneficiario.NombreCompleto, "")
+        txtRFC.Text = beneficiario.RFC
+        ddlRFCGenerico.SelectedValue = beneficiario.RfcGenericoId
+        ddlPais.SelectedValue = beneficiario.Pais
+        txtCalle.Text = beneficiario.Calle
+        txtNumeroInt.Text = beneficiario.NumeroInt
+        txtNumeroExt.Text = beneficiario.NumeroExt
+        txtColonia.Text = beneficiario.Colonia
+        txtCP.Text = beneficiario.Cp
+        txtPoblacion.Text = beneficiario.Poblacion
+
+        pnlFormularioBeneficiario.Visible = True
+        PnlTabla.Visible = False
+        PnlEncabezado.Visible = False
+    End Sub
+
     Private Sub LimpiarFormulario()
 
         hfBeneficiarioId.Value = ""
@@ -172,5 +227,13 @@ Public Class AdminBeneficiarios
         txtCP.Text = ""
         txtPoblacion.Text = ""
 
+    End Sub
+
+    Protected Sub btnCancelar_Click(sender As Object, e As EventArgs)
+        CargarBeneficiarios()
+        pnlFormularioBeneficiario.Visible = False
+        PnlTabla.Visible = True
+        PnlEncabezado.Visible = True
+        LimpiarFormulario()
     End Sub
 End Class

@@ -40,6 +40,7 @@ Namespace MercanciaSegura.DOM.Modelos
         Public Property FechaActualizacion As Date?
         Public Property FechaRegistro As Date = Date.Now
         Public Property EstatusId As Integer?
+        Public Property estatus As String
         Public Property FechaBaja As Date?
 
         Public Property Clave As String

@@ -100,10 +100,15 @@ Module DropdownHelpers
 
         Dim listaRFCGenerico As List(Of rfcGenerico) = JsonConvert.DeserializeObject(Of List(Of rfcGenerico))(rfcGenerico)
 
+        HttpContext.Current.Session("ListaRFCGenericos") = listaRFCGenerico
+
         ddlRFCGenerico.DataSource = listaRFCGenerico
         ddlRFCGenerico.DataTextField = "Tipo"
         ddlRFCGenerico.DataValueField = "RfcGenericoId"
         ddlRFCGenerico.DataBind()
+
+        ddlRFCGenerico.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
 
     Public Sub CargarTipoVendedor(ddlTipoVendedor As DropDownList)

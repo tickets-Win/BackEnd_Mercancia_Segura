@@ -135,12 +135,12 @@
             </asp:Panel>
             <div class="col-md-4">
                 <label class="form-label">Clave</label>
-                <asp:TextBox ID="txtClave" runat="server" CssClass="form-control required"></asp:TextBox>
+                <asp:TextBox ID="txtClave" runat="server" CssClass="form-control required clave-15"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">RFC</label>
-                <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control required"></asp:TextBox>
+                <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control required rfc-format"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
@@ -171,7 +171,7 @@
 
             <div class="col-md-4">
                 <label class="form-label">Correo</label>
-                <asp:TextBox ID="txtCorreo" TextMode="Email" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtCorreo" TextMode="Email" runat="server" CssClass="form-control email-format"></asp:TextBox>
             </div>
 
             <asp:Panel ID="pnlGenero" runat="server" CssClass="col-md-4">
@@ -198,7 +198,7 @@
 
             <div class="col-md-4">
                 <label class="form-label">C.P.</label>
-                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control only-numbers"></asp:TextBox>
             </div>
 
         </div>
@@ -207,7 +207,7 @@
 
         <div class="col-md-4">
             <label class="form-label">Comisión</label>
-            <asp:TextBox ID="txtComision" runat="server" CssClass="form-control required"></asp:TextBox>
+            <asp:TextBox ID="txtComision" runat="server" CssClass="form-control required porcentaje"></asp:TextBox>
         </div>
 
     </asp:Panel>
@@ -255,39 +255,108 @@
     <script>
         function validarCampos() {
 
-            limpiarValidacion()
-            let campos = document.querySelectorAll('.required');
+            limpiarValidacion();
             let valido = true;
 
-            campos.forEach(function (campo) {
+            document.querySelectorAll('.required').forEach(function (campo) {
                 if (campo.disabled) return;
 
                 if (!campo.value.trim()) {
-                    campo.classList.add('is-invalid');
+                    marcarError(campo, "Este campo es obligatorio");
                     valido = false;
-                } else {
-                    campo.classList.remove('is-invalid');
+                }
+            });
+
+            document.querySelectorAll('.only-numbers').forEach(function (campo) {
+                if (campo.value) {
+                    if (!/^\d+$/.test(campo.value)) {
+                        marcarError(campo, "Solo se permiten números");
+                        valido = false;
+                    }
+                    else if (campo.value.length !== 5) {
+                        marcarError(campo, "El código postal debe tener exactamente 5 dígitos");
+                        valido = false;
+                    }
+
+                }
+            });
+
+            document.querySelectorAll('.rfc-format').forEach(function (campo) {
+                if (campo.value) {
+                    let rfcRegex = /^([A-ZÑ&]{3,4})\d{6}([A-Z\d]{3})$/;
+                    if (!rfcRegex.test(campo.value.toUpperCase())) {
+                        marcarError(campo, "RFC no válido");
+                        valido = false;
+                    }
+                }
+            });
+
+            document.querySelectorAll('.clave-15').forEach(function (campo) {
+                if (campo.value) {
+                    let regex = /^[a-zA-Z0-9]{1,15}$/;
+
+                    if (!regex.test(campo.value)) {
+                        marcarError(campo, "Ingresa una clave valida, la clave debe tener letras o números");
+                        valido = false;
+                    }
+                }
+            });
+
+            document.querySelectorAll('.email-format').forEach(function (campo) {
+                if (campo.value) {
+                    let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+                    if (!emailRegex.test(campo.value.trim())) {
+                        marcarError(campo, "Ingresa un correo electrónico válido");
+                        valido = false;
+                    }
+                }
+            });
+
+            document.querySelectorAll('.porcentaje').forEach(function (campo) {
+                if (campo.value) {
+
+                    let valor = parseFloat(campo.value);
+
+                    if (isNaN(valor)) {
+                        marcarError(campo, "Debe ser un número válido");
+                        valido = false;
+                    }
+                    else if (valor < 0 || valor > 100) {
+                        marcarError(campo, "La comisión debe estar entre 0 y 100");
+                        valido = false;
+                    }
                 }
             });
 
             if (!valido) {
-                showToast('Completa todos los campos obligatorios', 'danger');
+                showToast('Corrige los campos marcados', 'danger');
             }
 
             return valido;
-
-
         }
-    </script>
 
-    <script>
+        function marcarError(campo, mensaje) {
+            campo.classList.add('is-invalid');
+
+            let feedback = document.createElement("div");
+            feedback.className = "invalid-feedback";
+            feedback.innerText = mensaje;
+
+            if (!campo.nextElementSibling || !campo.nextElementSibling.classList.contains("invalid-feedback")) {
+                campo.parentNode.appendChild(feedback);
+            }
+        }
+
         function limpiarValidacion() {
-            let campos = document.querySelectorAll('.required');
-            campos.forEach(function (campo) {
+            document.querySelectorAll('.is-invalid').forEach(function (campo) {
                 campo.classList.remove('is-invalid');
             });
-        }
 
+            document.querySelectorAll('.invalid-feedback').forEach(function (msg) {
+                msg.remove();
+            });
+        }
     </script>
     <script type="text/javascript">
         function llenarNombreCompleto() {
@@ -341,6 +410,24 @@
             txtComision.addEventListener('focus', function () {
                 txtComision.value = txtComision.value.replace("%", "");
             });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            document.querySelectorAll("input").forEach(function (input) {
+
+                input.addEventListener("keydown", function (e) {
+
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        return false;
+                    }
+
+                });
+
+            });
+
         });
     </script>
 </asp:Content>

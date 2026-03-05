@@ -759,26 +759,27 @@ if (myModalEl) {{
         filtrarClientes()
     End Sub
 
-    'Private Sub btnAgregarBeneficiario_Click(sender As Object, e As EventArgs) Handles btnAgregarBeneficiario.Click
-    '    ddlBeneficiario.SelectedIndex = 0
+    Private Sub btnAgregarBeneficiario_Click(sender As Object, e As EventArgs) Handles btnAgregarBeneficiario.Click
+        ddlBeneficiario.ClearSelection()
+        ddlBeneficiario.SelectedIndex = 0
 
-    '    ScriptManager.RegisterStartupScript(Me, Me.GetType(), "abrirModal",
-    '   "var myModal = new bootstrap.Modal(document.getElementById('modalAgregarBeneficiario')); myModal.show();", True)
-    'End Sub
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "abrirModal",
+       "var myModal = new bootstrap.Modal(document.getElementById('modalAgregarBeneficiario')); myModal.show();", True)
+    End Sub
 
-    '    Private Sub btnAgregarVendedor_Click(sender As Object, e As EventArgs) Handles btnAgregarVendedor.Click
-    '        ddlNombreVendedor.SelectedIndex = 0
-    '        txtComision.Text = ""
+    Private Sub btnAgregarVendedor_Click(sender As Object, e As EventArgs) Handles btnAgregarVendedor.Click
+        ddlNombreVendedor.SelectedIndex = 0
+        txtComision.Text = ""
 
-    '        ScriptManager.RegisterStartupScript(Me, Me.GetType(),
-    '"abrirModal",
-    '"setTimeout(function () {
-    '    var modalElement = document.getElementById('modalAgregarVendedor');
-    '    var modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
-    '    modalInstance.show();
-    '}, 200);",
-    'True)
-    '    End Sub
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(),
+"abrirModal",
+"setTimeout(function () {
+        var modalElement = document.getElementById('modalAgregarVendedor');
+        var modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+        modalInstance.show();
+    }, 200);",
+True)
+    End Sub
 
 
     <System.Web.Services.WebMethod(EnableSession:=True)>
@@ -816,22 +817,36 @@ if (myModalEl) {{
             cliente.ClienteBeneficiario = New List(Of ClienteBeneficiario)
         End If
 
-        Dim nuevoId As Integer = 1
-        If cliente.ClienteBeneficiario.Count > 0 Then
-            nuevoId = cliente.ClienteBeneficiario.Max(Function(c) c.ClienteBeneficiarioId) + 1
-        End If
+        Dim nuevoId As Integer = cliente.ClienteBeneficiario.Count + 1
 
-        Dim beneficiario As New ClienteBeneficiario With {
-        .ClienteBeneficiarioId = nuevoId,
-        .BeneficiarioPreferenteId = Convert.ToInt32(ddlBeneficiario.SelectedValue)
-        }
+        Dim beneficiarioId As Integer = Convert.ToInt32(ddlBeneficiario.SelectedValue)
+        Dim nombre As String = ddlBeneficiario.SelectedItem.Text
 
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCargarBeneficiarios() ' EJEMPLO
+        Dim lista As List(Of BeneficiarioPreferente) = JsonConvert.DeserializeObject(Of List(Of BeneficiarioPreferente))(json)
 
-        cliente.ClienteBeneficiario.Add(beneficiario)
+        Dim seleccionado = lista.FirstOrDefault(Function(x) x.BeneficiarioPreferenteId = beneficiarioId)
+
+        If seleccionado Is Nothing Then Exit Sub
+
+        cliente.ClienteBeneficiario.Add(New ClienteBeneficiario With {
+            .ClienteBeneficiarioId = nuevoId,
+            .BeneficiarioPreferenteId = beneficiarioId,
+            .claveBP = seleccionado.Clave,
+            .nombreCompletoBP = seleccionado.NombreCompleto,
+            .rfcbp = seleccionado.RFC,
+            .rfcGenericoBP = seleccionado.RfcGenerico,
+            .paisBP = seleccionado.Pais
+        })
 
         Session("Cliente") = cliente
 
         CargarGridBeneficiarios()
+
+        ddlBeneficiario.SelectedIndex = 0
+        ddlBeneficiario.DataBind()
+
         CerrarModal("modalAgregarBeneficiario")
     End Sub
 End Class

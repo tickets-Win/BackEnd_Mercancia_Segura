@@ -33,7 +33,7 @@
                     <Columns>
                         <asp:BoundField DataField="Clave" HeaderText="Clave" />
                         <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
-                        <asp:BoundField DataField="RFC" HeaderText="RFC" />
+                        <asp:BoundField DataField="RFCAMostrar" HeaderText="RFC" />
                         <asp:BoundField DataField="Pais" HeaderText="País" />
 
                         <asp:TemplateField HeaderText="Acciones">
@@ -68,7 +68,7 @@
             </h2>
 
             <div>
-                <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" />
+                <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" OnClick="btnCancelar_Click"/>
                 <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClientClick="return validarCampos();" OnClick="btnGuardar_Click" />
             </div>
         </div>
@@ -85,7 +85,7 @@
 
             <div class="col-md-4">
                 <label class="form-label">Clave</label>
-                <asp:TextBox ID="txtClave" runat="server" CssClass="form-control required"></asp:TextBox>
+                <asp:TextBox ID="txtClave" runat="server" CssClass="form-control required clave-15"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
@@ -124,18 +124,18 @@
 
             <div class="col-md-4">
                 <label class="form-label">RFC</label>
-                <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control required"></asp:TextBox>
+                <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control rfc-format "></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">RFC Génerico</label>
-                <asp:DropDownList ID="ddlRFCGenerico" CssClass="form-select required" runat="server">
+                <asp:DropDownList ID="ddlRFCGenerico" CssClass="form-select" runat="server">
                 </asp:DropDownList>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">País</label>
-                <asp:DropDownList ID="ddlPais" runat="server" CssClass="form-select required" Visible="true">
+                <asp:DropDownList ID="ddlPais" runat="server" CssClass="form-select " Visible="true">
                     <asp:ListItem Text="Selecciona un país" Value="" />
                     <asp:ListItem Text="México" Value="MX"></asp:ListItem>
                     <asp:ListItem Text="Estados Unidos" Value="US"></asp:ListItem>
@@ -144,27 +144,27 @@
 
             <div class="col-md-4">
                 <label class="form-label">Calle</label>
-                <asp:TextBox ID="txtCalle" runat="server" CssClass="form-control required"></asp:TextBox>
+                <asp:TextBox ID="txtCalle" runat="server" CssClass="form-control "></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Número Int.</label>
-                <asp:TextBox ID="txtNumeroInt" runat="server" CssClass="form-control required"></asp:TextBox>
+                <asp:TextBox ID="txtNumeroInt" runat="server" CssClass="form-control "></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Número Ext.</label>
-                <asp:TextBox ID="txtNumeroExt" runat="server" CssClass="form-control required"></asp:TextBox>
+                <asp:TextBox ID="txtNumeroExt" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Colonia</label>
-                <asp:TextBox ID="txtColonia" runat="server" CssClass="form-control required"></asp:TextBox>
+                <asp:TextBox ID="txtColonia" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">C.P.</label>
-                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control only-numbers"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
@@ -183,5 +183,149 @@
          var nombreCompleto = nombre + ' ' + apellidoP + ' ' + apellidoM;
          document.getElementById('<%= txtNombreCompleto.ClientID %>').value = nombreCompleto.trim();
      }
+     </script>
+    <script>
+        window.onload = function () {
+            const rfcInput = document.getElementById('<%= txtRFC.ClientID %>');
+     const rfcGenericoSelect = document.getElementById('<%= ddlRFCGenerico.ClientID %>');
+
+            function actualizarEstadoCampos() {
+                if (rfcInput.value.trim() !== '') {
+                    rfcGenericoSelect.disabled = true;
+                } else {
+                    rfcGenericoSelect.disabled = false;
+                }
+
+                if (rfcGenericoSelect.value !== '0') {
+                    rfcInput.disabled = true;
+                } else {
+                    rfcInput.disabled = false;
+                }
+            }
+
+            rfcInput.addEventListener('input', actualizarEstadoCampos);
+            rfcGenericoSelect.addEventListener('change', actualizarEstadoCampos);
+
+            actualizarEstadoCampos();
+        };
+    </script>
+     <script>
+         function showToast(message, type) {
+             const wrapper = document.createElement('div');
+             wrapper.innerHTML = `
+     <div class="toast align-items-center text-bg-${type} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+         <div class="d-flex">
+             <div class="toast-body">${message}</div>
+             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+         </div>
+     </div>
+ `;
+             document.getElementById('alertPlaceholder').append(wrapper);
+
+             setTimeout(() => {
+                 wrapper.querySelector('.toast').classList.remove('show');
+                 wrapper.remove();
+             }, 3000);
+         }
+     </script>
+
+ <div id="alertPlaceholder" class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;"></div>
+
+   <script>
+       function validarCampos() {
+
+           limpiarValidacion();
+           let valido = true;
+
+           document.querySelectorAll('.required').forEach(function (campo) {
+               if (campo.disabled) return;
+
+               if (!campo.value.trim()) {
+                   marcarError(campo, "Este campo es obligatorio");
+                   valido = false;
+               }
+           });
+
+           document.querySelectorAll('.only-numbers').forEach(function (campo) {
+               if (campo.value) {
+                   if (!/^\d+$/.test(campo.value)) {
+                       marcarError(campo, "Solo se permiten números");
+                       valido = false;
+                   }
+                   else if (campo.value.length !== 5) {
+                       marcarError(campo, "El código postal debe tener exactamente 5 dígitos");
+                       valido = false;
+                   }
+
+               }
+           });     
+
+           document.querySelectorAll('.rfc-format').forEach(function (campo) {
+               if (campo.value) {
+                   let rfcRegex = /^([A-ZÑ&]{3,4})\d{6}([A-Z\d]{3})$/;
+                   if (!rfcRegex.test(campo.value.toUpperCase())) {
+                       marcarError(campo, "RFC no válido");
+                       valido = false;
+                   }
+               }
+           });
+
+           document.querySelectorAll('.clave-15').forEach(function (campo) {
+               if (campo.value) {
+                   let regex = /^[a-zA-Z0-9]{15}$/;
+
+                   if (!regex.test(campo.value)) {
+                       marcarError(campo, "La clave debe tener exactamente 15 letras o números");
+                       valido = false;
+                   }
+               }
+           });      
+
+           if (!valido) {
+               showToast('Corrige los campos marcados', 'danger');
+           }
+
+           return valido;
+       }
+
+       function marcarError(campo, mensaje) {
+           campo.classList.add('is-invalid');
+
+           let feedback = document.createElement("div");
+           feedback.className = "invalid-feedback";
+           feedback.innerText = mensaje;
+
+           if (!campo.nextElementSibling || !campo.nextElementSibling.classList.contains("invalid-feedback")) {
+               campo.parentNode.appendChild(feedback);
+           }
+       }
+
+       function limpiarValidacion() {
+           document.querySelectorAll('.is-invalid').forEach(function (campo) {
+               campo.classList.remove('is-invalid');
+           });
+
+           document.querySelectorAll('.invalid-feedback').forEach(function (msg) {
+               msg.remove();
+           });
+       }
+   </script>
+     <script>
+         document.addEventListener("DOMContentLoaded", function () {
+
+             document.querySelectorAll("input").forEach(function (input) {
+
+                 input.addEventListener("keydown", function (e) {
+
+                     if (e.key === "Enter") {
+                         e.preventDefault();
+                         return false;
+                     }
+
+                 });
+
+             });
+
+         });
      </script>
 </asp:Content>

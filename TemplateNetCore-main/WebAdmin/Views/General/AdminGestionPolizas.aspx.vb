@@ -22,6 +22,18 @@ Public Class AdminGestionPolizas
         End Get
     End Property
 
+    Private Property RiesgosSession As List(Of RiesgoCubierto)
+        Get
+            If Session("RiesgosTemporal") Is Nothing Then
+                Session("RiesgosTemporal") = New List(Of RiesgoCubierto)()
+            End If
+            Return CType(Session("RiesgosTemporal"), List(Of RiesgoCubierto))
+        End Get
+        Set(value As List(Of RiesgoCubierto))
+            Session("RiesgosTemporal") = value
+        End Set
+    End Property
+
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If Not IsPostBack Then
             pnlFormularioPolizas.Visible = False
@@ -509,6 +521,8 @@ Public Class AdminGestionPolizas
 
         BienesSession.Clear()
         CoberturasSession.Clear()
+        RiesgosSession.Clear()
+        CargarRiesgos()
         CargarBienesGrid()
         CargarCoberturasGrid()
     End Sub
@@ -609,4 +623,125 @@ Public Class AdminGestionPolizas
         GvCoberturasContenedor.DataBind()
     End Sub
 
+
+    Private Sub AgregarRiesgo(txt As TextBox, tipoRiesgoId As Integer)
+
+        Dim nombreRiesgo As String = txt.Text.Trim()
+        If String.IsNullOrEmpty(nombreRiesgo) Then Return
+
+        Dim nuevoRiesgo As New RiesgoCubierto With {
+    .RiesgoCubiertoId = If(RiesgosSession.Count = 0, 1, RiesgosSession.Max(Function(r) r.RiesgoCubiertoId) + 1),
+    .Nombre = nombreRiesgo,
+    .TipoRiesgoId = tipoRiesgoId,
+    .PolizaMercanciaId = 0
+    }
+
+        RiesgosSession.Add(nuevoRiesgo)
+        Session("RiesgosTemporal") = RiesgosSession
+
+        txt.Text = ""
+        CargarRiesgos()
+
+    End Sub
+
+    Private Sub EliminarRiesgo(id As Integer)
+
+        Dim riesgoEliminar = RiesgosSession.FirstOrDefault(Function(r) r.RiesgoCubiertoId = id)
+
+        If riesgoEliminar IsNot Nothing Then
+            RiesgosSession.Remove(riesgoEliminar)
+            Session("RiesgosTemporal") = RiesgosSession
+            CargarRiesgos()
+
+        End If
+
+    End Sub
+
+    Private Sub CargarRiesgos()
+
+        CargarGridRiesgos(GvViajeCompleto, 1)
+        CargarGridRiesgos(GvViajeCompleto2, 1)
+        CargarGridRiesgos(GvViajeCompleto3, 1)
+
+        CargarGridRiesgos(GvContinuacionViaje, 2)
+        'CargarGridRiesgos(GvRiesgo2_2, 5)
+        'CargarGridRiesgos(GvRiesgo2_3, 6)
+
+        'CargarGridRiesgos(GvRiesgo3_1, 7)
+        'CargarGridRiesgos(GvRiesgo3_2, 8)
+        'CargarGridRiesgos(GvRiesgo3_3, 9)
+
+    End Sub
+    Protected Sub GvViajeCompleto_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Eliminar" Then
+            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            EliminarRiesgo(id)
+        End If
+    End Sub
+
+    Protected Sub GvViajeCompleto_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+        GvViajeCompleto.PageIndex = e.NewPageIndex
+        CargarGridRiesgos(GvViajeCompleto, 1)
+    End Sub
+
+    Private Sub CargarGridRiesgos(grid As GridView, tipoRiesgoId As Integer)
+
+        grid.DataSource = RiesgosSession.
+        Where(Function(r) r.TipoRiesgoId = tipoRiesgoId).ToList()
+
+        grid.DataBind()
+
+    End Sub
+
+    Protected Sub BtnAgregarCoberturaV_Click(sender As Object, e As EventArgs)
+        AgregarRiesgo(txtViajeCompleto, 1)
+    End Sub
+
+    Protected Sub GvViajeCompleto2_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Eliminar" Then
+            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            EliminarRiesgo(id)
+        End If
+    End Sub
+
+    Protected Sub GvViajeCompleto2_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+        GvViajeCompleto.PageIndex = e.NewPageIndex
+        CargarGridRiesgos(GvViajeCompleto2, 1)
+    End Sub
+
+    Protected Sub BtnAgregarCoberturaV2_Click(sender As Object, e As EventArgs)
+        AgregarRiesgo(txtviajeCompleto2, 1)
+    End Sub
+
+    Protected Sub GvViajeCompleto3_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Eliminar" Then
+            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            EliminarRiesgo(id)
+        End If
+    End Sub
+
+    Protected Sub GvViajeCompleto3_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+        GvViajeCompleto.PageIndex = e.NewPageIndex
+        CargarGridRiesgos(GvViajeCompleto3, 1)
+    End Sub
+
+    Protected Sub BtnAgregarCoberturaV3_Click(sender As Object, e As EventArgs)
+        AgregarRiesgo(txtviajeCompleto3, 1)
+    End Sub
+
+    Protected Sub GvContinuacionViaje_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Eliminar" Then
+            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            EliminarRiesgo(id)
+        End If
+    End Sub
+
+    Protected Sub GvContinuacionViaje_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+        GvContinuacionViaje.PageIndex = e.NewPageIndex
+        CargarGridRiesgos(GvContinuacionViaje, 2)
+    End Sub
+
+    Protected Sub btnagregarContinuacionViaje_Click(sender As Object, e As EventArgs)
+        AgregarRiesgo(txtcontinuacionViajeC, 2)
+    End Sub
 End Class
