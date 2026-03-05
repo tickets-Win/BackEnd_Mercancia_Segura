@@ -6,7 +6,6 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using MercanciaSegura.DOM.Modelos;
 using MercanciaSegura.DOM.Modelos.Cliente;
 using MercanciaSegura.RestAPI.Models;
-using MercanciaSegura.RestAPI.Models.Catalogos;
 using MercanciaSegura.RestAPI.Models.Cliente;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -53,6 +52,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 RegimenFiscalId = c.RegimenFiscalId,
                 TipoPersonaId = c.TipoPersonaId,
                 EstatusId = c.EstatusId,
+                Estatus = c.TipoEstatus != null ? c.TipoEstatus.Tipo : null,
                 CuotaMinimaInternacional = c.CuotaMinimaInternacional,
                 CuotaMinimaNacional = c.CuotaMinimaNacional,
                 CuotaAplicableInternacional = c.CuotaAplicableInternacional,
@@ -173,6 +173,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     .ThenInclude(cb => cb.BeneficiarioPreferente)
                     .ThenInclude(bp => bp.RfcGenerico)
 
+                .Include(c => c.TipoEstatus)
+
                 .Include(c => c.Correos)
                     .ThenInclude(co => co.TipoCorreo)
 
@@ -203,6 +205,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 .Include(c => c.ClienteBeneficiario)
                     .ThenInclude(cb => cb.BeneficiarioPreferente)
                     .ThenInclude(bp => bp.RfcGenerico)
+
+                .Include(c => c.TipoEstatus)
 
                 .Include(c => c.Correos)
                     .ThenInclude(co => co.TipoCorreo)
@@ -355,6 +359,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     .Include(c => c.ClienteBeneficiario)
                         .ThenInclude(cb => cb.BeneficiarioPreferente)
                         .ThenInclude(bp => bp.RfcGenerico)
+                    .Include(c => c.TipoEstatus)
                     .Include(c => c.Correos)
                         .ThenInclude(co => co.TipoCorreo)
                     .Include(c => c.Cuota)
@@ -517,6 +522,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
     .Include(c => c.ClienteBeneficiario)
         .ThenInclude(cb => cb.BeneficiarioPreferente)
         .ThenInclude(bp => bp.RfcGenerico)
+    .Include(c => c.TipoEstatus)
     .Include(c => c.Correos)
         .ThenInclude(co => co.TipoCorreo)
     .Include(c => c.Cuota)

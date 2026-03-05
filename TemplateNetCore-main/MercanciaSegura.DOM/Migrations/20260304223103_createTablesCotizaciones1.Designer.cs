@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260304223103_createTablesCotizaciones1")]
+    partial class createTablesCotizaciones1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -792,8 +795,7 @@ namespace MercanciaSegura.DOM.Migrations
 
                     b.HasKey("CotizacionContenedorId");
 
-                    b.HasIndex("CotizacionId")
-                        .IsUnique();
+                    b.HasIndex("CotizacionId");
 
                     b.ToTable("Cotizacion_Contenedor");
                 });
@@ -903,8 +905,7 @@ namespace MercanciaSegura.DOM.Migrations
 
                     b.HasKey("CotizacionMercanciaId");
 
-                    b.HasIndex("CotizacionId")
-                        .IsUnique();
+                    b.HasIndex("CotizacionId");
 
                     b.ToTable("Cotizacion_Mercancia");
                 });
@@ -1427,10 +1428,6 @@ namespace MercanciaSegura.DOM.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RiesgoCubiertoId"));
 
-                    b.Property<int?>("AdministracionBienId")
-                        .HasColumnType("int")
-                        .HasColumnName("Administracion_Bien_ID");
-
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Nombre");
@@ -1445,11 +1442,7 @@ namespace MercanciaSegura.DOM.Migrations
 
                     b.HasKey("RiesgoCubiertoId");
 
-                    b.HasIndex("AdministracionBienId");
-
                     b.HasIndex("PolizaMercanciaId");
-
-                    b.HasIndex("TipoRiesgoId");
 
                     b.ToTable("Riesgo_Cubierto");
                 });
@@ -1864,8 +1857,8 @@ namespace MercanciaSegura.DOM.Migrations
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.CotizacionContenedor", b =>
                 {
                     b.HasOne("MercanciaSegura.DOM.Modelos.Cotizacion", "Cotizacion")
-                        .WithOne("CotizacionContenedor")
-                        .HasForeignKey("MercanciaSegura.DOM.Modelos.CotizacionContenedor", "CotizacionId")
+                        .WithMany()
+                        .HasForeignKey("CotizacionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1875,8 +1868,8 @@ namespace MercanciaSegura.DOM.Migrations
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.CotizacionMercancia", b =>
                 {
                     b.HasOne("MercanciaSegura.DOM.Modelos.Cotizacion", "Cotizacion")
-                        .WithOne("CotizacionMercancia")
-                        .HasForeignKey("MercanciaSegura.DOM.Modelos.CotizacionMercancia", "CotizacionId")
+                        .WithMany("CotizacionMercancia")
+                        .HasForeignKey("CotizacionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1980,27 +1973,11 @@ namespace MercanciaSegura.DOM.Migrations
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.RiesgoCubierto", b =>
                 {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.AdministracionBien", "AdministracionBien")
-                        .WithMany()
-                        .HasForeignKey("AdministracionBienId");
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", "PolizaMercancia")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", null)
                         .WithMany("RiesgoCubierto")
                         .HasForeignKey("PolizaMercanciaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.TipoRiesgo", "TipoRiesgo")
-                        .WithMany()
-                        .HasForeignKey("TipoRiesgoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AdministracionBien");
-
-                    b.Navigation("PolizaMercancia");
-
-                    b.Navigation("TipoRiesgo");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Vendedor.Vendedor", b =>
@@ -2033,8 +2010,6 @@ namespace MercanciaSegura.DOM.Migrations
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cotizacion", b =>
                 {
-                    b.Navigation("CotizacionContenedor");
-
                     b.Navigation("CotizacionMercancia");
                 });
 
