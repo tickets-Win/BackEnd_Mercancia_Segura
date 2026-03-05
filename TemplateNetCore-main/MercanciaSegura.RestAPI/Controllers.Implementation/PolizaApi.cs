@@ -128,7 +128,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         RiesgoCubiertoId = r.RiesgoCubiertoId,
         Nombre = r.Nombre,
         TipoRiesgoId = r.TipoRiesgoId,
-        PolizaMercanciaId = r.PolizaMercanciaId
+        PolizaMercanciaId = r.PolizaMercanciaId,
+        AdministracionBienId = r.AdministracionBienId,
     }).ToList() ?? new List<RiesgoCubiertoResponse>()
 
     }).ToList(),
@@ -251,7 +252,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 .Select(r => new RiesgoCubierto
                 {
                     Nombre = r.Nombre,
-                    TipoRiesgoId = r.TipoRiesgoId
+                    TipoRiesgoId = r.TipoRiesgoId,
+                    AdministracionBienId = r.AdministracionBienId,
                 })
                 .ToList() ?? new List<RiesgoCubierto>();
         }
@@ -320,7 +322,13 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 .Include(p => p.FormaPago)
                 .Include(p => p.EstatusPoliza)
                 .Include(p => p.PolizaContenedor)
-                .Include(p => p.PolizaMercancia)
+    .ThenInclude(pc => pc.Cobertura)
+
+.Include(p => p.PolizaMercancia)
+    .ThenInclude(pm => pm.RiesgoCubierto)
+
+.Include(p => p.Bien)
+    .ThenInclude(b => b.TipoBien)
                 .FirstOrDefaultAsync(p => p.PolizaId == idPoliza);
 
             if (poliza == null)
@@ -360,22 +368,9 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     poliza.PolizaMercancia = new List<PolizaMercancia>();
                     foreach (var item in body.PolizaMercancia)
                     {
-                        var mercancia = new PolizaMercancia
-                        {
-                            AdministracionBienId = item.AdministracionBienId
-                        };
-                        MapToPolizaMercancia(mercancia, item);
+                        var mercancia = new PolizaMercancia();
 
-                        if (item.RiesgoCubierto != null && item.RiesgoCubierto.Any())
-                        {
-                            mercancia.RiesgoCubierto = item.RiesgoCubierto
-                                .Select(r => new RiesgoCubierto
-                                {
-                                    Nombre = r.Nombre,
-                                    TipoRiesgoId = r.TipoRiesgoId
-                                })
-                                .ToList();
-                        }
+                        MapToPolizaMercancia(mercancia, item);
 
                         poliza.PolizaMercancia.Add(mercancia);
                     }
@@ -440,88 +435,139 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 .Include(p => p.Moneda)
                 .Include(p => p.FormaPago)
                 .Include(p => p.EstatusPoliza)
+
                 .Include(p => p.PolizaContenedor)
+                    .ThenInclude(pc => pc.Cobertura)
+
                 .Include(p => p.PolizaMercancia)
+                    .ThenInclude(pm => pm.RiesgoCubierto)
+
+                .Include(p => p.Bien)
+
                 .FirstOrDefaultAsync(p => p.PolizaId == idPoliza);
 
             if (poliza == null)
                 return NotFound();
 
-            // 🔹 Actualizar datos de la póliza
+            // 🔹 Actualizar datos generales
             MapToPoliza(poliza, body);
             poliza.FechaActualizacion = DateTime.Now;
 
-            // 🔹 Actualizar o crear PolizaContenedor
             if (body.PolizaContenedor != null)
             {
                 if (poliza.PolizaContenedor == null)
                 {
-                    poliza.PolizaContenedor = new PolizaContenedor { PolizaId = poliza.PolizaId };
+                    poliza.PolizaContenedor = new PolizaContenedor
+                    {
+                        PolizaId = poliza.PolizaId
+                    };
                     _context.PolizaContenedor.Add(poliza.PolizaContenedor);
                 }
+
                 MapToPolizaContenedor(poliza.PolizaContenedor, body.PolizaContenedor);
+
+                // 🔹 Limpiar coberturas anteriores
+                if (poliza.PolizaContenedor.Cobertura != null)
+                {
+                    _context.Cobertura.RemoveRange(poliza.PolizaContenedor.Cobertura);
+                }
+
+                // 🔹 Insertar nuevas coberturas
+                poliza.PolizaContenedor.Cobertura = body.PolizaContenedor.Cobertura?
+                    .Select(c => new Cobertura
+                    {
+                        Nombre = c.Nombre
+                    }).ToList();
             }
 
+            if (body.PolizaMercancia != null && body.PolizaMercancia.Any())
+            {
+                // eliminar anteriores
+                if (poliza.PolizaMercancia != null)
+                {
+                    foreach (var pm in poliza.PolizaMercancia)
+                    {
+                        if (pm.RiesgoCubierto != null)
+                            _context.RiesgoCubierto.RemoveRange(pm.RiesgoCubierto);
+                    }
+
+                    _context.PolizaMercancia.RemoveRange(poliza.PolizaMercancia);
+                }
+
+                poliza.PolizaMercancia = new List<PolizaMercancia>();
+
+                foreach (var item in body.PolizaMercancia)
+                {
+                    var mercancia = new PolizaMercancia();
+
+                    MapToPolizaMercancia(mercancia, item);
+
+                    poliza.PolizaMercancia.Add(mercancia);
+                }
+            }
+
+            if (body.Bien != null)
+            {
+                if (poliza.Bien != null)
+                    _context.Bien.RemoveRange(poliza.Bien);
+
+                poliza.Bien = new List<Bien>();
+
+                foreach (var b in body.Bien)
+                {
+                    var bien = new Bien();
+                    MapToBien(bien, b);
+                    poliza.Bien.Add(bien);
+                }
+            }
 
             await _context.SaveChangesAsync();
 
-            return Ok(MapToResponse(poliza));
-        }
-
-        public override async Task<IActionResult> DeletePolizaAsync(string version, int idPoliza)
-        {
-            // Buscar la póliza
-            var poliza = await _context.Poliza
+            // Recargar para respuesta
+            var polizaActualizada = await _context.Poliza
+                .AsNoTracking()
+                .Include(p => p.Producto)
+                .Include(p => p.Contratante)
+                .Include(p => p.Aseguradora)
+                .Include(p => p.SubRamo)
+                .Include(p => p.Moneda)
+                .Include(p => p.FormaPago)
+                .Include(p => p.EstatusPoliza)
                 .Include(p => p.PolizaContenedor)
                     .ThenInclude(pc => pc.Cobertura)
                 .Include(p => p.PolizaMercancia)
                     .ThenInclude(pm => pm.RiesgoCubierto)
                 .Include(p => p.Bien)
+                    .ThenInclude(b => b.TipoBien)
+                .FirstOrDefaultAsync(p => p.PolizaId == idPoliza);
+
+            return Ok(MapToResponse(polizaActualizada));
+        }
+
+        public override async Task<IActionResult> DeletePolizaAsync(string version, int idPoliza)
+        {
+            var poliza = await _context.Poliza
                 .FirstOrDefaultAsync(p => p.PolizaId == idPoliza);
 
             if (poliza == null)
                 return NotFound(new { message = "La póliza no existe" });
 
-            if (poliza.EstatusPolizaId == 3)
+            if (poliza.FechaBaja != null)
                 return BadRequest(new { message = "La póliza ya está cancelada" });
-
-            await using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
-                // Marcar como cancelada
-                poliza.EstatusPolizaId = 3;
+                poliza.EstatusPolizaId = 3; // 3 = Cancelada
+                poliza.FechaBaja = DateTime.Now;
                 poliza.FechaActualizacion = DateTime.Now;
 
-                // Opcional: marcar hijos como inactivos o limpiar datos
-                if (poliza.PolizaContenedor != null)
-                {
-                    poliza.PolizaContenedor.TrayectosAsegurados = null;
-                    poliza.PolizaContenedor.Cobertura?.Clear();
-                }
-
-                if (poliza.PolizaMercancia != null)
-                {
-                    foreach (var pm in poliza.PolizaMercancia)
-                    {
-                        pm.RiesgoCubierto?.Clear();
-                    }
-                }
-
-                if (poliza.Bien != null)
-                {
-                    poliza.Bien.Clear();
-                }
-
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
 
                 return Ok(new { message = "Póliza cancelada correctamente" });
             }
-            catch
+            catch (Exception ex)
             {
-                await transaction.RollbackAsync();
-                throw;
+                return StatusCode(500, new { message = "Error al cancelar la póliza", detail = ex.Message });
             }
         }
 

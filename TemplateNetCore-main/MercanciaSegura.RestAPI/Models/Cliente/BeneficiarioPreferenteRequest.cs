@@ -6,7 +6,6 @@
         public string ApellidoPaterno { get; set; }
         public string ApellidoMaterno { get; set; }
         public string NombreCompleto { get; set; }
-        public string Domicilio { get; set; }
         public string RFC { get; set; }
         public string Clave { get; set; }
 

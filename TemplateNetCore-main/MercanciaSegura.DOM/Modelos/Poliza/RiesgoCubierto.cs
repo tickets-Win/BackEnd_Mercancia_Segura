@@ -18,5 +18,17 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
 
         [Column("Poliza_Mercancia_ID")]
         public int PolizaMercanciaId { get; set; }
+
+        [Column("Administracion_Bien_ID")]
+        public int? AdministracionBienId { get; set; }
+
+        [ForeignKey(nameof(AdministracionBienId))]
+        public AdministracionBien? AdministracionBien { get; set; }
+
+        [ForeignKey(nameof(PolizaMercanciaId))]
+        public PolizaMercancia? PolizaMercancia { get; set; }
+
+        [ForeignKey(nameof(TipoRiesgoId))]
+        public TipoRiesgo? TipoRiesgo { get; set; }
     }
 }

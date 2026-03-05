@@ -21,7 +21,6 @@ namespace MercanciaSegura.RestAPI.Models.Cliente
         public string NumeroInt { get; set; }
         public string NumeroExt { get; set; }
         public string Poblacion { get; set; }
-        public string Domicilio { get; set; }
         public string Colonia { get; set; }
         public string Cp { get; set; }
         public string Pais { get; set; }
