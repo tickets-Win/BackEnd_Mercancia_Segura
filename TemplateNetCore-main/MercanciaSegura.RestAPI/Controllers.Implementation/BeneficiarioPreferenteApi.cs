@@ -33,7 +33,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 tipo = b.TipoPersona != null ? b.TipoPersona.Tipo : null,
                 RfcGenericoId = b.RfcGenericoId,
                 rfcGenerico = b.RfcGenerico != null ? b.RfcGenerico.Tipo : null,
-                Domicilio = b.Domicilio,
                 NombreCompleto = b.NombreCompleto,
                 Calle = b.Calle,
                 NumeroInt = b.NumeroInt,
@@ -66,7 +65,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             entity.Cp = body.Cp;
             entity.Pais = body.Pais;
             entity.Nacionalidad = body.Nacionalidad;
-            entity.Domicilio = body.Domicilio;
             entity.NombreCompleto = body.NombreCompleto;
         }
 

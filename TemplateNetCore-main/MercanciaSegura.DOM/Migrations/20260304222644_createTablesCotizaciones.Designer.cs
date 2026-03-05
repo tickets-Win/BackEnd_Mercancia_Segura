@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260304222644_createTablesCotizaciones")]
+    partial class createTablesCotizaciones
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,6 +63,11 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("nvarchar(5)")
                         .HasColumnName("CP");
+
+                    b.Property<string>("Domicilio")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("Domicilio");
 
                     b.Property<DateTime?>("FechaActualizacion")
                         .HasColumnType("datetime2")
@@ -692,223 +700,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.ToTable("Cliente_Vendedor");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cotizacion", b =>
-                {
-                    b.Property<int>("CotizacionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Cotizacion_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CotizacionId"));
-
-                    b.Property<int?>("ClienteId")
-                        .HasColumnType("int")
-                        .HasColumnName("Cliente_ID");
-
-                    b.Property<DateTime?>("FechaCancelacion")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Fecha_Cancelacion");
-
-                    b.Property<DateTime>("FechaCotizacion")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Fecha_Cotizacion");
-
-                    b.Property<decimal?>("GastosExpedicion")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Gastos_Expedicion");
-
-                    b.Property<string>("MotivoCancelacion")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
-                        .HasColumnName("Motivo_Cancelacion");
-
-                    b.Property<int?>("PolizaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Poliza_ID");
-
-                    b.Property<decimal?>("SumaAsegurada")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Suma_Asegurada");
-
-                    b.Property<DateTime?>("VigenciaDel")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Vigencia_Del");
-
-                    b.Property<DateTime?>("VigenciaHasta")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Vigencia_Hasta");
-
-                    b.HasKey("CotizacionId");
-
-                    b.HasIndex("ClienteId");
-
-                    b.HasIndex("PolizaId");
-
-                    b.ToTable("Cotizacion");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.CotizacionContenedor", b =>
-                {
-                    b.Property<int>("CotizacionContenedorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Cotizacion_Contenedor_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CotizacionContenedorId"));
-
-                    b.Property<int>("CotizacionId")
-                        .HasColumnType("int")
-                        .HasColumnName("Cotizacion_ID");
-
-                    b.Property<decimal?>("IVA")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("IVA");
-
-                    b.Property<string>("NumeroContenedor")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Numero_contenedor");
-
-                    b.Property<decimal?>("OpcionCuota")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Opcion_Cuota");
-
-                    b.Property<string>("TamanoTipoContendor")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Tamaño_Tipo_Contendor");
-
-                    b.Property<decimal?>("Tarifa")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Tarifa");
-
-                    b.Property<decimal?>("Total")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Total");
-
-                    b.Property<decimal?>("TotalTarifa")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Total_Tarifa");
-
-                    b.HasKey("CotizacionContenedorId");
-
-                    b.HasIndex("CotizacionId")
-                        .IsUnique();
-
-                    b.ToTable("Cotizacion_Contenedor");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.CotizacionMercancia", b =>
-                {
-                    b.Property<int>("CotizacionMercanciaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Cotizacion_Mercancia_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CotizacionMercanciaId"));
-
-                    b.Property<string>("Clasificacion")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Clasificacion");
-
-                    b.Property<string>("CotizacionCliente")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Cotizacion_Cliente");
-
-                    b.Property<int>("CotizacionId")
-                        .HasColumnType("int")
-                        .HasColumnName("Cotizacion_ID");
-
-                    b.Property<decimal?>("CuotaAplicable")
-                        .HasColumnType("decimal(18,4)")
-                        .HasColumnName("Cuota_Aplicable");
-
-                    b.Property<decimal?>("CuotaMinima")
-                        .HasColumnType("decimal(18,4)")
-                        .HasColumnName("Cuota_Minima");
-
-                    b.Property<string>("Deducibles")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Deducibles");
-
-                    b.Property<string>("DescripcionMercancia")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Descripcion_Mercancia");
-
-                    b.Property<string>("Destino")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Destino");
-
-                    b.Property<decimal?>("IVA")
-                        .HasColumnType("decimal(18,4)")
-                        .HasColumnName("IVA");
-
-                    b.Property<string>("MedidasDeSeguridadAdicionales")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Medidas_De_Seguridad_Adicionales");
-
-                    b.Property<string>("MedioDeConduccion")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Medio_De_Conduccion");
-
-                    b.Property<string>("MedioDeTransporte")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Medio_De_Transporte");
-
-                    b.Property<string>("Observaciones")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Observaciones");
-
-                    b.Property<string>("Origen")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Origen");
-
-                    b.Property<decimal?>("PrimaServicioDeAseguramiento")
-                        .HasColumnType("decimal(18,4)")
-                        .HasColumnName("Prima_Servicio_De_Aseguramiento");
-
-                    b.Property<string>("SubClasificacion")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Sub_Clasificacion");
-
-                    b.Property<decimal?>("Subtotal")
-                        .HasColumnType("decimal(18,4)")
-                        .HasColumnName("Subtotal");
-
-                    b.Property<decimal?>("TipoCambioCotizar")
-                        .HasColumnType("decimal(18,4)")
-                        .HasColumnName("Tipo_Cambio_Cotizar");
-
-                    b.Property<string>("TipoEmpaque")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Tipo_Empaque");
-
-                    b.Property<decimal?>("Total")
-                        .HasColumnType("decimal(18,4)")
-                        .HasColumnName("Total");
-
-                    b.Property<decimal?>("TotalSeguroContenedor")
-                        .HasColumnType("decimal(18,4)")
-                        .HasColumnName("Total_Seguro_Contenedor");
-
-                    b.Property<decimal?>("TotalSeguroMercancia")
-                        .HasColumnType("decimal(18,4)")
-                        .HasColumnName("Total_Seguro_Mercancia");
-
-                    b.Property<string>("Transito")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("Transito");
-
-                    b.HasKey("CotizacionMercanciaId");
-
-                    b.HasIndex("CotizacionId")
-                        .IsUnique();
-
-                    b.ToTable("Cotizacion_Mercancia");
-                });
-
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.AdministracionBien", b =>
                 {
                     b.Property<int>("AdministracionBienId")
@@ -1427,10 +1218,6 @@ namespace MercanciaSegura.DOM.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RiesgoCubiertoId"));
 
-                    b.Property<int?>("AdministracionBienId")
-                        .HasColumnType("int")
-                        .HasColumnName("Administracion_Bien_ID");
-
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Nombre");
@@ -1445,11 +1232,7 @@ namespace MercanciaSegura.DOM.Migrations
 
                     b.HasKey("RiesgoCubiertoId");
 
-                    b.HasIndex("AdministracionBienId");
-
                     b.HasIndex("PolizaMercanciaId");
-
-                    b.HasIndex("TipoRiesgoId");
 
                     b.ToTable("Riesgo_Cubierto");
                 });
@@ -1846,43 +1629,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Navigation("Vendedor");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cotizacion", b =>
-                {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.Cliente", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId");
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Poliza", "Poliza")
-                        .WithMany()
-                        .HasForeignKey("PolizaId");
-
-                    b.Navigation("Cliente");
-
-                    b.Navigation("Poliza");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.CotizacionContenedor", b =>
-                {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cotizacion", "Cotizacion")
-                        .WithOne("CotizacionContenedor")
-                        .HasForeignKey("MercanciaSegura.DOM.Modelos.CotizacionContenedor", "CotizacionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cotizacion");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.CotizacionMercancia", b =>
-                {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cotizacion", "Cotizacion")
-                        .WithOne("CotizacionMercancia")
-                        .HasForeignKey("MercanciaSegura.DOM.Modelos.CotizacionMercancia", "CotizacionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cotizacion");
-                });
-
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Bien", b =>
                 {
                     b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.AdministracionBien", "AdministracionBien")
@@ -1980,27 +1726,11 @@ namespace MercanciaSegura.DOM.Migrations
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.RiesgoCubierto", b =>
                 {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.AdministracionBien", "AdministracionBien")
-                        .WithMany()
-                        .HasForeignKey("AdministracionBienId");
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", "PolizaMercancia")
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.PolizaMercancia", null)
                         .WithMany("RiesgoCubierto")
                         .HasForeignKey("PolizaMercanciaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.TipoRiesgo", "TipoRiesgo")
-                        .WithMany()
-                        .HasForeignKey("TipoRiesgoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AdministracionBien");
-
-                    b.Navigation("PolizaMercancia");
-
-                    b.Navigation("TipoRiesgo");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Vendedor.Vendedor", b =>
@@ -2029,13 +1759,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Navigation("Correos");
 
                     b.Navigation("Cuota");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cotizacion", b =>
-                {
-                    b.Navigation("CotizacionContenedor");
-
-                    b.Navigation("CotizacionMercancia");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Poliza", b =>

@@ -14,10 +14,6 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         [MaxLength(100)]
         public string? Nombre { get; set; }
 
-        [Column("Domicilio")]
-        [MaxLength(200)]
-        public string? Domicilio { get; set; }
-
         [Column("RFC")]
         [MaxLength(13)]
         public string? RFC { get; set; }
