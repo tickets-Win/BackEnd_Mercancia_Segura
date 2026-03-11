@@ -27,7 +27,7 @@ namespace MercanciaSegura.RestAPI.Models.Cotizacion
 
         public DateTime? FechaCancelacion { get; set; }
 
-        public List<CotizacionMercanciaResponse> CotizacionMercancia { get; set; }
-        public List<CotizacionContenedorResponse> CotizacionContenedor { get; set; }
+        public CotizacionMercanciaResponse CotizacionMercancia { get; set; } = new();
+        public CotizacionContenedorResponse CotizacionContenedor { get; set; } = new();
     }
 }

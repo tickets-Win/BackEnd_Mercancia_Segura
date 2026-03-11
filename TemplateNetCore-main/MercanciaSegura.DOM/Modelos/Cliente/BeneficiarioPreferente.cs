@@ -68,6 +68,14 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         [MaxLength(50)]
         public string? Pais { get; set; }
 
+        [Column("Estado")]
+        [MaxLength(50)]
+        public string? Estado { get; set; }
+
+        [Column("Municipio")]
+        [MaxLength(50)]
+        public string? Municipio { get; set; }
+
         [Column("Nacionalidad")]
         [MaxLength(30)]
         public string? Nacionalidad { get; set; }

@@ -41,6 +41,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 Colonia = b.Colonia,
                 Cp = b.Cp,
                 Pais = b.Pais,
+                Estado = b.Estado,
+                Municipio = b.Municipio,
                 Nacionalidad = b.Nacionalidad,
                 FechaRegistro = b.FechaRegistro,
                 FechaActualizacion = b.FechaActualizacion
@@ -64,6 +66,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             entity.Colonia = body.Colonia;
             entity.Cp = body.Cp;
             entity.Pais = body.Pais;
+            entity.Estado = body.Estado;
+            entity.Municipio = body.Municipio;
             entity.Nacionalidad = body.Nacionalidad;
             entity.NombreCompleto = body.NombreCompleto;
         }

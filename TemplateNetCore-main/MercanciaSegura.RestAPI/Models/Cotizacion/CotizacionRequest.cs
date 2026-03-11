@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MercanciaSegura.DOM.Modelos;
 
 namespace MercanciaSegura.RestAPI.Models.Cotizacion
 {
@@ -23,9 +24,8 @@ namespace MercanciaSegura.RestAPI.Models.Cotizacion
 
         public DateTime? FechaCancelacion { get; set; }
 
-        public List<CotizacionMercanciaRequest> CotizacionMercancia { get; set; }
-
-        public List<CotizacionContenedorRequest> CotizacionContenedor { get; set; }
+        public CotizacionMercanciaRequest CotizacionMercancia { get; set; } = new();
+        public CotizacionContenedorRequest CotizacionContenedor { get; set; } = new();
     }
 }
 
