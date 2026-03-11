@@ -1,24 +1,7 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminVendedor.aspx.vb" Inherits="WebAdmin.AdminVendedor" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <style>
-        .icon-btn {
-            background: none;
-            border: none;
-            padding: 6px;
-            font-size: 20px;
-            color: #000;
-            cursor: pointer;
-        }
-
-            .icon-btn:hover {
-                color: #555;
-            }
-
-        .action-icon {
-            text-decoration: none !important;
-        }
-    </style>
+    <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:Panel ID="PnlEncabezado" runat="server">
@@ -29,7 +12,15 @@
         </div>
         <div class="mb-4">
             <asp:TextBox ID="txtBuscarVendedor" runat="server" CssClass="form-control"
-                placeholder="🔍 Buscar vendedores..."></asp:TextBox>
+                placeholder="🔍 Buscar vendedores..." AutoPostBack="true" OnTextChanged="txtBuscarVendedor_TextChanged"></asp:TextBox>
+        </div>
+        <div class="d-flex justify-content-left mb-4">
+            <label for="ddlTipoEstatusCliente" class="form-label visually-hidden">Filtrar</label>
+            <asp:DropDownList ID="ddlTipoEstatusCliente" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoEstatusCliente_SelectedIndexChanged">
+                <asp:ListItem Text="-- Todos --" Value="0" />
+                <asp:ListItem Text="Activo" Value="1" />
+                <asp:ListItem Text="Suspendido" Value="2" />
+            </asp:DropDownList>
         </div>
     </asp:Panel>
     <asp:Panel ID="PnlTabla" runat="server">
@@ -38,6 +29,7 @@
                 <asp:GridView ID="gvVendedores" runat="server"
                     CssClass="table table-hover align-middle"
                     AutoGenerateColumns="False"
+                    OnRowCommand="gvVendedores_RowCommand"
                     HeaderStyle-CssClass="table-light"
                     DataKeyNames="VendedorId"
                     AllowPaging="True"
@@ -46,18 +38,17 @@
                     <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
                     <Columns>
                         <asp:BoundField DataField="Clave" HeaderText="Clave" />
-                        <asp:BoundField DataField="Estatus" HeaderText="Estatus" />
+                        <asp:TemplateField HeaderText="Estatus">
+                            <ItemTemplate>
+                                <%# If(Eval("Estatus"), "Activo", "Suspendido") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
                         <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
                         <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
 
                         <asp:TemplateField HeaderText="Acciones">
                             <ItemTemplate>
-                                <asp:LinkButton ID="lnkVer" runat="server" CommandName="Ver" CommandArgument='<%# Eval("VendedorId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Ver">
-                                <i class="bi bi-eye"></i>
-                                </asp:LinkButton>
-
                                 <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("VendedorId") %>'
                                     CssClass="icon-btn action-icon" ToolTip="Editar">
                                 <i class="bi bi-pencil"></i>
@@ -83,15 +74,16 @@
 
     <!-- FORMULARIO DE REGISTRO / EDICIÓN DE VENDEDOR -->
     <asp:Panel ID="pnlFormularioVendedor" runat="server" CssClass="card p-4 mt-4" Visible="false">
-
+        <asp:HiddenField ID="hfVendedorId" runat="server" />
+        <asp:HiddenField ID="hfTipoPersona" runat="server" />
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>
                 <asp:Label ID="lblMensaje" runat="server"></asp:Label>
             </h2>
 
             <div>
-                <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" />
-                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClick="btnGuardar_Click" />
+                <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" OnClick="btnCancelar_Click" />
+                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClick="btnGuardar_Click" OnClientClick="return validarCampos();" />
             </div>
         </div>
 
@@ -102,40 +94,38 @@
 
             <div class="col-md-4">
                 <label class="form-label">Tipo de persona</label>
-                <asp:DropDownList ID="ddlTipoPersona" CssClass="form-select" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoPersona_SelectedIndexChanged">
-                    <asp:ListItem Text="Fisica" Value="Fisica"></asp:ListItem>
-                    <asp:ListItem Text="Moral" Value="Moral"></asp:ListItem>
+                <asp:DropDownList ID="ddlTipoPersona" CssClass="form-select required" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoPersona_SelectedIndexChanged">
                 </asp:DropDownList>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Estatus</label>
                 <asp:DropDownList ID="ddlEstatus" CssClass="form-select" runat="server">
-                    <asp:ListItem Text="Activo" Value="Activo"></asp:ListItem>
-                    <asp:ListItem Text="Suspendido" Value="Suspendido"></asp:ListItem>
+                    <asp:ListItem Text="Activo" Value="1"></asp:ListItem>
+                    <asp:ListItem Text="Suspendido" Value="0"></asp:ListItem>
                 </asp:DropDownList>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Tipo Vendedor</label>
-                <asp:DropDownList ID="ddlTipoVendedor" CssClass="form-select" runat="server">
+                <asp:DropDownList ID="ddlTipoVendedor" CssClass="form-select required" runat="server" AutoPostBack="false" onchange="onTipoVendedorChange()">
                 </asp:DropDownList>
             </div>
             <asp:Panel ID="pnlDatosFisica" runat="server">
                 <div class="row g-3 mt-2">
                     <div class="col-md-4">
                         <label class="form-label">Apellido paterno</label>
-                        <asp:TextBox ID="txtApellidoP" runat="server" CssClass="form-control" oninput="llenarNombreCompleto()"></asp:TextBox>
+                        <asp:TextBox ID="txtApellidoP" runat="server" CssClass="form-control required" oninput="llenarNombreCompleto()"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Apellido materno</label>
-                        <asp:TextBox ID="txtApellidoM" runat="server" CssClass="form-control" oninput="llenarNombreCompleto()"></asp:TextBox>
+                        <asp:TextBox ID="txtApellidoM" runat="server" CssClass="form-control required" oninput="llenarNombreCompleto()"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Nombre</label>
-                        <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" oninput="llenarNombreCompleto()"></asp:TextBox>
+                        <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control required" oninput="llenarNombreCompleto()"></asp:TextBox>
                     </div>
                 </div>
             </asp:Panel>
@@ -145,26 +135,26 @@
             </asp:Panel>
             <div class="col-md-4">
                 <label class="form-label">Clave</label>
-                <asp:TextBox ID="txtClave" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtClave" runat="server" CssClass="form-control required clave-15"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">RFC</label>
-                <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control required rfc-format"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Fecha registro</label>
-                <asp:TextBox ID="txtFechaRegistro" TextMode="Date" runat="server" CssClass="form-control" ReadOnly="True"></asp:TextBox>
+                <asp:TextBox ID="txtFechaRegistro" TextMode="Date" runat="server" CssClass="form-control required" ReadOnly="True"></asp:TextBox>
             </div>
             <asp:Panel ID="pnlRazonSocial" runat="server" CssClass="col-md-4">
                 <label class="form-label">Razón / Denominación social</label>
                 <asp:TextBox ID="txtRazonSocial" runat="server" CssClass="form-control"></asp:TextBox>
             </asp:Panel>
 
-            <div class="col-md-4">
+            <div class="col-md-8">
                 <label class="form-label">Observaciones</label>
-                <asp:TextBox ID="txtObservaciones" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtObservaciones" runat="server" CssClass="form-control textarea" TextMode="MultiLine" Rows="4" Placeholder="Notas adicionales del vendedor"></asp:TextBox>
             </div>
 
         </div>
@@ -176,21 +166,22 @@
 
             <div class="col-md-4">
                 <label class="form-label">Teléfono</label>
-                <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control required"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
                 <label class="form-label">Correo</label>
-                <asp:TextBox ID="txtCorreo" TextMode="Email" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtCorreo" TextMode="Email" runat="server" CssClass="form-control email-format"></asp:TextBox>
             </div>
 
-            <div class="col-md-4">
+            <asp:Panel ID="pnlGenero" runat="server" CssClass="col-md-4">
                 <label class="form-label">Género</label>
                 <asp:DropDownList ID="ddlGenero" runat="server" CssClass="form-select">
+                    <asp:ListItem Text="Selecciona género" Value="" />
                     <asp:ListItem Text="Masculino" Value="M"></asp:ListItem>
                     <asp:ListItem Text="Femenino" Value="F"></asp:ListItem>
                 </asp:DropDownList>
-            </div>
+            </asp:Panel>
             <div class="col-md-4">
                 <label class="form-label">Estado</label>
                 <asp:TextBox ID="txtEstado" runat="server" CssClass="form-control"></asp:TextBox>
@@ -207,7 +198,7 @@
 
             <div class="col-md-4">
                 <label class="form-label">C.P.</label>
-                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control"></asp:TextBox>
+                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control only-numbers"></asp:TextBox>
             </div>
 
         </div>
@@ -216,10 +207,157 @@
 
         <div class="col-md-4">
             <label class="form-label">Comisión</label>
-            <asp:TextBox ID="txtComisión" runat="server" CssClass="form-control"></asp:TextBox>
+            <asp:TextBox ID="txtComision" runat="server" CssClass="form-control required porcentaje"></asp:TextBox>
         </div>
 
     </asp:Panel>
+    <script>
+        function onTipoVendedorChange() {
+
+            limpiarValidacion();
+
+            const ddl = document.getElementById('<%= ddlTipoVendedor.ClientID %>');
+            const txtComision = document.getElementById('<%= txtComision.ClientID %>');
+
+            if (ddl.value === "1") {
+                txtComision.disabled = false;
+                txtComision.classList.add('required');
+            } else {
+                txtComision.disabled = true;
+                txtComision.value = "";
+                txtComision.classList.remove('required');
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var ddlTipoVendedor = document.getElementById('<%= ddlTipoVendedor.ClientID %>');
+            var txtComision = document.getElementById('<%= txtComision.ClientID %>');
+
+            function toggleComision() {
+                var tipoSeleccionado = ddlTipoVendedor.options[ddlTipoVendedor.selectedIndex].text;
+
+                if (tipoSeleccionado.toLowerCase() === "intermediario") {
+                    txtComision.disabled = false;
+                } else {
+                    txtComision.disabled = true;
+                    txtComision.value = "";
+                }
+            }
+
+            ddlTipoVendedor.addEventListener("change", toggleComision);
+
+            toggleComision();
+        });
+    </script>
+
+    <script>
+        function validarCampos() {
+
+            limpiarValidacion();
+            let valido = true;
+
+            document.querySelectorAll('.required').forEach(function (campo) {
+                if (campo.disabled) return;
+
+                if (!campo.value.trim()) {
+                    marcarError(campo, "Este campo es obligatorio");
+                    valido = false;
+                }
+            });
+
+            document.querySelectorAll('.only-numbers').forEach(function (campo) {
+                if (campo.value) {
+                    if (!/^\d+$/.test(campo.value)) {
+                        marcarError(campo, "Solo se permiten números");
+                        valido = false;
+                    }
+                    else if (campo.value.length !== 5) {
+                        marcarError(campo, "El código postal debe tener exactamente 5 dígitos");
+                        valido = false;
+                    }
+
+                }
+            });
+
+            document.querySelectorAll('.rfc-format').forEach(function (campo) {
+                if (campo.value) {
+                    let rfcRegex = /^([A-ZÑ&]{3,4})\d{6}([A-Z\d]{3})$/;
+                    if (!rfcRegex.test(campo.value.toUpperCase())) {
+                        marcarError(campo, "RFC no válido");
+                        valido = false;
+                    }
+                }
+            });
+
+            document.querySelectorAll('.clave-15').forEach(function (campo) {
+                if (campo.value) {
+                    let regex = /^[a-zA-Z0-9]{1,15}$/;
+
+                    if (!regex.test(campo.value)) {
+                        marcarError(campo, "Ingresa una clave valida, la clave debe tener letras o números");
+                        valido = false;
+                    }
+                }
+            });
+
+            document.querySelectorAll('.email-format').forEach(function (campo) {
+                if (campo.value) {
+                    let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+                    if (!emailRegex.test(campo.value.trim())) {
+                        marcarError(campo, "Ingresa un correo electrónico válido");
+                        valido = false;
+                    }
+                }
+            });
+
+            document.querySelectorAll('.porcentaje').forEach(function (campo) {
+                if (campo.value) {
+
+                    let valor = parseFloat(campo.value);
+
+                    if (isNaN(valor)) {
+                        marcarError(campo, "Debe ser un número válido");
+                        valido = false;
+                    }
+                    else if (valor < 0 || valor > 100) {
+                        marcarError(campo, "La comisión debe estar entre 0 y 100");
+                        valido = false;
+                    }
+                }
+            });
+
+            if (!valido) {
+                showToast('Corrige los campos marcados', 'danger');
+            }
+
+            return valido;
+        }
+
+        function marcarError(campo, mensaje) {
+            campo.classList.add('is-invalid');
+
+            let feedback = document.createElement("div");
+            feedback.className = "invalid-feedback";
+            feedback.innerText = mensaje;
+
+            if (!campo.nextElementSibling || !campo.nextElementSibling.classList.contains("invalid-feedback")) {
+                campo.parentNode.appendChild(feedback);
+            }
+        }
+
+        function limpiarValidacion() {
+            document.querySelectorAll('.is-invalid').forEach(function (campo) {
+                campo.classList.remove('is-invalid');
+            });
+
+            document.querySelectorAll('.invalid-feedback').forEach(function (msg) {
+                msg.remove();
+            });
+        }
+    </script>
     <script type="text/javascript">
         function llenarNombreCompleto() {
             var nombre = document.getElementById('<%= txtNombre.ClientID %>').value;
@@ -230,5 +368,66 @@
             document.getElementById('<%= txtNombreCompleto.ClientID %>').value = nombreCompleto.trim();
         }
     </script>
+    <script>
+        function showToast(message, type) {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = `
+        <div class="toast align-items-center text-bg-${type} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+            document.getElementById('alertPlaceholder').append(wrapper);
 
+            setTimeout(() => {
+                wrapper.querySelector('.toast').classList.remove('show');
+                wrapper.remove();
+            }, 3000);
+        }
+    </script>
+
+    <div id="alertPlaceholder" class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;"></div>
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var txtComision = document.getElementById('<%= txtComision.ClientID %>');
+
+            txtComision.addEventListener('blur', function () {
+                var valor = txtComision.value.trim();
+
+                valor = valor.replace(",", ".");
+
+                if (valor !== "" && !isNaN(valor)) {
+                    var numero = parseFloat(valor).toFixed(2);
+                    txtComision.value = numero + "%";
+                } else {
+                    txtComision.value = "";
+                }
+            });
+
+            txtComision.addEventListener('focus', function () {
+                txtComision.value = txtComision.value.replace("%", "");
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            document.querySelectorAll("input").forEach(function (input) {
+
+                input.addEventListener("keydown", function (e) {
+
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        return false;
+                    }
+
+                });
+
+            });
+
+        });
+    </script>
 </asp:Content>
