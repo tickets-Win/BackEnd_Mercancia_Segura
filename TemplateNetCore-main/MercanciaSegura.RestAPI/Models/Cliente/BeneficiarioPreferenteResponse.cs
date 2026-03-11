@@ -24,6 +24,8 @@ namespace MercanciaSegura.RestAPI.Models.Cliente
         public string Colonia { get; set; }
         public string Cp { get; set; }
         public string Pais { get; set; }
+        public string Estado { get; set; }
+        public string Municipio { get; set; }
         public string Nacionalidad { get; set; }
 
         public DateTime? FechaActualizacion { get; set; }

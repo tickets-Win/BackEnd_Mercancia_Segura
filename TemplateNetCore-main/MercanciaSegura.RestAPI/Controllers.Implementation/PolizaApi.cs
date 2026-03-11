@@ -200,14 +200,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             pc.OtroPrima = body.OtroPrima;
             pc.IVA = body.IVA;
             pc.PrimaTotal = body.PrimaTotal;
-
-            // 📌 Lista de Coberturas
-            pc.Cobertura = body.Cobertura?
-                .Select(c => new Cobertura
-                {
-                    Nombre = c.Nombre
-                })
-                .ToList() ?? new List<Cobertura>();
         }
 
         private void MapToPolizaMercancia(PolizaMercancia pm, PolizaMercanciaRequest body)
@@ -246,16 +238,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             pm.OtroPrima = body.OtroPrima;
             pm.IVA = body.IVA;
             pm.PrimaTotal = body.PrimaTotal;
-
-            // 📌 Riesgos cubiertos
-            pm.RiesgoCubierto = body.RiesgoCubierto?
-                .Select(r => new RiesgoCubierto
-                {
-                    Nombre = r.Nombre,
-                    TipoRiesgoId = r.TipoRiesgoId,
-                    AdministracionBienId = r.AdministracionBienId,
-                })
-                .ToList() ?? new List<RiesgoCubierto>();
         }
 
         private void MapToBien(Bien bien, BienRequest body)
@@ -272,15 +254,9 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         }
 
 
-
-
-        public override async Task<IActionResult> GetPolizaAsync(string version)
+        private IQueryable<Poliza> QueryPolizaCompleta()
         {
-            // Obtener todas las pólizas activas
-            var polizas = await _context.Poliza
-                .AsNoTracking()
-                .Where(p => p.FechaBaja == null) // Soft delete
-                                                 // Catálogos relacionados
+            return _context.Poliza
                 .Include(p => p.Producto)
                 .Include(p => p.Contratante)
                 .Include(p => p.Aseguradora)
@@ -288,47 +264,37 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 .Include(p => p.Moneda)
                 .Include(p => p.FormaPago)
                 .Include(p => p.EstatusPoliza)
-                // PolizaContenedor y sus coberturas
                 .Include(p => p.PolizaContenedor)
                     .ThenInclude(pc => pc.Cobertura)
-                // PolizaMercancia y sus riesgos
                 .Include(p => p.PolizaMercancia)
                     .ThenInclude(pm => pm.RiesgoCubierto)
-                // Bienes y tipo de bien
                 .Include(p => p.Bien)
-                    .ThenInclude(b => b.TipoBien)
+                    .ThenInclude(b => b.TipoBien);
+        }
+
+
+
+
+        public override async Task<IActionResult> GetPolizaAsync(string version)
+        {
+            var polizas = await QueryPolizaCompleta()
+                .AsNoTracking()
+                .Where(p => p.FechaBaja == null)
                 .OrderByDescending(p => p.FechaRegistro)
                 .ToListAsync();
 
-            // Mapear a response
             var response = polizas
                 .Select(p => MapToResponse(p))
                 .ToList();
 
-            // Retornar
             return Ok(response);
         }
 
         public override async Task<IActionResult> GetPolizaByIdAsync(string version, int idPoliza)
         {
-            var poliza = await _context.Poliza
+            var poliza = await QueryPolizaCompleta()
                 .AsNoTracking()
-                .Where(p => p.FechaBaja == null) // Respeta soft delete
-                .Include(p => p.Producto)
-                .Include(p => p.Contratante)
-                .Include(p => p.Aseguradora)
-                .Include(p => p.SubRamo)
-                .Include(p => p.Moneda)
-                .Include(p => p.FormaPago)
-                .Include(p => p.EstatusPoliza)
-                .Include(p => p.PolizaContenedor)
-    .ThenInclude(pc => pc.Cobertura)
-
-.Include(p => p.PolizaMercancia)
-    .ThenInclude(pm => pm.RiesgoCubierto)
-
-.Include(p => p.Bien)
-    .ThenInclude(b => b.TipoBien)
+                .Where(p => p.FechaBaja == null)
                 .FirstOrDefaultAsync(p => p.PolizaId == idPoliza);
 
             if (poliza == null)
@@ -336,7 +302,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             return Ok(MapToResponse(poliza));
         }
-
         public override async Task<IActionResult> CreatePolizaAsync(string version, [FromBody] PolizaRequest body)
         {
             if (!ModelState.IsValid)
@@ -361,6 +326,12 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     var contenedor = new PolizaContenedor();
                     MapToPolizaContenedor(contenedor, body.PolizaContenedor);
                     poliza.PolizaContenedor = contenedor;
+
+                    contenedor.Cobertura = body.PolizaContenedor.Cobertura?
+                        .Select(c => new Cobertura
+                        {
+                            Nombre = c.Nombre
+                        }).ToList() ?? new();
                 }
                 else if (body.PolizaMercancia != null && body.PolizaMercancia.Any())
                 {
@@ -377,8 +348,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 }
 
 
-                // 🔹 Bienes
-                if (body.Bien != null && body.Bien.Any())
+                if (body.Bien?.Any() == true)
                 {
                     poliza.Bien = new List<Bien>();
                     foreach (var b in body.Bien)
@@ -394,22 +364,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // Cargar para respuesta
-                var polizaCreada = await _context.Poliza
+                var polizaCreada = await QueryPolizaCompleta()
                     .AsNoTracking()
-                    .Include(p => p.Producto)
-                    .Include(p => p.Contratante)
-                    .Include(p => p.Aseguradora)
-                    .Include(p => p.SubRamo)
-                    .Include(p => p.Moneda)
-                    .Include(p => p.FormaPago)
-                    .Include(p => p.EstatusPoliza)
-                    .Include(p => p.PolizaContenedor)
-                        .ThenInclude(pc => pc.Cobertura)
-                    .Include(p => p.PolizaMercancia)
-                        .ThenInclude(pm => pm.RiesgoCubierto)
-                    .Include(p => p.Bien)
-                        .ThenInclude(b => b.TipoBien)
                     .FirstOrDefaultAsync(p => p.PolizaId == poliza.PolizaId);
 
                 return Ok(MapToResponse(polizaCreada));
@@ -424,18 +380,14 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
         public override async Task<IActionResult> UpdatePolizaAsync(string version, int idPoliza, [FromBody] PolizaRequest body)
         {
-            if (!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var poliza = await _context.Poliza
-                .Include(p => p.Producto)
-                .Include(p => p.Contratante)
-                .Include(p => p.Aseguradora)
-                .Include(p => p.SubRamo)
-                .Include(p => p.Moneda)
-                .Include(p => p.FormaPago)
-                .Include(p => p.EstatusPoliza)
+            await using var transaction = await _context.Database.BeginTransactionAsync();
 
+            try
+            {
+            var poliza = await _context.Poliza
                 .Include(p => p.PolizaContenedor)
                     .ThenInclude(pc => pc.Cobertura)
 
@@ -446,11 +398,14 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                 .FirstOrDefaultAsync(p => p.PolizaId == idPoliza);
 
-            if (poliza == null)
-                return NotFound();
+                if (poliza == null)
+                    return NotFound();
 
-            // 🔹 Actualizar datos generales
-            MapToPoliza(poliza, body);
+                if (poliza.FechaBaja != null)
+                    return BadRequest("La póliza está cancelada y no puede modificarse");
+
+                // 🔹 Actualizar datos generales
+                MapToPoliza(poliza, body);
             poliza.FechaActualizacion = DateTime.Now;
 
             if (body.PolizaContenedor != null)
@@ -466,19 +421,17 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                 MapToPolizaContenedor(poliza.PolizaContenedor, body.PolizaContenedor);
 
-                // 🔹 Limpiar coberturas anteriores
-                if (poliza.PolizaContenedor.Cobertura != null)
-                {
-                    _context.Cobertura.RemoveRange(poliza.PolizaContenedor.Cobertura);
-                }
-
-                // 🔹 Insertar nuevas coberturas
-                poliza.PolizaContenedor.Cobertura = body.PolizaContenedor.Cobertura?
-                    .Select(c => new Cobertura
+                    if (poliza.PolizaContenedor?.Cobertura?.Any() == true)
                     {
-                        Nombre = c.Nombre
-                    }).ToList();
-            }
+                        _context.Cobertura.RemoveRange(poliza.PolizaContenedor.Cobertura);
+                    }
+
+                    poliza.PolizaContenedor.Cobertura = body.PolizaContenedor.Cobertura?
+                        .Select(c => new Cobertura
+                        {
+                            Nombre = c.Nombre
+                        }).ToList() ?? new List<Cobertura>();
+                }
 
             if (body.PolizaMercancia != null && body.PolizaMercancia.Any())
             {
@@ -521,27 +474,20 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 }
             }
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
-            // Recargar para respuesta
-            var polizaActualizada = await _context.Poliza
-                .AsNoTracking()
-                .Include(p => p.Producto)
-                .Include(p => p.Contratante)
-                .Include(p => p.Aseguradora)
-                .Include(p => p.SubRamo)
-                .Include(p => p.Moneda)
-                .Include(p => p.FormaPago)
-                .Include(p => p.EstatusPoliza)
-                .Include(p => p.PolizaContenedor)
-                    .ThenInclude(pc => pc.Cobertura)
-                .Include(p => p.PolizaMercancia)
-                    .ThenInclude(pm => pm.RiesgoCubierto)
-                .Include(p => p.Bien)
-                    .ThenInclude(b => b.TipoBien)
-                .FirstOrDefaultAsync(p => p.PolizaId == idPoliza);
+                var polizaActualizada = await QueryPolizaCompleta()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.PolizaId == idPoliza);
 
-            return Ok(MapToResponse(polizaActualizada));
+                return Ok(MapToResponse(polizaActualizada));
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public override async Task<IActionResult> DeletePolizaAsync(string version, int idPoliza)
