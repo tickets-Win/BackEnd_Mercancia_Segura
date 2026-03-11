@@ -20,6 +20,8 @@ Namespace MercanciaSegura.DOM.Modelos
         Public Property NumeroInt As String
         Public Property NumeroExt As String
         Public Property Pais As String
+        Public Property Estado As String
+        Public Property Municipio As String
         Public Property Poblacion As String
         Public Property Colonia As String
         Public Property Cp As String

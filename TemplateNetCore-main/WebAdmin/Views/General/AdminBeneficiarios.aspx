@@ -139,12 +139,28 @@
                     <asp:ListItem Text="Selecciona un país" Value="" />
                     <asp:ListItem Text="México" Value="MX"></asp:ListItem>
                     <asp:ListItem Text="Estados Unidos" Value="US"></asp:ListItem>
+                    <asp:ListItem Text="Francia" Value="FR"></asp:ListItem>
+                    <asp:ListItem Text="Argentina" Value="AR"></asp:ListItem>
+                    <asp:ListItem Text="Italia" Value="IT"></asp:ListItem>
                 </asp:DropDownList>
             </div>
 
             <div class="col-md-4">
+                <label class="form-label">Estado</label>
+                <asp:TextBox ID="txtEstado" runat="server" CssClass="form-control "></asp:TextBox>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Municipio</label>
+                <asp:TextBox ID="txtMunicipio" runat="server" CssClass="form-control "></asp:TextBox>
+            </div>
+            <div class="col-md-4">
                 <label class="form-label">Calle</label>
                 <asp:TextBox ID="txtCalle" runat="server" CssClass="form-control "></asp:TextBox>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Número Ext.</label>
+                <asp:TextBox ID="txtNumeroExt" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
@@ -152,10 +168,6 @@
                 <asp:TextBox ID="txtNumeroInt" runat="server" CssClass="form-control "></asp:TextBox>
             </div>
 
-            <div class="col-md-4">
-                <label class="form-label">Número Ext.</label>
-                <asp:TextBox ID="txtNumeroExt" runat="server" CssClass="form-control"></asp:TextBox>
-            </div>
 
             <div class="col-md-4">
                 <label class="form-label">Colonia</label>
@@ -184,23 +196,15 @@
          document.getElementById('<%= txtNombreCompleto.ClientID %>').value = nombreCompleto.trim();
      }
      </script>
-    <script>
-        window.onload = function () {
-            const rfcInput = document.getElementById('<%= txtRFC.ClientID %>');
-     const rfcGenericoSelect = document.getElementById('<%= ddlRFCGenerico.ClientID %>');
+        <script>
+            window.onload = function () {
+                const rfcInput = document.getElementById('<%= txtRFC.ClientID %>');
+            const rfcGenericoSelect = document.getElementById('<%= ddlRFCGenerico.ClientID %>');
 
             function actualizarEstadoCampos() {
-                if (rfcInput.value.trim() !== '') {
-                    rfcGenericoSelect.disabled = true;
-                } else {
-                    rfcGenericoSelect.disabled = false;
-                }
+                rfcGenericoSelect.disabled = rfcInput.value.trim() !== '';
 
-                if (rfcGenericoSelect.value !== '0') {
-                    rfcInput.disabled = true;
-                } else {
-                    rfcInput.disabled = false;
-                }
+                rfcInput.disabled = rfcGenericoSelect.value !== '0';
             }
 
             rfcInput.addEventListener('input', actualizarEstadoCampos);
@@ -208,7 +212,18 @@
 
             actualizarEstadoCampos();
         };
-    </script>
+
+        function obtenerRfcGenericoParaGuardar() {
+            const rfcGenSelect = document.getElementById('<%= ddlRFCGenerico.ClientID %>');
+                const valor = rfcGenSelect.value;
+
+                if (!valor || valor === '0') {
+                    return null;
+                }
+
+                return parseInt(valor, 10);
+            }
+        </script>
      <script>
          function showToast(message, type) {
              const wrapper = document.createElement('div');
@@ -272,10 +287,10 @@
 
            document.querySelectorAll('.clave-15').forEach(function (campo) {
                if (campo.value) {
-                   let regex = /^[a-zA-Z0-9]{15}$/;
+                   let regex = /^[a-zA-Z0-9]{1,15}$/;
 
                    if (!regex.test(campo.value)) {
-                       marcarError(campo, "La clave debe tener exactamente 15 letras o números");
+                       marcarError(campo, "La clave debe tener letras o números");
                        valido = false;
                    }
                }

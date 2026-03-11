@@ -230,6 +230,24 @@ Partial Public Class AdminBeneficiarios
     Protected WithEvents ddlPais As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
+    '''Control txtEstado.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtEstado As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtMunicipio.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtMunicipio As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control txtCalle.
     '''</summary>
     '''<remarks>
@@ -239,15 +257,6 @@ Partial Public Class AdminBeneficiarios
     Protected WithEvents txtCalle As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtNumeroInt.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtNumeroInt As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
     '''Control txtNumeroExt.
     '''</summary>
     '''<remarks>
@@ -255,6 +264,15 @@ Partial Public Class AdminBeneficiarios
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtNumeroExt As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtNumeroInt.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtNumeroInt As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtColonia.

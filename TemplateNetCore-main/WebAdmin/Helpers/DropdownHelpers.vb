@@ -5,13 +5,14 @@ Module DropdownHelpers
     Public Sub CargarTipoPersona(ddlTipoPersona As DropDownList)
         Dim api As New ConsumoApi()
         Dim tipoPersona As String = api.GetTipoPersona()
-
         Dim listaTipoPersona As List(Of TipoPersona) = JsonConvert.DeserializeObject(Of List(Of TipoPersona))(tipoPersona)
 
         ddlTipoPersona.DataSource = listaTipoPersona
         ddlTipoPersona.DataTextField = "Tipo"
         ddlTipoPersona.DataValueField = "TipoPersonaId"
         ddlTipoPersona.DataBind()
+
+
     End Sub
 
     Public Sub CargarTipoEstatus(ddlEstatus As DropDownList)
@@ -24,6 +25,7 @@ Module DropdownHelpers
         ddlEstatus.DataTextField = "Tipo"
         ddlEstatus.DataValueField = "EstatusId"
         ddlEstatus.DataBind()
+
     End Sub
 
     Public Sub CargarTipoSeguro(ddlSeguroContrata As DropDownList)
@@ -36,6 +38,8 @@ Module DropdownHelpers
         ddlSeguroContrata.DataTextField = "Tipo"
         ddlSeguroContrata.DataValueField = "TipoSeguroId"
         ddlSeguroContrata.DataBind()
+        ddlSeguroContrata.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
 
     Public Sub CargarTipoCuenta(ddlTipoCuenta As DropDownList)
@@ -48,6 +52,8 @@ Module DropdownHelpers
         ddlTipoCuenta.DataTextField = "Tipo"
         ddlTipoCuenta.DataValueField = "TipoCuentaId"
         ddlTipoCuenta.DataBind()
+        ddlTipoCuenta.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
 
     Public Sub CargarOrigenCliente(ddlOrigenCliente As DropDownList)
@@ -60,6 +66,8 @@ Module DropdownHelpers
         ddlOrigenCliente.DataTextField = "Tipo"
         ddlOrigenCliente.DataValueField = "OrigenClienteId"
         ddlOrigenCliente.DataBind()
+        ddlOrigenCliente.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
 
     Public Sub CargarTipoSector(ddlSector As DropDownList)
@@ -72,6 +80,8 @@ Module DropdownHelpers
         ddlSector.DataTextField = "Tipo"
         ddlSector.DataValueField = "TipoSectorId"
         ddlSector.DataBind()
+        ddlSector.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
 
     Public Sub CargarRegimenFiscal(ddlRegimenFiscal As DropDownList, tipoPersonaId As Integer)
@@ -92,6 +102,8 @@ Module DropdownHelpers
         ddlRegimenFiscal.DataTextField = "CodigoDescripcion"
         ddlRegimenFiscal.DataValueField = "RegimenFiscalId"
         ddlRegimenFiscal.DataBind()
+        ddlRegimenFiscal.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
 
     Public Sub CargarRFCGenerico(ddlRFCGenerico As DropDownList)
@@ -121,6 +133,8 @@ Module DropdownHelpers
         ddlTipoVendedor.DataTextField = "Tipo"
         ddlTipoVendedor.DataValueField = "TipoVendedorId"
         ddlTipoVendedor.DataBind()
+        ddlTipoVendedor.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
     Public Sub CargarTipoCorreo(ddlTipoCorreo As DropDownList)
         Dim api As New ConsumoApi()
@@ -132,6 +146,8 @@ Module DropdownHelpers
         ddlTipoCorreo.DataTextField = "Tipo"
         ddlTipoCorreo.DataValueField = "TipoCorreoId"
         ddlTipoCorreo.DataBind()
+        ddlTipoCorreo.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
     Public Sub CargarTipoAseguradora(ddlTipoAseguradora As DropDownList)
         Dim api As New ConsumoApi()
@@ -143,6 +159,8 @@ Module DropdownHelpers
         ddlTipoAseguradora.DataTextField = "Nombre"
         ddlTipoAseguradora.DataValueField = "AseguradoraId"
         ddlTipoAseguradora.DataBind()
+        ddlTipoAseguradora.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
     Public Sub CargarTipoContratante(ddlTipoContratante As DropDownList)
         Dim api As New ConsumoApi()
@@ -154,6 +172,8 @@ Module DropdownHelpers
         ddlTipoContratante.DataTextField = "Nombre"
         ddlTipoContratante.DataValueField = "ContratanteId"
         ddlTipoContratante.DataBind()
+        ddlTipoContratante.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
     Public Sub CargarFormaPago(ddlFormaPago As DropDownList)
         Dim api As New ConsumoApi()
@@ -165,6 +185,8 @@ Module DropdownHelpers
         ddlFormaPago.DataTextField = "Nombre"
         ddlFormaPago.DataValueField = "FormaPagoId"
         ddlFormaPago.DataBind()
+        ddlFormaPago.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
     Public Sub CargarTipoMoneda(ddlTipoMoneda As DropDownList)
         Dim api As New ConsumoApi()
@@ -176,7 +198,9 @@ Module DropdownHelpers
         ddlTipoMoneda.DataTextField = "Nombre"
         ddlTipoMoneda.DataValueField = "MonedaId"
         ddlTipoMoneda.DataBind()
+        ddlTipoMoneda.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
     End Sub
+
     Public Sub CargarTipoSubRamo(ddlTipoSubRamo As DropDownList)
         Dim api As New ConsumoApi()
         Dim tipoSubRamo As String = api.GetSubRamo()
@@ -187,6 +211,8 @@ Module DropdownHelpers
         ddlTipoSubRamo.DataTextField = "Nombre"
         ddlTipoSubRamo.DataValueField = "SubRamoId"
         ddlTipoSubRamo.DataBind()
+        ddlTipoSubRamo.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
     End Sub
     Public Sub CargarTipoProducto(ddlProducto As DropDownList)
         Dim api As New ConsumoApi()
@@ -222,6 +248,8 @@ Module DropdownHelpers
             ddl.DataTextField = "Tarifa"
             ddl.DataValueField = "TipoTarifaId"
             ddl.DataBind()
+            ddl.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
         Next
     End Sub
 

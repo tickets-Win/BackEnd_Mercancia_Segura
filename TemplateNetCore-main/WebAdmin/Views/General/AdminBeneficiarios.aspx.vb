@@ -116,6 +116,12 @@ Public Class AdminBeneficiarios
             nombreCompleto = txtRazonSocial.Text.Trim()
         End If
 
+        Dim rfcGenericoId As Integer? = Nothing
+
+        If Not String.IsNullOrWhiteSpace(ddlRFCGenerico.SelectedValue) AndAlso ddlRFCGenerico.SelectedValue <> "0" Then
+            rfcGenericoId = Convert.ToInt32(ddlRFCGenerico.SelectedValue)
+        End If
+
         Dim beneficiarios As New BeneficiarioPreferente With {
         .TipoPersonaId = tipoPersonaId,
         .Clave = txtClave.Text,
@@ -125,8 +131,10 @@ Public Class AdminBeneficiarios
         .Nombre = txtNombre.Text,
         .NombreCompleto = nombreCompleto,
         .RFC = txtRFC.Text,
-        .RfcGenericoId = ddlRFCGenerico.SelectedValue,
+        .RfcGenericoId = rfcGenericoId,
         .Pais = ddlPais.SelectedValue,
+        .Estado = txtEstado.Text,
+        .Municipio = txtMunicipio.Text,
         .Calle = txtCalle.Text,
         .NumeroInt = txtNumeroInt.Text,
         .NumeroExt = txtNumeroExt.Text,
@@ -192,6 +200,8 @@ Public Class AdminBeneficiarios
         txtRFC.Text = beneficiario.RFC
         ddlRFCGenerico.SelectedValue = beneficiario.RfcGenericoId
         ddlPais.SelectedValue = beneficiario.Pais
+        txtEstado.Text = beneficiario.Estado
+        txtMunicipio.Text = beneficiario.Municipio
         txtCalle.Text = beneficiario.Calle
         txtNumeroInt.Text = beneficiario.NumeroInt
         txtNumeroExt.Text = beneficiario.NumeroExt

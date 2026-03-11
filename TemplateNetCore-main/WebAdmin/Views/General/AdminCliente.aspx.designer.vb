@@ -716,13 +716,22 @@ Partial Public Class AdminCliente
     Protected WithEvents pnlGestionarCredito As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''Control chkHabilitarCampos.
+    '''Control rbCredito.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents chkHabilitarCampos As Global.System.Web.UI.WebControls.CheckBox
+    Protected WithEvents rbCredito As Global.System.Web.UI.WebControls.RadioButton
+
+    '''<summary>
+    '''Control rbContado.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents rbContado As Global.System.Web.UI.WebControls.RadioButton
 
     '''<summary>
     '''Control txtDiasCredito.

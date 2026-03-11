@@ -4,6 +4,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="../../Content/site.css" rel="stylesheet" />
+    <style>
+        .radio-texto label {
+            margin-left: 6px;
+        }
+    </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:Panel ID="PnlEncabezado" runat="server">
@@ -235,6 +240,9 @@
                             <asp:ListItem Text="Selecciona un país" Value="" />
                             <asp:ListItem Text="México" Value="MX"></asp:ListItem>
                             <asp:ListItem Text="Estados Unidos" Value="US"></asp:ListItem>
+                            <asp:ListItem Text="Francia" Value="FR"></asp:ListItem>
+                            <asp:ListItem Text="Argentina" Value="AR"></asp:ListItem>
+                            <asp:ListItem Text="Italia" Value="IT"></asp:ListItem>
                         </asp:DropDownList>
                     </div>
 
@@ -365,27 +373,29 @@
                                                 data-bs-target="#modalCorreo"
                                                 Text="Agregar" />
                                         </div>
-                                        <asp:GridView ID="gvCorreosAdicionales" runat="server"
-                                            CssClass="table table-bordered"
-                                            AutoGenerateColumns="False"
-                                            ShowHeader="True"
-                                            OnRowCommand="gvCorreosAdicionales_RowCommand">
+                                        <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                            <asp:GridView ID="gvCorreosAdicionales" runat="server"
+                                                CssClass="table table-bordered mb-0"
+                                                AutoGenerateColumns="False"
+                                                ShowHeader="True"
+                                                OnRowCommand="gvCorreosAdicionales_RowCommand">
 
-                                            <Columns>
-                                                <asp:BoundField DataField="TipoCorreo" HeaderText="Tipo" />
-                                                <asp:BoundField DataField="Correo" HeaderText="Correo" />
+                                                <Columns>
+                                                    <asp:BoundField DataField="TipoCorreo" HeaderText="Tipo" />
+                                                    <asp:BoundField DataField="Correo" HeaderText="Correo" />
 
-                                                <asp:TemplateField HeaderText="Acciones">
-                                                    <ItemTemplate>
-                                                        <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("CorreoId") %>'
-                                                            CssClass="icon-btn action-icon" ToolTip="Eliminar"
-                                                            OnClientClick="return confirm('¿Seguro que deseas eliminar este correo?');">
+                                                    <asp:TemplateField HeaderText="Acciones">
+                                                        <ItemTemplate>
+                                                            <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("CorreoId") %>'
+                                                                CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                                                OnClientClick="return confirm('¿Seguro que deseas eliminar este correo?');">
                                                             <i class="bi bi-trash"></i>
-                                                        </asp:LinkButton>
-                                                    </ItemTemplate>
-                                                </asp:TemplateField>
-                                            </Columns>
-                                        </asp:GridView>
+                                                            </asp:LinkButton>
+                                                        </ItemTemplate>
+                                                    </asp:TemplateField>
+                                                </Columns>
+                                            </asp:GridView>
+                                        </div>
                                         <div class="modal fade" id="modalCorreo" tabindex="-1" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
@@ -582,10 +592,23 @@
                     <asp:Panel ID="pnlGestionarCredito" runat="server" CssClass="card p-4 mt-4" Visible="True">
                         <h5 class="border-bottom pb-2">Gestionar Crédito</h5>
                         <div class="col-md-12 mb-3">
-                            <asp:CheckBox ID="chkHabilitarCampos" runat="server" AutoPostBack="true" OnCheckedChanged="chkHabilitarCampos_CheckedChanged" />
-                            <label class="form-check-label">
-                                Gestionar Crédito
-                            </label>
+                            <asp:RadioButton
+                                ID="rbCredito"
+                                runat="server"
+                                GroupName="TipoPago"
+                                Text="Gestionar Crédito"
+                                CssClass="radio-texto"
+                                AutoPostBack="true"
+                                OnCheckedChanged="TipoPago_CheckedChanged" />
+
+                            <asp:RadioButton
+                                ID="rbContado"
+                                runat="server"
+                                GroupName="TipoPago"
+                                Text="Contado"
+                                CssClass="radio-texto"
+                                AutoPostBack="true"
+                                OnCheckedChanged="TipoPago_CheckedChanged" />
                         </div>
                         <div class="row g-3 mt-2">
                             <div class="col-md-4">
@@ -753,96 +776,96 @@
             document.getElementById('<%= txtNombreCompleto.ClientID %>').value = nombreCompleto.trim();
         }
     </script>
-     <script>
-         function validarCampos() {
+    <script>
+        function validarCampos() {
 
-             limpiarValidacion();
-             let valido = true;
+            limpiarValidacion();
+            let valido = true;
 
-             document.querySelectorAll('.required').forEach(function (campo) {
-                 if (campo.disabled) return;
+            document.querySelectorAll('.required').forEach(function (campo) {
+                if (campo.disabled) return;
 
-                 if (!campo.value.trim()) {
-                     marcarError(campo, "Este campo es obligatorio");
-                     valido = false;
-                 }
-             });
+                if (!campo.value.trim()) {
+                    marcarError(campo, "Este campo es obligatorio");
+                    valido = false;
+                }
+            });
 
-             document.querySelectorAll('.only-numbers').forEach(function (campo) {
-                 if (campo.value) {
-                     if (!/^\d+$/.test(campo.value)) {
-                         marcarError(campo, "Solo se permiten números");
-                         valido = false;
-                     }
-                     else if (campo.value.length !== 5) {
-                         marcarError(campo, "El código postal debe tener exactamente 5 dígitos");
-                         valido = false;
-                     }
+            document.querySelectorAll('.only-numbers').forEach(function (campo) {
+                if (campo.value) {
+                    if (!/^\d+$/.test(campo.value)) {
+                        marcarError(campo, "Solo se permiten números");
+                        valido = false;
+                    }
+                    else if (campo.value.length !== 5) {
+                        marcarError(campo, "El código postal debe tener exactamente 5 dígitos");
+                        valido = false;
+                    }
 
-                 }
-             });
+                }
+            });
 
-             document.querySelectorAll('.rfc-format').forEach(function (campo) {
-                 if (campo.value) {
-                     let rfcRegex = /^([A-ZÑ&]{3,4})\d{6}([A-Z\d]{3})$/;
-                     if (!rfcRegex.test(campo.value.toUpperCase())) {
-                         marcarError(campo, "RFC no válido");
-                         valido = false;
-                     }
-                 }
-             });
+            document.querySelectorAll('.rfc-format').forEach(function (campo) {
+                if (campo.value) {
+                    let rfcRegex = /^([A-ZÑ&]{3,4})\d{6}([A-Z\d]{3})$/;
+                    if (!rfcRegex.test(campo.value.toUpperCase())) {
+                        marcarError(campo, "RFC no válido");
+                        valido = false;
+                    }
+                }
+            });
 
-             document.querySelectorAll('.clave-15').forEach(function (campo) {
-                 if (campo.value) {
-                     let regex = /^[a-zA-Z0-9]{1,15}$/;
+            document.querySelectorAll('.clave-15').forEach(function (campo) {
+                if (campo.value) {
+                    let regex = /^[a-zA-Z0-9]{1,15}$/;
 
-                     if (!regex.test(campo.value)) {
-                         marcarError(campo, "La clave debe tener letras o números");
-                         valido = false;
-                     }
-                 }
-             });           
+                    if (!regex.test(campo.value)) {
+                        marcarError(campo, "La clave debe tener letras o números");
+                        valido = false;
+                    }
+                }
+            });
 
-             document.querySelectorAll('.email-format').forEach(function (campo) {
-                 if (campo.value) {
-                     let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+            document.querySelectorAll('.email-format').forEach(function (campo) {
+                if (campo.value) {
+                    let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-                     if (!emailRegex.test(campo.value.trim())) {
-                         marcarError(campo, "Ingresa un correo electrónico válido");
-                         valido = false;
-                     }
-                 }
-             });         
+                    if (!emailRegex.test(campo.value.trim())) {
+                        marcarError(campo, "Ingresa un correo electrónico válido");
+                        valido = false;
+                    }
+                }
+            });
 
-             if (!valido) {
-                 showToast('Corrige los campos marcados', 'danger');
-             }
+            if (!valido) {
+                showToast('Corrige los campos marcados', 'danger');
+            }
 
-             return valido;
-         }
+            return valido;
+        }
 
-         function marcarError(campo, mensaje) {
-             campo.classList.add('is-invalid');
+        function marcarError(campo, mensaje) {
+            campo.classList.add('is-invalid');
 
-             let feedback = document.createElement("div");
-             feedback.className = "invalid-feedback";
-             feedback.innerText = mensaje;
+            let feedback = document.createElement("div");
+            feedback.className = "invalid-feedback";
+            feedback.innerText = mensaje;
 
-             if (!campo.nextElementSibling || !campo.nextElementSibling.classList.contains("invalid-feedback")) {
-                 campo.parentNode.appendChild(feedback);
-             }
-         }
+            if (!campo.nextElementSibling || !campo.nextElementSibling.classList.contains("invalid-feedback")) {
+                campo.parentNode.appendChild(feedback);
+            }
+        }
 
-         function limpiarValidacion() {
-             document.querySelectorAll('.is-invalid').forEach(function (campo) {
-                 campo.classList.remove('is-invalid');
-             });
+        function limpiarValidacion() {
+            document.querySelectorAll('.is-invalid').forEach(function (campo) {
+                campo.classList.remove('is-invalid');
+            });
 
-             document.querySelectorAll('.invalid-feedback').forEach(function (msg) {
-                 msg.remove();
-             });
-         }
-     </script>
+            document.querySelectorAll('.invalid-feedback').forEach(function (msg) {
+                msg.remove();
+            });
+        }
+    </script>
 
     <script>
         function showToast(message, type) {
@@ -882,27 +905,42 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+
             const inputs = document.querySelectorAll('input[data-format]');
 
             inputs.forEach(input => {
+
                 input.addEventListener('blur', function () {
+
                     let format = input.getAttribute('data-format');
                     let val = input.value.trim();
 
                     if (format === 'percent') {
                         input.value = formatPercent(val);
-                    } else if (format === 'money-mn') {
-                        input.value = formatMoney(val, 'Mn');
-                    } else if (format === 'money-usd') {
-                        input.value = formatMoney(val, 'Usd');
                     }
+
+                    if (format === 'money-mn') {
+                        input.value = formatMoney(val, 'MN');
+                    }
+
+                    if (format === 'money-usd') {
+                        input.value = formatMoney(val, 'USD');
+                    }
+
                 });
 
                 input.addEventListener('focus', function () {
-                    let val = input.value;
-                    input.value = val.replace(/[^0-9.-]/g, '');
+                    input.value = input.value.replace(/[^0-9.-]/g, '');
                 });
+
+                if (input.form) {
+                    input.form.addEventListener('submit', function () {
+                        input.value = input.value.replace(/[^0-9.-]/g, '');
+                    });
+                }
+
             });
+
         });
     </script>
     <script>
@@ -911,17 +949,9 @@
             const rfcGenericoSelect = document.getElementById('<%= ddlRFCGenerico.ClientID %>');
 
             function actualizarEstadoCampos() {
-                if (rfcInput.value.trim() !== '') {
-                    rfcGenericoSelect.disabled = true;
-                } else {
-                    rfcGenericoSelect.disabled = false;
-                }
+                rfcGenericoSelect.disabled = rfcInput.value.trim() !== '';
 
-                if (rfcGenericoSelect.value !== '0') {
-                    rfcInput.disabled = true;
-                } else {
-                    rfcInput.disabled = false;
-                }
+                rfcInput.disabled = rfcGenericoSelect.value !== '0';
             }
 
             rfcInput.addEventListener('input', actualizarEstadoCampos);
@@ -929,23 +959,34 @@
 
             actualizarEstadoCampos();
         };
+
+        function obtenerRfcGenericoParaGuardar() {
+            const rfcGenSelect = document.getElementById('<%= ddlRFCGenerico.ClientID %>');
+            const valor = rfcGenSelect.value;
+
+            if (!valor || valor === '0') {
+                return null;
+            }
+
+            return parseInt(valor, 10);
+        }
     </script>
-     <script>
-         document.addEventListener("DOMContentLoaded", function () {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
 
-             document.querySelectorAll("input").forEach(function (input) {
+            document.querySelectorAll("input").forEach(function (input) {
 
-                 input.addEventListener("keydown", function (e) {
+                input.addEventListener("keydown", function (e) {
 
-                     if (e.key === "Enter") {
-                         e.preventDefault();
-                         return false;
-                     }
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        return false;
+                    }
 
-                 });
+                });
 
-             });
+            });
 
-         });
-     </script>
+        });
+    </script>
 </asp:Content>

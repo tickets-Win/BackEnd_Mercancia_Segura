@@ -85,12 +85,21 @@ Public Class AdminGestionPolizas
         gvPolizas.DataSource = lstPolizas
         gvPolizas.DataBind()
     End Sub
-    Protected Sub gvPolizas_RowCommand(sender As Object, e As GridViewCommandEventArgs)
 
+    Protected Sub gvPolizas_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+        gvPolizas.PageIndex = e.NewPageIndex
+        cargarPolizas()
     End Sub
+    Protected Sub gvPolizas_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Editar" Then
+            Dim polizaId As Integer = Convert.ToInt32(e.CommandArgument)
+            pnlFormularioPolizas.Visible = True
+            PnlTabla.Visible = False
+            pnlEncabezado.Visible = False
+            lblMensaje.Text = "Editar Póliza"
 
-    Protected Sub gvPolizas_PageIndexChanged(sender As Object, e As EventArgs)
-
+            EditarPoliza(polizaId)
+        End If
     End Sub
 
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
@@ -104,8 +113,8 @@ Public Class AdminGestionPolizas
             .ContratanteId = ddlContratante.SelectedValue,
             .AseguradoraId = ddlAseguradora.SelectedValue,
             .SubRamoId = ddlSubRamo.SelectedValue,
-            .VigenciaDel = Date.Now,
-            .VigenciaHasta = Date.Now,
+            .VigenciaDel = If(String.IsNullOrEmpty(txtVigenciaDel.Text), CType(Nothing, DateTime?), Convert.ToDateTime(txtVigenciaDel.Text)),
+            .VigenciaHasta = If(String.IsNullOrEmpty(txtVigenciaHasta.Text), CType(Nothing, DateTime?), Convert.ToDateTime(txtVigenciaHasta.Text)),
             .EstatusPolizaId = ddlEstatus.SelectedValue,
             .FormaPagoId = ddlFormaPago.SelectedValue,
             .MonedaId = ddlMoneda.SelectedValue,
@@ -115,11 +124,7 @@ Public Class AdminGestionPolizas
 
         Dim polizaMercanciaList As New List(Of PolizaMercancia)
 
-        If Not String.IsNullOrWhiteSpace(txtNombreInternoPoliza1.Text) OrElse
-       Not String.IsNullOrWhiteSpace(txtNombreInternoPoliza2.Text) OrElse
-       Not String.IsNullOrWhiteSpace(txtNombreInternoPoliza3.Text) Then
-
-            polizaMercanciaList.Add(New PolizaMercancia With {
+        polizaMercanciaList.Add(New PolizaMercancia With {
         .AdministracionBienId = 1,
         .NombreInternoPoliza = txtNombreInternoPoliza1.Text,
         .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo1.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo1.Text)),
@@ -141,10 +146,13 @@ Public Class AdminGestionPolizas
         .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia1.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia1.Text)),
         .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia1.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia1.Text)),
         .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia1.Text), Nothing, Convert.ToDecimal(txtIVAMercancia1.Text)),
-        .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia1.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia1.Text))
+        .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia1.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia1.Text)),
+        .RiesgoCubierto = RiesgosSession.
+Where(Function(r) r.AdministracionBienId = 1).
+ToList()
     })
 
-            polizaMercanciaList.Add(New PolizaMercancia With {
+        polizaMercanciaList.Add(New PolizaMercancia With {
             .AdministracionBienId = 2,
             .NombreInternoPoliza = txtNombreInternoPoliza2.Text,
             .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo2.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo2.Text)),
@@ -166,10 +174,13 @@ Public Class AdminGestionPolizas
             .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia2.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia2.Text)),
             .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia2.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia2.Text)),
             .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia2.Text), Nothing, Convert.ToDecimal(txtIVAMercancia2.Text)),
-            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia2.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia2.Text))
-        })
+            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia2.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia2.Text)),
+            .RiesgoCubierto = RiesgosSession.
+Where(Function(r) r.AdministracionBienId = 2).
+ToList()
+                                })
 
-            polizaMercanciaList.Add(New PolizaMercancia With {
+        polizaMercanciaList.Add(New PolizaMercancia With {
             .AdministracionBienId = 3,
             .NombreInternoPoliza = txtNombreInternoPoliza3.Text,
             .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo3.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo3.Text)),
@@ -191,13 +202,14 @@ Public Class AdminGestionPolizas
             .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia3.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia3.Text)),
             .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia3.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia3.Text)),
             .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia3.Text), Nothing, Convert.ToDecimal(txtIVAMercancia3.Text)),
-            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia3.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia3.Text))
-        })
+            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia3.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia3.Text)),
+.RiesgoCubierto = RiesgosSession.
+Where(Function(r) r.AdministracionBienId = 3).
+ToList()})
 
-            poliza.PolizaMercancia = polizaMercanciaList
-        End If
+        poliza.PolizaMercancia = polizaMercanciaList
 
-        Dim bienesAsegurados = BienesSession.
+            Dim bienesAsegurados = BienesSession.
     Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
                                                                            Return New Bien With {
             .AdministracionBienId = b.AdministracionBienId,
@@ -234,11 +246,7 @@ Public Class AdminGestionPolizas
                                                                                   End Function).ToList()
 
         poliza.Bien = bienesAsegurados.Concat(bienesExcluidos).Concat(bienesSujetosConsulta).Concat(bienesContenedor).ToList()
-        If polizaMercanciaList.Count = 0 AndAlso
-       (Not String.IsNullOrWhiteSpace(txtNombreInternoPolizaContenedor.Text) OrElse
-        Not String.IsNullOrWhiteSpace(txtTrayectosAsegurados.Text) OrElse
-        Not String.IsNullOrWhiteSpace(txtMedioTransporte.Text)) Then
-            Dim polizaContenedor As New PolizaContenedor With {
+        Dim polizaContenedor As New PolizaContenedor With {
             .NombreInternoPoliza = txtNombreInternoPolizaContenedor.Text,
             .TrayectosAsegurados = txtTrayectosAsegurados.Text,
             .MedioTransporte = txtMedioTransporte.Text,
@@ -259,8 +267,7 @@ Public Class AdminGestionPolizas
             .Cobertura = CoberturasSession.ToList()
         }
 
-            poliza.PolizaContenedor = polizaContenedor
-        End If
+        poliza.PolizaContenedor = polizaContenedor
 
         Dim respuesta As String
         Dim json As String
@@ -276,6 +283,124 @@ Public Class AdminGestionPolizas
         PnlTabla.Visible = True
     End Sub
 
+    Protected Sub EditarPoliza(polizaId As Integer)
+        Dim api As New ConsumoApi()
+        Dim objpoliza As String = api.GetPolizaId(polizaId)
+
+        Dim poliza As Poliza = JsonConvert.DeserializeObject(Of Poliza)(objpoliza)
+
+        hfPolizaId.Value = poliza.PolizaId.ToString()
+
+        ddlProducto.SelectedValue = poliza.ProductoId
+        txtTipoPoliza.Text = poliza.TipoPoliza
+        txtNumeroPoliza.Text = poliza.NumeroPoliza
+        ddlContratante.SelectedValue = poliza.ContratanteId
+        ddlAseguradora.SelectedValue = poliza.AseguradoraId
+        ddlSubRamo.SelectedValue = poliza.SubRamoId
+        If poliza.VigenciaDel.HasValue Then
+            txtVigenciaDel.Text = poliza.VigenciaDel.Value.ToString("yyyy-MM-dd")
+        End If
+
+        If poliza.VigenciaHasta.HasValue Then
+            txtVigenciaHasta.Text = poliza.VigenciaHasta.Value.ToString("yyyy-MM-dd")
+        End If
+        ddlEstatus.SelectedValue = poliza.EstatusPolizaId
+        ddlFormaPago.SelectedValue = poliza.FormaPagoId
+        ddlMoneda.SelectedValue = poliza.MonedaId
+        txtClaveAgente.Text = poliza.ClaveAgente
+        txtFolioPoliza.Text = poliza.FolioPoliza
+
+        For Each pm In poliza.PolizaMercancia
+
+            Select Case pm.AdministracionBienId
+
+                Case 1
+                    txtNombreInternoPoliza1.Text = pm.NombreInternoPoliza
+                    txtTerrestreAereo1.Text = pm.TerrestreAereo
+                    txtMaritimo1.Text = pm.Maritimo
+                    txtPaqueteria1.Text = pm.PaqueteriaMensajeria
+                    txtDeducibles1.Text = pm.Deducibles
+                    txtCompras1.Text = pm.Compras
+                    txtVentas1.Text = pm.Ventas
+                    txtMaquila1.Text = pm.Maquila
+                    txtBienesUsados1.Text = pm.BienesUsados
+                    txtEmbarquesEntreFiliales1.Text = pm.EmbarqueFiliales
+                    txtOtrosMercancia1.Text = pm.IndemnizacionOtros
+                    txtCuotaGeneralPoliza1.Text = pm.CuotaGeneralPoliza
+                    txtMedicamentos1.Text = pm.Medicamentos
+                    txtCobreAluminioAcero1.Text = pm.CobreAluminioAcero
+                    txtMedicamentosControlados1.Text = pm.MedicamentosControlados
+                    txtEQ1.Text = pm.EqContratistas
+                    txtPrimaNetaMercancia1.Text = pm.PrimaNeta
+                    txtDerechoPolizaMercancia1.Text = pm.DerechoPoliza
+                    txtOtrosMercancia1.Text = pm.OtroPrima
+                    txtIVAMercancia1.Text = pm.IVA
+                    txtPrimaTotalMercancia1.Text = pm.PrimaTotal
+
+                Case 2
+                    txtNombreInternoPoliza2.Text = pm.NombreInternoPoliza
+                    txtTerrestreAereo2.Text = pm.TerrestreAereo
+                    txtMaritimo2.Text = pm.Maritimo
+                    txtPaqueteria2.Text = pm.PaqueteriaMensajeria
+                    txtDeducibles2.Text = pm.Deducibles
+                    txtCompras2.Text = pm.Compras
+                    txtVentas2.Text = pm.Ventas
+                    txtMaquila2.Text = pm.Maquila
+                    txtBienesUsados2.Text = pm.BienesUsados
+                    txtEmbarquesEntreFiliales2.Text = pm.EmbarqueFiliales
+                    txtOtrosMercancia2.Text = pm.IndemnizacionOtros
+                    txtCuotaGeneralPoliza2.Text = pm.CuotaGeneralPoliza
+                    txtMedicamentos2.Text = pm.Medicamentos
+                    txtCobreAluminioAcero2.Text = pm.CobreAluminioAcero
+                    txtMedicamentosControlados2.Text = pm.MedicamentosControlados
+                    txtEQ2.Text = pm.EqContratistas
+                    txtPrimaNetaMercancia2.Text = pm.PrimaNeta
+                    txtDerechoPolizaMercancia2.Text = pm.DerechoPoliza
+                    txtOtrosMercancia2.Text = pm.OtroPrima
+                    txtIVAMercancia2.Text = pm.IVA
+                    txtPrimaTotalMercancia2.Text = pm.PrimaTotal
+
+                Case 3
+                    txtNombreInternoPoliza3.Text = pm.NombreInternoPoliza
+                    txtTerrestreAereo3.Text = pm.TerrestreAereo
+                    txtMaritimo3.Text = pm.Maritimo
+                    txtPaqueteria3.Text = pm.PaqueteriaMensajeria
+                    txtDeducibles3.Text = pm.Deducibles
+                    txtCompras3.Text = pm.Compras
+                    txtVentas3.Text = pm.Ventas
+                    txtMaquila3.Text = pm.Maquila
+                    txtBienesUsados3.Text = pm.BienesUsados
+                    txtEmbarquesEntreFiliales3.Text = pm.EmbarqueFiliales
+                    txtOtrosMercancia3.Text = pm.IndemnizacionOtros
+                    txtCuotaGeneralPoliza3.Text = pm.CuotaGeneralPoliza
+                    txtMedicamentos3.Text = pm.Medicamentos
+                    txtCobreAluminioAcero3.Text = pm.CobreAluminioAcero
+                    txtMedicamentosControlados3.Text = pm.MedicamentosControlados
+                    txtEQ3.Text = pm.EqContratistas
+                    txtPrimaNetaMercancia3.Text = pm.PrimaNeta
+                    txtDerechoPolizaMercancia3.Text = pm.DerechoPoliza
+                    txtOtrosMercancia3.Text = pm.OtroPrima
+                    txtIVAMercancia3.Text = pm.IVA
+                    txtPrimaTotalMercancia3.Text = pm.PrimaTotal
+
+
+            End Select
+
+        Next
+
+        If poliza.PolizaContenedor IsNot Nothing Then
+
+            txtNombreInternoPolizaContenedor.Text = poliza.PolizaContenedor.NombreInternoPoliza
+            txtTrayectosAsegurados.Text = poliza.PolizaContenedor.TrayectosAsegurados
+            txtMedioTransporte.Text = poliza.PolizaContenedor.MedioTransporte
+            txtPorContenedor.Text = poliza.PolizaContenedor.PorContenedor
+            txtFerrocarril.Text = poliza.PolizaContenedor.Ferrocarril
+            txtTerrestreMontosPoliza.Text = poliza.PolizaContenedor.Terrestre
+            txtCuotaAplicable.Text = poliza.PolizaContenedor.CuotaAplicable
+
+        End If
+
+    End Sub
 
     Private Sub CargarBienesGrid()
 
@@ -624,7 +749,7 @@ Public Class AdminGestionPolizas
     End Sub
 
 
-    Private Sub AgregarRiesgo(txt As TextBox, tipoRiesgoId As Integer)
+    Private Sub AgregarRiesgo(txt As TextBox, tipoRiesgoId As Integer, administracionId As Integer)
 
         Dim nombreRiesgo As String = txt.Text.Trim()
         If String.IsNullOrEmpty(nombreRiesgo) Then Return
@@ -633,6 +758,7 @@ Public Class AdminGestionPolizas
     .RiesgoCubiertoId = If(RiesgosSession.Count = 0, 1, RiesgosSession.Max(Function(r) r.RiesgoCubiertoId) + 1),
     .Nombre = nombreRiesgo,
     .TipoRiesgoId = tipoRiesgoId,
+    .AdministracionBienId = administracionId,
     .PolizaMercanciaId = 0
     }
 
@@ -659,18 +785,17 @@ Public Class AdminGestionPolizas
 
     Private Sub CargarRiesgos()
 
-        CargarGridRiesgos(GvViajeCompleto, 1)
-        CargarGridRiesgos(GvViajeCompleto2, 1)
-        CargarGridRiesgos(GvViajeCompleto3, 1)
+        CargarGridRiesgos(GvViajeCompleto, 1, 1)
+        CargarGridRiesgos(GvViajeCompleto2, 1, 2)
+        CargarGridRiesgos(GvViajeCompleto3, 1, 3)
 
-        CargarGridRiesgos(GvContinuacionViaje, 2)
-        'CargarGridRiesgos(GvRiesgo2_2, 5)
-        'CargarGridRiesgos(GvRiesgo2_3, 6)
+        CargarGridRiesgos(GvContinuacionViaje, 2, 1)
+        CargarGridRiesgos(GvContinuacionViaje2, 2, 2)
+        CargarGridRiesgos(GvContinuacionViaje3, 2, 3)
 
-        'CargarGridRiesgos(GvRiesgo3_1, 7)
-        'CargarGridRiesgos(GvRiesgo3_2, 8)
-        'CargarGridRiesgos(GvRiesgo3_3, 9)
-
+        CargarGridRiesgos(GvCoberturasAdicionales, 3, 1)
+        CargarGridRiesgos(GvCoberturasAdicionales2, 3, 2)
+        CargarGridRiesgos(GvCoberturasAdicionales3, 3, 3)
     End Sub
     Protected Sub GvViajeCompleto_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
@@ -681,20 +806,18 @@ Public Class AdminGestionPolizas
 
     Protected Sub GvViajeCompleto_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
         GvViajeCompleto.PageIndex = e.NewPageIndex
-        CargarGridRiesgos(GvViajeCompleto, 1)
+        CargarGridRiesgos(GvViajeCompleto, 1, 1)
     End Sub
 
-    Private Sub CargarGridRiesgos(grid As GridView, tipoRiesgoId As Integer)
-
+    Private Sub CargarGridRiesgos(grid As GridView, tipoRiesgoId As Integer, administracionId As Integer)
         grid.DataSource = RiesgosSession.
-        Where(Function(r) r.TipoRiesgoId = tipoRiesgoId).ToList()
-
+        Where(Function(r) r.TipoRiesgoId = tipoRiesgoId AndAlso r.AdministracionBienId = administracionId).ToList()
         grid.DataBind()
-
     End Sub
+
 
     Protected Sub BtnAgregarCoberturaV_Click(sender As Object, e As EventArgs)
-        AgregarRiesgo(txtViajeCompleto, 1)
+        AgregarRiesgo(txtViajeCompleto, 1, 1)
     End Sub
 
     Protected Sub GvViajeCompleto2_RowCommand(sender As Object, e As GridViewCommandEventArgs)
@@ -706,11 +829,11 @@ Public Class AdminGestionPolizas
 
     Protected Sub GvViajeCompleto2_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
         GvViajeCompleto.PageIndex = e.NewPageIndex
-        CargarGridRiesgos(GvViajeCompleto2, 1)
+        CargarGridRiesgos(GvViajeCompleto2, 1, 1)
     End Sub
 
     Protected Sub BtnAgregarCoberturaV2_Click(sender As Object, e As EventArgs)
-        AgregarRiesgo(txtviajeCompleto2, 1)
+        AgregarRiesgo(txtviajeCompleto2, 1, 2)
     End Sub
 
     Protected Sub GvViajeCompleto3_RowCommand(sender As Object, e As GridViewCommandEventArgs)
@@ -722,11 +845,11 @@ Public Class AdminGestionPolizas
 
     Protected Sub GvViajeCompleto3_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
         GvViajeCompleto.PageIndex = e.NewPageIndex
-        CargarGridRiesgos(GvViajeCompleto3, 1)
+        CargarGridRiesgos(GvViajeCompleto3, 1, 2)
     End Sub
 
     Protected Sub BtnAgregarCoberturaV3_Click(sender As Object, e As EventArgs)
-        AgregarRiesgo(txtviajeCompleto3, 1)
+        AgregarRiesgo(txtviajeCompleto3, 1, 3)
     End Sub
 
     Protected Sub GvContinuacionViaje_RowCommand(sender As Object, e As GridViewCommandEventArgs)
@@ -738,10 +861,102 @@ Public Class AdminGestionPolizas
 
     Protected Sub GvContinuacionViaje_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
         GvContinuacionViaje.PageIndex = e.NewPageIndex
-        CargarGridRiesgos(GvContinuacionViaje, 2)
+        CargarGridRiesgos(GvContinuacionViaje, 2, 1)
     End Sub
 
     Protected Sub btnagregarContinuacionViaje_Click(sender As Object, e As EventArgs)
-        AgregarRiesgo(txtcontinuacionViajeC, 2)
+        AgregarRiesgo(txtcontinuacionViajeC, 2, 1)
     End Sub
+
+    Protected Sub btnCancelar_Click(sender As Object, e As EventArgs)
+        cargarPolizas()
+        pnlFormularioPolizas.Visible = False
+        PnlTabla.Visible = True
+        pnlEncabezado.Visible = True
+        LimpiarFormulario()
+    End Sub
+
+    Protected Sub GvContinuacionViaje2_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Eliminar" Then
+            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            EliminarRiesgo(id)
+        End If
+    End Sub
+
+    Protected Sub GvContinuacionViaje2_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+        GvContinuacionViaje2.PageIndex = e.NewPageIndex
+        CargarGridRiesgos(GvContinuacionViaje2, 2, 2)
+    End Sub
+
+    Protected Sub btnagregarContinuacionViaje2_Click(sender As Object, e As EventArgs)
+        AgregarRiesgo(txtcontinuacionViajeC2, 2, 2)
+    End Sub
+
+    Protected Sub GvContinuacionViaje3_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Eliminar" Then
+            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            EliminarRiesgo(id)
+        End If
+    End Sub
+
+    Protected Sub GvContinuacionViaje3_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+        GvContinuacionViaje3.PageIndex = e.NewPageIndex
+        CargarGridRiesgos(GvContinuacionViaje3, 2, 3)
+    End Sub
+
+    Protected Sub btnagregarContinuacionViaje3_Click(sender As Object, e As EventArgs)
+        AgregarRiesgo(txtcontinuacionViajeC3, 2, 3)
+    End Sub
+
+
+    Protected Sub GvCoberturasAdicionales_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Eliminar" Then
+            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            EliminarRiesgo(id)
+        End If
+    End Sub
+
+    Protected Sub GvCoberturasAdicionales_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+        GvCoberturasAdicionales.PageIndex = e.NewPageIndex
+        CargarGridRiesgos(GvCoberturasAdicionales, 3, 1)
+    End Sub
+
+    Protected Sub btnAgregarCcoberturasAdicionales_Click(sender As Object, e As EventArgs)
+        AgregarRiesgo(txtcoberturasAdicionales, 3, 1)
+
+    End Sub
+
+    Protected Sub GvCoberturasAdicionales2_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Eliminar" Then
+            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            EliminarRiesgo(id)
+        End If
+    End Sub
+
+    Protected Sub GvCoberturasAdicionales2_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+        GvCoberturasAdicionales2.PageIndex = e.NewPageIndex
+        CargarGridRiesgos(GvCoberturasAdicionales2, 3, 2)
+    End Sub
+
+    Protected Sub btnAgregarCcoberturasAdicionales2_Click(sender As Object, e As EventArgs)
+        AgregarRiesgo(txtcoberturasAdicionales2, 3, 2)
+    End Sub
+
+    Protected Sub GvCoberturasAdicionales3_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Eliminar" Then
+            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            EliminarRiesgo(id)
+        End If
+    End Sub
+
+    Protected Sub GvCoberturasAdicionales3_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
+        GvCoberturasAdicionales3.PageIndex = e.NewPageIndex
+        CargarGridRiesgos(GvCoberturasAdicionales3, 3, 3)
+    End Sub
+
+    Protected Sub btnAgregarCcoberturasAdicionales3_Click(sender As Object, e As EventArgs)
+        AgregarRiesgo(txtcoberturasAdicionales3, 3, 3)
+    End Sub
+
+
 End Class

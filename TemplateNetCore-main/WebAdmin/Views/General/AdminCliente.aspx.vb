@@ -26,7 +26,7 @@ Public Class AdminCliente
             CargarBeneficiario(ddlBeneficiario)
             txtFechaRegistro.Text = DateTime.Now.ToString("yyyy-MM-dd")
 
-            ActualizarEstadoCampos(chkHabilitarCampos.Checked)
+            ActualizarEstadoCampos(True)
         End If
     End Sub
 
@@ -141,6 +141,12 @@ Public Class AdminCliente
             Exit Sub
         End If
 
+        Dim rfcGenericoId As Integer? = Nothing
+
+        If Not String.IsNullOrWhiteSpace(ddlRFCGenerico.SelectedValue) AndAlso ddlRFCGenerico.SelectedValue <> "0" Then
+            rfcGenericoId = Convert.ToInt32(ddlRFCGenerico.SelectedValue)
+        End If
+
         Dim cliente As New Cliente With {
         .TipoPersonaId = tipoPersonaId,
         .Clave = txtClave.Text,
@@ -151,7 +157,7 @@ Public Class AdminCliente
         .NombreCompleto = nombreCompleto,
         .RegimenFiscalId = ddlRegimenFiscal.SelectedValue,
         .Rfc = txtRFC.Text,
-        .RfcGenericoId = ddlRFCGenerico.SelectedValue,
+        .RfcGenericoId = rfcGenericoId,
         .FechaRegistro = Date.Now,
         .TipoSeguroId = ddlSeguroContrata.SelectedValue,
         .TipoCuentaId = ddlTipoCuenta.SelectedValue,
@@ -230,10 +236,18 @@ Public Class AdminCliente
         If Not String.IsNullOrEmpty(hfClienteId.Value) Then
             Dim clienteId As Integer = Convert.ToInt32(hfClienteId.Value)
             respuesta = api.PutEditarCliente(clienteId, json)
-            mensajeToast = "Cliente editado correctamente"
+            If respuesta.Contains("error") Then
+                mensajeToast = "No se edito el cliente"
+            Else
+                mensajeToast = "Cliente editado correctamente"
+            End If
         Else
             respuesta = api.PostCliente(json)
-            mensajeToast = "Cliente agregado correctamente"
+            If respuesta.Contains("error") Then
+                mensajeToast = "Error al agregar el cliente"
+            Else
+                mensajeToast = "Cliente agregado correctamente"
+            End If
         End If
 
         System.Diagnostics.Debug.WriteLine("Respuesta API:" & respuesta)
@@ -717,19 +731,6 @@ if (myModalEl) {{
         End If
     End Sub
 
-    Protected Sub chkHabilitarCampos_CheckedChanged(sender As Object, e As EventArgs)
-        ActualizarEstadoCampos(chkHabilitarCampos.Checked)
-    End Sub
-    Private Sub ActualizarEstadoCampos(estaHabilitado As Boolean)
-        txtDiasCredito.Enabled = estaHabilitado
-        txtMetodoPago.Enabled = estaHabilitado
-        txtNumeroCuenta.Enabled = estaHabilitado
-        txtLimiteCredito.Enabled = estaHabilitado
-        txtDiasPago.Enabled = estaHabilitado
-        txtDiasRevision.Enabled = estaHabilitado
-        txtSaldo.Enabled = estaHabilitado
-    End Sub
-
     Protected Sub txtBuscarCliente_TextChanged(sender As Object, e As EventArgs)
         filtrarClientes()
     End Sub
@@ -848,5 +849,19 @@ True)
         ddlBeneficiario.DataBind()
 
         CerrarModal("modalAgregarBeneficiario")
+    End Sub
+
+    Protected Sub TipoPago_CheckedChanged(sender As Object, e As EventArgs)
+        ActualizarEstadoCampos(rbCredito.Checked)
+    End Sub
+
+    Private Sub ActualizarEstadoCampos(estaHabilitado As Boolean)
+        txtDiasCredito.Enabled = estaHabilitado
+        txtMetodoPago.Enabled = estaHabilitado
+        txtNumeroCuenta.Enabled = estaHabilitado
+        txtLimiteCredito.Enabled = estaHabilitado
+        txtDiasPago.Enabled = estaHabilitado
+        txtDiasRevision.Enabled = estaHabilitado
+        txtSaldo.Enabled = estaHabilitado
     End Sub
 End Class

@@ -5,6 +5,7 @@
         Public Property Nombre As String
         Public Property TipoRiesgoId As Integer
         Public Property PolizaMercanciaId As Integer
+        Public Property AdministracionBienId As Integer
     End Class
 
 End Namespace

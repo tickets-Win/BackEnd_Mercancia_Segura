@@ -50,7 +50,9 @@ Public Class AdminVendedor
         Dim tipoVendedorId As Integer = Convert.ToInt32(ddlTipoVendedor.SelectedValue)
 
         Dim comisionValue As Decimal = 0
-        Decimal.TryParse(txtComision.Text.Replace("$", "").Trim(), comisionValue)
+        Dim texto As String = txtComision.Text.Replace("%", "").Trim()
+
+        Decimal.TryParse(texto, comisionValue)
 
         If comisionValue > 100 Then comisionValue = 100
         If comisionValue < 0 Then comisionValue = 0
@@ -232,7 +234,7 @@ Public Class AdminVendedor
         txtTelefono.Text = vendedor.Telefono
         txtCorreo.Text = vendedor.CorreoElectronico
         txtObservaciones.Text = vendedor.Observaciones
-        txtComision.Text = vendedor.Comision.ToString()
+        txtComision.Text = Convert.ToDecimal(vendedor.Comision).ToString("0.00") & "%"
         ddlEstatus.SelectedValue = If(vendedor.Estatus, "1", "0")
         ddlEstatus.Enabled = True
         ddlTipoPersona.Enabled = False

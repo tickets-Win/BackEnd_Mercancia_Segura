@@ -77,6 +77,15 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents pnlFormularioPolizas As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
+    '''Control hfPolizaId.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfPolizaId As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
     '''Control lblMensaje.
     '''</summary>
     '''<remarks>
@@ -491,6 +500,15 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents GvContinuacionViaje As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
+    '''Control UpCoberturasAdicionales.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpCoberturasAdicionales As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtcoberturasAdicionales.
     '''</summary>
     '''<remarks>
@@ -507,6 +525,15 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnAgregarCcoberturasAdicionales As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvCoberturasAdicionales.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvCoberturasAdicionales As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
     '''Control txtDeducibles1.
@@ -851,6 +878,15 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents GvViajeCompleto2 As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
+    '''Control UpContinuacionViaje2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpContinuacionViaje2 As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtcontinuacionViajeC2.
     '''</summary>
     '''<remarks>
@@ -869,6 +905,24 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents btnagregarContinuacionViaje2 As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
+    '''Control GvContinuacionViaje2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvContinuacionViaje2 As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control UpdatePanel1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpdatePanel1 As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtcoberturasAdicionales2.
     '''</summary>
     '''<remarks>
@@ -885,6 +939,15 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnAgregarCcoberturasAdicionales2 As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvCoberturasAdicionales2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvCoberturasAdicionales2 As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
     '''Control txtDeducibles2.
@@ -1229,6 +1292,15 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents GvViajeCompleto3 As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
+    '''Control UpContinnuacionViaje3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpContinnuacionViaje3 As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtcontinuacionViajeC3.
     '''</summary>
     '''<remarks>
@@ -1247,6 +1319,24 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents btnagregarContinuacionViaje3 As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
+    '''Control GvContinuacionViaje3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvContinuacionViaje3 As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control UpdatePanel2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpdatePanel2 As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control txtcoberturasAdicionales3.
     '''</summary>
     '''<remarks>
@@ -1263,6 +1353,15 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnAgregarCcoberturasAdicionales3 As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvCoberturasAdicionales3.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvCoberturasAdicionales3 As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
     '''Control txtDeducibles3.
