@@ -213,7 +213,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label">Teléfono</label>
-                        <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control required"></asp:TextBox>
+                        <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control required" onkeyup="formatPhone(this)"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
@@ -272,14 +272,15 @@
                     </div>
 
                     <div class="col-md-4">
+                        <label class="form-label">Número Ext.</label>
+                        <asp:TextBox ID="txtNumeroExterior" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+
+                    <div class="col-md-4">
                         <label class="form-label">Número Int.</label>
                         <asp:TextBox ID="txtNumeroInterior" runat="server" CssClass="form-control"></asp:TextBox>
                     </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label">Número Ext.</label>
-                        <asp:TextBox ID="txtNumeroExterior" runat="server" CssClass="form-control"></asp:TextBox>
-                    </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Población</label>
@@ -340,23 +341,37 @@
                                 <h6>Cuota Aplicable</h6>
                                 <div class="row mb-3">
                                     <div class="col col-md-6">
+                                        <label class="form-label">Nacional (%)</label>
                                         <asp:TextBox ID="txtCuotaNacional" runat="server" CssClass="form-control"
                                             placeholder="Nacional (%)" data-format="percent"></asp:TextBox>
                                     </div>
                                     <div class="col-md-6">
+                                        <label class="form-label">Internacional (%)</label>
                                         <asp:TextBox ID="txtCuotaInternacional" runat="server" CssClass="form-control"
                                             placeholder="Internacional (%)" data-format="percent"></asp:TextBox>
                                     </div>
                                 </div>
-                                <h6>Cuota Mínima</h6>
                                 <div class="row mb-3">
-                                    <div class="col col-md-6">
-                                        <asp:TextBox ID="txtMinimoNacional" runat="server" CssClass="form-control"
-                                            placeholder="Nacional $0.00" data-format="money-mn"></asp:TextBox>
+                                    <h6>Cuota Mínima</h6>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nacional</label>
+                                        <div class="input-group">
+                                            <asp:TextBox ID="txtMinimoNacional" runat="server" data-format="money-simple" CssClass="form-control"
+                                                placeholder="0.00"></asp:TextBox>
+
+                                            <asp:DropDownList ID="ddlMonedaNacional" runat="server" CssClass="form-select">
+                                            </asp:DropDownList>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <asp:TextBox ID="txtMinimoInternacional" runat="server" CssClass="form-control"
-                                            placeholder="Internacional $0.00" data-format="money-usd"></asp:TextBox>
+                                        <label class="form-label">Internacional</label>
+                                        <div class="input-group">
+                                            <asp:TextBox ID="txtMinimoInternacional" runat="server" data-format="money-simple" CssClass="form-control"
+                                                placeholder="0.00"></asp:TextBox>
+
+                                            <asp:DropDownList ID="ddlMonedaInternacional" runat="server" CssClass="form-select">
+                                            </asp:DropDownList>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -892,16 +907,32 @@
     <script>
         function formatPercent(value) {
             if (!value) return '';
+
             let num = parseFloat(value.replace(/[^0-9.-]/g, ''));
             if (isNaN(num)) return '';
-            return num.toFixed(2) + '%';
+
+            let decimals = Math.max(2, Math.min(6, (value.split('.')[1] || '').length));
+
+            return num.toFixed(decimals) + '%';
         }
 
         function formatMoney(value, currency) {
             if (!value) return '';
-            let num = parseFloat(value.replace(/[^0-9.-]/g, ''));
+            let num = parseFloat(value.toString().replace(/[^0-9.-]/g, ''));
             if (isNaN(num)) return '';
-            return '$' + num.toFixed(2) + ' ' + currency.toUpperCase();
+
+            let decimalesOriginales = (value.toString().split('.')[1] || '').length;
+
+            let minDec = 2;
+            let maxDec = 6;
+            let decimales = Math.max(minDec, Math.min(maxDec, decimalesOriginales));
+
+            let formatted = num.toLocaleString('en-US', {
+                minimumFractionDigits: minDec,
+                maximumFractionDigits: decimales
+            });
+
+            return '$' + formatted + (currency ? ' ' + currency.toUpperCase() : '');
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -926,7 +957,9 @@
                     if (format === 'money-usd') {
                         input.value = formatMoney(val, 'USD');
                     }
-
+                    if (format === 'money-simple') {
+                        input.value = formatMoneySimple(val);
+                    }
                 });
 
                 input.addEventListener('focus', function () {
@@ -942,6 +975,51 @@
             });
 
         });
+
+        function aplicarFormatoInicial() {
+            document.querySelectorAll('input[data-format]').forEach(function (input) {
+                let format = input.getAttribute('data-format');
+                let val = input.value.trim();
+
+                if (!val) return;
+
+                if (format === 'percent') {
+                    input.value = formatPercent(val);
+                }
+
+                if (format === 'money-mn') {
+                    input.value = formatMoney(val, 'MN');
+                }
+
+                if (format === 'money-usd') {
+                    input.value = formatMoney(val, 'USD');
+                }
+                if (format === 'money-simple') {
+                    input.value = formatMoneySimple(val);
+                }
+            });
+        }
+    </script>
+    <script>
+        function formatMoneySimple(value) {
+            if (!value) return '';
+
+            let num = parseFloat(value.toString().replace(/[^0-9.-]/g, ''));
+            if (isNaN(num)) return '';
+
+            let decimalesOriginales = (value.toString().split('.')[1] || '').length;
+
+            let minDec = 2;
+            let maxDec = 6;
+            let decimales = Math.max(minDec, Math.min(maxDec, decimalesOriginales));
+
+            let formatted = num.toLocaleString('en-US', {
+                minimumFractionDigits: minDec,
+                maximumFractionDigits: decimales
+            });
+
+            return '$' + formatted;
+        }
     </script>
     <script>
         window.onload = function () {
@@ -989,4 +1067,22 @@
 
         });
     </script>
+    <script type="text/javascript">
+        function formatPhone(input) {
+            var num = input.value.replace(/\D/g, '');
+            if (num.length > 0) {
+                if (num.length <= 2) {
+                    input.value = '(' + num;
+                } else if (num.length <= 4) {
+                    input.value = '(' + num.substring(0, 2) + ') ' + num.substring(2);
+                } else if (num.length <= 6) {
+                    input.value = '(' + num.substring(0, 2) + ') ' + num.substring(2, 4) + ' ' + num.substring(4);
+                } else if (num.length <= 8) {
+                    input.value = '(' + num.substring(0, 2) + ') ' + num.substring(2, 4) + ' ' + num.substring(4, 6) + ' ' + num.substring(6);
+                } else {
+                    input.value = '(' + num.substring(0, 2) + ') ' + num.substring(2, 4) + ' ' + num.substring(4, 6) + ' ' + num.substring(6, 8) + ' ' + num.substring(8, 10);
+                }
+            }
+        }
+</script>
 </asp:Content>

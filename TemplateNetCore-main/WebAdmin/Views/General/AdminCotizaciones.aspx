@@ -1,10 +1,10 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminCotizaciones.aspx.vb" Inherits="WebAdmin.AdminCotizaciones" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="../../Content/site.css" rel="stylesheet" />     
+    <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:Panel ID="pnlEncabezado" runat="server">
@@ -28,111 +28,46 @@
         </div>
     </asp:Panel>
     <asp:Panel ID="PnlTabla" runat="server">
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col">Clave</th>
-                    <th scope="col">Cliente</th>
-                    <th scope="col">Estatus</th>
-                    <th scope="col">Fecha Cotización</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row">COT-01</th>
-                    <td>Carlos Lopez</td>
-                    <td>Pendiente</td>
-                    <td>2023-01-15</td>
-                    <td>Mercancia</td>
-                    <td>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Aceptar"><i class="bi bi-check-circle"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">COT-02</th>
-                    <td>Ana García</td>
-                    <td>Pendiente</td>
-                    <td>2023-01-15</td>
-                    <td>Mercancia</td>
-                    <td>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Aceptar"><i class="bi bi-check-circle"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">COT-03</th>
-                    <td>Carlos Lopez</td>
-                    <td>Pendiente</td>
-                    <td>2023-01-15</td>
-                    <td>Mercancia</td>
-                    <td>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Aceptar"><i class="bi bi-check-circle"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">COT-04</th>
-                    <td>Carlos Lopez</td>
-                    <td>Pendiente</td>
-                    <td>2023-01-15</td>
-                    <td>Mercancia</td>
-                    <td>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Aceptar"><i class="bi bi-check-circle"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">COT-05</th>
-                    <td>Carlos Lopez</td>
-                    <td>Pendiente</td>
-                    <td>2023-01-15</td>
-                    <td>Mercancia</td>
-                    <td>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Aceptar"><i class="bi bi-check-circle"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">COT-06</th>
-                    <td>Carlos Lopez</td>
-                    <td>Pendiente</td>
-                    <td>2023-01-15</td>
-                    <td>Mercancia</td>
-                    <td>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Aceptar"><i class="bi bi-check-circle"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">COT-07</th>
-                    <td>Carlos Lopez</td>
-                    <td>Pendiente</td>
-                    <td>2023-01-15</td>
-                    <td>Mercancia</td>
-                    <td>
-                        <button class="icon-btn" title="Editar"><i class="bi bi-pencil"></i></button>
-                        <button class="icon-btn" title="Enviar correo"><i class="bi bi-envelope"></i></button>
-                        <button class="icon-btn" title="Eliminar"><i class="bi bi-trash"></i></button>
-                        <button class="icon-btn" title="Aceptar"><i class="bi bi-check-circle"></i></button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="card card-shadow p-4 mb-4">
+            <div style="overflow-x: auto; width: 100%;">
+                <asp:GridView ID="gvCotizaciones" runat="server"
+                    CssClass="table table-hover align-middle"
+                    AutoGenerateColumns="False"
+                    OnRowCommand="gvCotizaciones_RowCommand"
+                    HeaderStyle-CssClass="table-light"
+                    DataKeyNames="CotizacionId"
+                    AllowPaging="True"
+                    PageSize="10"
+                    OnPageIndexChanging="gvCotizaciones_PageIndexChanging">
+                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                    <Columns>
+                        <asp:BoundField DataField="FechaCotizacion" HeaderText="Fecha Cotizacion" />
+                        <asp:BoundField DataField="SumaAsegurada" HeaderText="Suma Asegurada" />
+                        <asp:BoundField DataField="GastosExpedicion" HeaderText="Gastos Expedicion" />
+
+                        <asp:TemplateField HeaderText="Acciones">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("CotizacionId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Editar">
+                                <i class="bi bi-pencil"></i>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("CotizacionId") %>'
+                                    CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                    OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
+                                <i class="bi bi-trash"></i>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("CotizacionId") %>'
+                                    CssClass="icon-btn" ToolTip="Enviar correo">
+                                <i class="bi bi-envelope"></i>
+                                </asp:LinkButton>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
     </asp:Panel>
     <asp:Panel ID="pnlFormularioCotizaciones" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -152,6 +87,11 @@
                     <asp:ListItem Text="Mercancia" Value="Mercancia"></asp:ListItem>
                     <asp:ListItem Text="Contenedor" Value="Contenedor"></asp:ListItem>
                 </asp:DropDownList>
+            </div>           
+            <div class="col-md-4">
+                <label class="form-label">Nombre Interno Póliza</label>
+                <asp:DropDownList ID="ddlNombreInternoPoliza" CssClass="form-select" runat="server" AutoPostBack="true">
+                </asp:DropDownList>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Fecha Cotización</label>
@@ -160,15 +100,6 @@
             <div class="col-md-4">
                 <label class="form-label">Cliente</label>
                 <asp:DropDownList ID="ddlCliente" CssClass="form-select" runat="server" AutoPostBack="true">
-                    <asp:ListItem Text="Edgar Pérez Garrido" Value="Mercancia"></asp:ListItem>
-                    <asp:ListItem Text="Marco Salas" Value="Contenedor"></asp:ListItem>
-                </asp:DropDownList>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Nombre Interno Póliza</label>
-                <asp:DropDownList ID="ddlNombreInternoPoliza" CssClass="form-select" runat="server" AutoPostBack="true">
-                    <asp:ListItem Text="Nombre Interno 1" Value="Mercancia"></asp:ListItem>
-                    <asp:ListItem Text="Nombre Interno 2" Value="Contenedor"></asp:ListItem>
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -279,8 +210,8 @@
             <div class="col-md-12">
                 <div class="card p-3 shadow-sm">
                     <h5>Coberturas de la cotización</h5>
-                    <div class="row g-3 mt-2">
 
+                    <div class="row g-3">
                         <div class="row mt-3 gx-0">
                             <div class="col-md-12 px-2">
                                 <div class="card shadow-sm bg-light w-100">
@@ -328,10 +259,23 @@
                             </div>
                         </div>
                     </div>
+                    <asp:Panel ID="pnlMedidasSeguridad" runat="server">
+                        <div class="row mb-3">
+                            <div class="col col-md-6">
+                                <h6 class="titulo-cuota">Medidas de seguridad adicionales</h6>
+                                <asp:TextBox ID="txtMedidasSeguridad" runat="server" CssClass="form-control"
+                                    placeholder=""></asp:TextBox>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="titulo-cuota">Deducibles</h6>
+                                <asp:TextBox ID="txtDeducibles" runat="server" CssClass="form-control"
+                                    placeholder=""></asp:TextBox>
+                            </div>
+                        </div>
+                    </asp:Panel>
                     <asp:Panel ID="pnlBienesAsegurados" runat="server" Visible="false">
                         <h5 class="mt-4">Bienes asegurados</h5>
-                        <div class="row g-3 mt-2">
-
+                        <div class="row g-3">
                             <div class="row mt-3 gx-0">
                                 <div class="col-md-12 px-2">
                                     <div class="card shadow-sm bg-light w-100">
@@ -384,18 +328,6 @@
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <div class="card p-3 shadow-sm">
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <h6 class="titulo-cuota">Medidas de seguridad adicionales</h6>
-                                            <asp:TextBox ID="txtMedidasSeguridad" runat="server" CssClass="form-control"
-                                                placeholder=""></asp:TextBox>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h6 class="titulo-cuota">Deducibles</h6>
-                                            <asp:TextBox ID="txtDeducibles" runat="server" CssClass="form-control"
-                                                placeholder=""></asp:TextBox>
-                                        </div>
-                                    </div>
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
                                             <h6 class="titulo-cuota">Cuota Aplicable</h6>
@@ -595,5 +527,5 @@
                 icon.classList.add('bi-chevron-down');
             }
         }
-    </script>
+    </script>   
 </asp:Content>

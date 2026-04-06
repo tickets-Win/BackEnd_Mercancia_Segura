@@ -153,6 +153,12 @@
                 <label class="form-label">Municipio</label>
                 <asp:TextBox ID="txtMunicipio" runat="server" CssClass="form-control "></asp:TextBox>
             </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Colonia</label>
+                <asp:TextBox ID="txtColonia" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>
+
             <div class="col-md-4">
                 <label class="form-label">Calle</label>
                 <asp:TextBox ID="txtCalle" runat="server" CssClass="form-control "></asp:TextBox>
@@ -166,12 +172,6 @@
             <div class="col-md-4">
                 <label class="form-label">Número Int.</label>
                 <asp:TextBox ID="txtNumeroInt" runat="server" CssClass="form-control "></asp:TextBox>
-            </div>
-
-
-            <div class="col-md-4">
-                <label class="form-label">Colonia</label>
-                <asp:TextBox ID="txtColonia" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
 
             <div class="col-md-4">

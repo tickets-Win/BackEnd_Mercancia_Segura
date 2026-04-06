@@ -248,6 +248,15 @@ Partial Public Class AdminBeneficiarios
     Protected WithEvents txtMunicipio As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control txtColonia.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtColonia As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control txtCalle.
     '''</summary>
     '''<remarks>
@@ -273,15 +282,6 @@ Partial Public Class AdminBeneficiarios
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtNumeroInt As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtColonia.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtColonia As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtCP.

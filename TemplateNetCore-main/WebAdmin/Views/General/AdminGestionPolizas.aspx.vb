@@ -1,4 +1,5 @@
 ﻿Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Linq
 Imports WebAdmin.MercanciaSegura.DOM.Modelos
 
 Public Class AdminGestionPolizas
@@ -46,6 +47,7 @@ Public Class AdminGestionPolizas
             DropdownHelpers.CargarTipoSubRamo(ddlSubRamo)
             DropdownHelpers.CargarFormaPago(ddlFormaPago)
             DropdownHelpers.CargarTipoMoneda(ddlMoneda)
+            DropdownHelpers.CargarTipoEstatusPoliza(ddlEstatusPoliza)
             CargarBienesGrid()
         End If
     End Sub
@@ -56,7 +58,16 @@ Public Class AdminGestionPolizas
         PnlTabla.Visible = False
         lblMensaje.Text = "Nuevo Registro"
 
+        ddlEstatusPoliza.SelectedValue = "1"
+        ddlEstatusPoliza.Enabled = False
+        ddlProducto.Enabled = True
+
+        pnlMercancia.Visible = True
+        pnlContenedor.Visible = False
+
         LimpiarFormulario()
+
+        hfPolizaId.Value = ""
     End Sub
 
     Protected Sub ddlProducto_SelectedIndexChanged(sender As Object, e As EventArgs)
@@ -74,6 +85,23 @@ Public Class AdminGestionPolizas
             pnlMediosTransporte.Visible = True
 
         End If
+    End Sub
+
+    Private Sub MostrarProducto(productoId As Integer)
+
+        If productoId = 1 Then
+            pnlNombreInternoPoliza.Visible = False
+            pnlMercancia.Visible = True
+            pnlContenedor.Visible = False
+            pnlMediosTransporte.Visible = False
+
+        ElseIf productoId = 2 Then
+            pnlNombreInternoPoliza.Visible = True
+            pnlContenedor.Visible = True
+            pnlMercancia.Visible = False
+            pnlMediosTransporte.Visible = True
+        End If
+
     End Sub
 
     Protected Sub cargarPolizas()
@@ -100,7 +128,41 @@ Public Class AdminGestionPolizas
 
             EditarPoliza(polizaId)
         End If
+
+        If e.CommandName = "Eliminar" Then
+            Dim api As New ConsumoApi()
+            Dim polizaId As Integer = Convert.ToInt32(e.CommandArgument)
+
+            Dim eliminado As String = api.DeletePoliza(polizaId)
+
+            cargarPolizas()
+
+            If Not String.IsNullOrEmpty(eliminado) Then
+                Dim respuestaObj As JObject = JObject.Parse(eliminado)
+                Dim mensaje As String
+
+                If respuestaObj("message") IsNot Nothing Then
+                    mensaje = respuestaObj("message").ToString()
+                Else
+                    mensaje = "Poliza eliminada correctamente"
+                End If
+
+                ScriptManager.RegisterStartupScript(Me, Me.GetType(), "toast",
+        "showToast('" & mensaje & "', 'success');", True)
+            Else
+                ScriptManager.RegisterStartupScript(Me, Me.GetType(), "toast",
+                "showToast('Error al eliminar la poliza', 'danger');", True)
+            End If
+        End If
     End Sub
+
+    Private Function EsMercanciaSeleccionada() As Boolean
+        Return Not String.IsNullOrWhiteSpace(txtNombreInternoPoliza1.Text)
+    End Function
+
+    Private Function EsContenedorSeleccionado() As Boolean
+        Return Not String.IsNullOrWhiteSpace(txtNombreInternoPolizaContenedor.Text)
+    End Function
 
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
         Dim api As New ConsumoApi()
@@ -115,108 +177,112 @@ Public Class AdminGestionPolizas
             .SubRamoId = ddlSubRamo.SelectedValue,
             .VigenciaDel = If(String.IsNullOrEmpty(txtVigenciaDel.Text), CType(Nothing, DateTime?), Convert.ToDateTime(txtVigenciaDel.Text)),
             .VigenciaHasta = If(String.IsNullOrEmpty(txtVigenciaHasta.Text), CType(Nothing, DateTime?), Convert.ToDateTime(txtVigenciaHasta.Text)),
-            .EstatusPolizaId = ddlEstatus.SelectedValue,
+            .EstatusPolizaId = Convert.ToInt32(ddlEstatusPoliza.SelectedValue),
             .FormaPagoId = ddlFormaPago.SelectedValue,
             .MonedaId = ddlMoneda.SelectedValue,
             .ClaveAgente = txtClaveAgente.Text,
             .FolioPoliza = txtFolioPoliza.Text
             }
 
-        Dim polizaMercanciaList As New List(Of PolizaMercancia)
+        If EsMercanciaSeleccionada() Then
 
-        polizaMercanciaList.Add(New PolizaMercancia With {
-        .AdministracionBienId = 1,
-        .NombreInternoPoliza = txtNombreInternoPoliza1.Text,
-        .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo1.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo1.Text)),
-        .Maritimo = If(String.IsNullOrWhiteSpace(txtMaritimo1.Text), Nothing, Convert.ToDecimal(txtMaritimo1.Text)),
-        .PaqueteriaMensajeria = If(String.IsNullOrWhiteSpace(txtPaqueteria1.Text), Nothing, Convert.ToDecimal(txtPaqueteria1.Text)),
-        .Deducibles = txtDeducibles1.Text,
-        .Compras = txtCompras1.Text,
-        .Ventas = txtVentas1.Text,
-        .Maquila = txtMaquila1.Text,
-        .BienesUsados = txtBienesUsados1.Text,
-        .EmbarqueFiliales = txtEmbarquesEntreFiliales1.Text,
-        .IndemnizacionOtros = txtOtrosMercancia1.Text,
-        .CuotaGeneralPoliza = If(String.IsNullOrWhiteSpace(txtCuotaGeneralPoliza1.Text), Nothing, Convert.ToDecimal(txtCuotaGeneralPoliza1.Text)),
-        .Medicamentos = If(String.IsNullOrWhiteSpace(txtMedicamentos1.Text), Nothing, Convert.ToDecimal(txtMedicamentos1.Text)),
-        .CobreAluminioAcero = If(String.IsNullOrWhiteSpace(txtCobreAluminioAcero1.Text), Nothing, Convert.ToDecimal(txtCobreAluminioAcero1.Text)),
-        .MedicamentosControlados = If(String.IsNullOrWhiteSpace(txtMedicamentosControlados1.Text), Nothing, Convert.ToDecimal(txtMedicamentosControlados1.Text)),
-        .EqContratistas = If(String.IsNullOrWhiteSpace(txtEQ1.Text), Nothing, Convert.ToDecimal(txtEQ1.Text)),
-        .PrimaNeta = If(String.IsNullOrWhiteSpace(txtPrimaNetaMercancia1.Text), Nothing, Convert.ToDecimal(txtPrimaNetaMercancia1.Text)),
-        .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia1.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia1.Text)),
-        .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia1.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia1.Text)),
-        .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia1.Text), Nothing, Convert.ToDecimal(txtIVAMercancia1.Text)),
-        .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia1.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia1.Text)),
-        .RiesgoCubierto = RiesgosSession.
-Where(Function(r) r.AdministracionBienId = 1).
-ToList()
-    })
+            Dim polizaMercanciaList As New List(Of PolizaMercancia)
 
-        polizaMercanciaList.Add(New PolizaMercancia With {
-            .AdministracionBienId = 2,
-            .NombreInternoPoliza = txtNombreInternoPoliza2.Text,
-            .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo2.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo2.Text)),
-            .Maritimo = If(String.IsNullOrWhiteSpace(txtMaritimo2.Text), Nothing, Convert.ToDecimal(txtMaritimo2.Text)),
-            .PaqueteriaMensajeria = If(String.IsNullOrWhiteSpace(txtPaqueteria2.Text), Nothing, Convert.ToDecimal(txtPaqueteria2.Text)),
-            .Deducibles = txtDeducibles2.Text,
-            .Compras = txtCompras2.Text,
-            .Ventas = txtVentas2.Text,
-            .Maquila = txtMaquila2.Text,
-            .BienesUsados = txtBienesUsados2.Text,
-            .EmbarqueFiliales = txtEmbarquesEntreFiliales2.Text,
-            .IndemnizacionOtros = txtOtrosMercancia2.Text,
-            .CuotaGeneralPoliza = If(String.IsNullOrWhiteSpace(txtCuotaGeneralPoliza2.Text), Nothing, Convert.ToDecimal(txtCuotaGeneralPoliza2.Text)),
-            .Medicamentos = If(String.IsNullOrWhiteSpace(txtMedicamentos2.Text), Nothing, Convert.ToDecimal(txtMedicamentos2.Text)),
-            .CobreAluminioAcero = If(String.IsNullOrWhiteSpace(txtCobreAluminioAcero2.Text), Nothing, Convert.ToDecimal(txtCobreAluminioAcero2.Text)),
-            .MedicamentosControlados = If(String.IsNullOrWhiteSpace(txtMedicamentosControlados2.Text), Nothing, Convert.ToDecimal(txtMedicamentosControlados2.Text)),
-            .EqContratistas = If(String.IsNullOrWhiteSpace(txtEQ2.Text), Nothing, Convert.ToDecimal(txtEQ2.Text)),
-            .PrimaNeta = If(String.IsNullOrWhiteSpace(txtPrimaNetaMercancia2.Text), Nothing, Convert.ToDecimal(txtPrimaNetaMercancia2.Text)),
-            .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia2.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia2.Text)),
-            .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia2.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia2.Text)),
-            .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia2.Text), Nothing, Convert.ToDecimal(txtIVAMercancia2.Text)),
-            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia2.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia2.Text)),
+            polizaMercanciaList.Add(New PolizaMercancia With {
+            .AdministracionBienId = 1,
+            .NombreInternoPoliza = txtNombreInternoPoliza1.Text,
+            .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo1.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo1.Text)),
+            .Maritimo = If(String.IsNullOrWhiteSpace(txtMaritimo1.Text), Nothing, Convert.ToDecimal(txtMaritimo1.Text)),
+            .PaqueteriaMensajeria = If(String.IsNullOrWhiteSpace(txtPaqueteria1.Text), Nothing, Convert.ToDecimal(txtPaqueteria1.Text)),
+            .Deducibles = txtDeducibles1.Text,
+            .Compras = txtCompras1.Text,
+            .Ventas = txtVentas1.Text,
+            .Maquila = txtMaquila1.Text,
+            .BienesUsados = txtBienesUsados1.Text,
+            .EmbarqueFiliales = txtEmbarquesEntreFiliales1.Text,
+            .IndemnizacionOtros = txtOtrosBasesIndemnizacion1.Text,
+            .CuotaGeneralPoliza = If(String.IsNullOrWhiteSpace(txtCuotaGeneralPoliza1.Text), Nothing, Convert.ToDecimal(txtCuotaGeneralPoliza1.Text)),
+            .Medicamentos = If(String.IsNullOrWhiteSpace(txtMedicamentos1.Text), Nothing, Convert.ToDecimal(txtMedicamentos1.Text)),
+            .CobreAluminioAcero = If(String.IsNullOrWhiteSpace(txtCobreAluminioAcero1.Text), Nothing, Convert.ToDecimal(txtCobreAluminioAcero1.Text)),
+            .MedicamentosControlados = If(String.IsNullOrWhiteSpace(txtMedicamentosControlados1.Text), Nothing, Convert.ToDecimal(txtMedicamentosControlados1.Text)),
+            .EqContratistas = If(String.IsNullOrWhiteSpace(txtEQ1.Text), Nothing, Convert.ToDecimal(txtEQ1.Text)),
+            .PrimaNeta = If(String.IsNullOrWhiteSpace(txtPrimaNetaMercancia1.Text), Nothing, Convert.ToDecimal(txtPrimaNetaMercancia1.Text)),
+            .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia1.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia1.Text)),
+            .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia1.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia1.Text)),
+            .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia1.Text), Nothing, Convert.ToDecimal(txtIVAMercancia1.Text)),
+            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia1.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia1.Text)),
             .RiesgoCubierto = RiesgosSession.
-Where(Function(r) r.AdministracionBienId = 2).
-ToList()
-                                })
+    Where(Function(r) r.AdministracionBienId = 1).
+    ToList()
+        })
 
-        polizaMercanciaList.Add(New PolizaMercancia With {
-            .AdministracionBienId = 3,
-            .NombreInternoPoliza = txtNombreInternoPoliza3.Text,
-            .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo3.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo3.Text)),
-            .Maritimo = If(String.IsNullOrWhiteSpace(txtMaritimo3.Text), Nothing, Convert.ToDecimal(txtMaritimo3.Text)),
-            .PaqueteriaMensajeria = If(String.IsNullOrWhiteSpace(txtPaqueteria3.Text), Nothing, Convert.ToDecimal(txtPaqueteria3.Text)),
-            .Deducibles = txtDeducibles3.Text,
-            .Compras = txtCompras3.Text,
-            .Ventas = txtVentas3.Text,
-            .Maquila = txtMaquila3.Text,
-            .BienesUsados = txtBienesUsados3.Text,
-            .EmbarqueFiliales = txtEmbarquesEntreFiliales3.Text,
-            .IndemnizacionOtros = txtOtrosMercancia3.Text,
-            .CuotaGeneralPoliza = If(String.IsNullOrWhiteSpace(txtCuotaGeneralPoliza3.Text), Nothing, Convert.ToDecimal(txtCuotaGeneralPoliza3.Text)),
-            .Medicamentos = If(String.IsNullOrWhiteSpace(txtMedicamentos3.Text), Nothing, Convert.ToDecimal(txtMedicamentos3.Text)),
-            .CobreAluminioAcero = If(String.IsNullOrWhiteSpace(txtCobreAluminioAcero3.Text), Nothing, Convert.ToDecimal(txtCobreAluminioAcero3.Text)),
-            .MedicamentosControlados = If(String.IsNullOrWhiteSpace(txtMedicamentosControlados3.Text), Nothing, Convert.ToDecimal(txtMedicamentosControlados3.Text)),
-            .EqContratistas = If(String.IsNullOrWhiteSpace(txtEQ3.Text), Nothing, Convert.ToDecimal(txtEQ3.Text)),
-            .PrimaNeta = If(String.IsNullOrWhiteSpace(txtPrimaNetaMercancia3.Text), Nothing, Convert.ToDecimal(txtPrimaNetaMercancia3.Text)),
-            .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia3.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia3.Text)),
-            .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia3.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia3.Text)),
-            .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia3.Text), Nothing, Convert.ToDecimal(txtIVAMercancia3.Text)),
-            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia3.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia3.Text)),
-.RiesgoCubierto = RiesgosSession.
-Where(Function(r) r.AdministracionBienId = 3).
-ToList()})
+            polizaMercanciaList.Add(New PolizaMercancia With {
+                .AdministracionBienId = 2,
+                .NombreInternoPoliza = txtNombreInternoPoliza2.Text,
+                .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo2.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo2.Text)),
+                .Maritimo = If(String.IsNullOrWhiteSpace(txtMaritimo2.Text), Nothing, Convert.ToDecimal(txtMaritimo2.Text)),
+                .PaqueteriaMensajeria = If(String.IsNullOrWhiteSpace(txtPaqueteria2.Text), Nothing, Convert.ToDecimal(txtPaqueteria2.Text)),
+                .Deducibles = txtDeducibles2.Text,
+                .Compras = txtCompras2.Text,
+                .Ventas = txtVentas2.Text,
+                .Maquila = txtMaquila2.Text,
+                .BienesUsados = txtBienesUsados2.Text,
+                .EmbarqueFiliales = txtEmbarquesEntreFiliales2.Text,
+                .IndemnizacionOtros = txtOtrosBasesIndemnizacion2.Text,
+                .CuotaGeneralPoliza = If(String.IsNullOrWhiteSpace(txtCuotaGeneralPoliza2.Text), Nothing, Convert.ToDecimal(txtCuotaGeneralPoliza2.Text)),
+                .Medicamentos = If(String.IsNullOrWhiteSpace(txtMedicamentos2.Text), Nothing, Convert.ToDecimal(txtMedicamentos2.Text)),
+                .CobreAluminioAcero = If(String.IsNullOrWhiteSpace(txtCobreAluminioAcero2.Text), Nothing, Convert.ToDecimal(txtCobreAluminioAcero2.Text)),
+                .MedicamentosControlados = If(String.IsNullOrWhiteSpace(txtMedicamentosControlados2.Text), Nothing, Convert.ToDecimal(txtMedicamentosControlados2.Text)),
+                .EqContratistas = If(String.IsNullOrWhiteSpace(txtEQ2.Text), Nothing, Convert.ToDecimal(txtEQ2.Text)),
+                .PrimaNeta = If(String.IsNullOrWhiteSpace(txtPrimaNetaMercancia2.Text), Nothing, Convert.ToDecimal(txtPrimaNetaMercancia2.Text)),
+                .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia2.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia2.Text)),
+                .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia2.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia2.Text)),
+                .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia2.Text), Nothing, Convert.ToDecimal(txtIVAMercancia2.Text)),
+                .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia2.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia2.Text)),
+                .RiesgoCubierto = RiesgosSession.
+    Where(Function(r) r.AdministracionBienId = 2).
+    ToList()
+                                    })
 
-        poliza.PolizaMercancia = polizaMercanciaList
+            polizaMercanciaList.Add(New PolizaMercancia With {
+                .AdministracionBienId = 3,
+                .NombreInternoPoliza = txtNombreInternoPoliza3.Text,
+                .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo3.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo3.Text)),
+                .Maritimo = If(String.IsNullOrWhiteSpace(txtMaritimo3.Text), Nothing, Convert.ToDecimal(txtMaritimo3.Text)),
+                .PaqueteriaMensajeria = If(String.IsNullOrWhiteSpace(txtPaqueteria3.Text), Nothing, Convert.ToDecimal(txtPaqueteria3.Text)),
+                .Deducibles = txtDeducibles3.Text,
+                .Compras = txtCompras3.Text,
+                .Ventas = txtVentas3.Text,
+                .Maquila = txtMaquila3.Text,
+                .BienesUsados = txtBienesUsados3.Text,
+                .EmbarqueFiliales = txtEmbarquesEntreFiliales3.Text,
+                .IndemnizacionOtros = txtOtrosBasesIndemnizacion3.Text,
+                .CuotaGeneralPoliza = If(String.IsNullOrWhiteSpace(txtCuotaGeneralPoliza3.Text), Nothing, Convert.ToDecimal(txtCuotaGeneralPoliza3.Text)),
+                .Medicamentos = If(String.IsNullOrWhiteSpace(txtMedicamentos3.Text), Nothing, Convert.ToDecimal(txtMedicamentos3.Text)),
+                .CobreAluminioAcero = If(String.IsNullOrWhiteSpace(txtCobreAluminioAcero3.Text), Nothing, Convert.ToDecimal(txtCobreAluminioAcero3.Text)),
+                .MedicamentosControlados = If(String.IsNullOrWhiteSpace(txtMedicamentosControlados3.Text), Nothing, Convert.ToDecimal(txtMedicamentosControlados3.Text)),
+                .EqContratistas = If(String.IsNullOrWhiteSpace(txtEQ3.Text), Nothing, Convert.ToDecimal(txtEQ3.Text)),
+                .PrimaNeta = If(String.IsNullOrWhiteSpace(txtPrimaNetaMercancia3.Text), Nothing, Convert.ToDecimal(txtPrimaNetaMercancia3.Text)),
+                .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia3.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia3.Text)),
+                .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia3.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia3.Text)),
+                .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia3.Text), Nothing, Convert.ToDecimal(txtIVAMercancia3.Text)),
+                .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia3.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia3.Text)),
+    .RiesgoCubierto = RiesgosSession.
+    Where(Function(r) r.AdministracionBienId = 3).
+    ToList()})
 
-            Dim bienesAsegurados = BienesSession.
-    Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
-                                                                           Return New Bien With {
-            .AdministracionBienId = b.AdministracionBienId,
-            .Nombre = b.Nombre,
-            .TipoBienId = 1
-        }
-                                                                       End Function).ToList()
+            poliza.PolizaMercancia = polizaMercanciaList
+
+        End If
+
+        Dim bienesAsegurados = BienesSession.
+Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
+                                                                       Return New Bien With {
+        .AdministracionBienId = b.AdministracionBienId,
+        .Nombre = b.Nombre,
+        .TipoBienId = 1
+    }
+                                                                   End Function).ToList()
 
         Dim bienesExcluidos = BienesSession.
     Where(Function(b) b.TipoBienId = 2).Select(Function(b)
@@ -246,7 +312,9 @@ ToList()})
                                                                                   End Function).ToList()
 
         poliza.Bien = bienesAsegurados.Concat(bienesExcluidos).Concat(bienesSujetosConsulta).Concat(bienesContenedor).ToList()
-        Dim polizaContenedor As New PolizaContenedor With {
+
+        If EsContenedorSeleccionado() Then
+            Dim polizaContenedor As New PolizaContenedor With {
             .NombreInternoPoliza = txtNombreInternoPolizaContenedor.Text,
             .TrayectosAsegurados = txtTrayectosAsegurados.Text,
             .MedioTransporte = txtMedioTransporte.Text,
@@ -267,15 +335,36 @@ ToList()})
             .Cobertura = CoberturasSession.ToList()
         }
 
-        poliza.PolizaContenedor = polizaContenedor
+            poliza.PolizaContenedor = polizaContenedor
+
+        End If
 
         Dim respuesta As String
+        Dim mensajeToast As String = ""
         Dim json As String
 
         json = JsonConvert.SerializeObject(poliza, Formatting.Indented)
         System.Diagnostics.Debug.WriteLine("JSON enviado a API:" & json)
 
-        respuesta = api.PostPoliza(json)
+        If Not String.IsNullOrEmpty(hfPolizaId.Value) Then
+            Dim polizaId As Integer = Convert.ToInt32(hfPolizaId.Value)
+            respuesta = api.PutEditarPoliza(polizaId, json)
+            If respuesta.Contains("error") Then
+                mensajeToast = "No se edito la poliza"
+            Else
+                mensajeToast = "Poliza editada correctamente"
+            End If
+        Else
+            respuesta = api.PostPoliza(json)
+            If respuesta.Contains("error") Then
+                mensajeToast = "Error al agregar poliza"
+            Else
+                mensajeToast = "Poliza agregada correctamente"
+            End If
+        End If
+
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "toast",
+        "showToast('" & mensajeToast & "', 'success');", True)
 
         cargarPolizas()
         pnlFormularioPolizas.Visible = False
@@ -292,6 +381,7 @@ ToList()})
         hfPolizaId.Value = poliza.PolizaId.ToString()
 
         ddlProducto.SelectedValue = poliza.ProductoId
+        MostrarProducto(poliza.ProductoId)
         txtTipoPoliza.Text = poliza.TipoPoliza
         txtNumeroPoliza.Text = poliza.NumeroPoliza
         ddlContratante.SelectedValue = poliza.ContratanteId
@@ -304,11 +394,94 @@ ToList()})
         If poliza.VigenciaHasta.HasValue Then
             txtVigenciaHasta.Text = poliza.VigenciaHasta.Value.ToString("yyyy-MM-dd")
         End If
-        ddlEstatus.SelectedValue = poliza.EstatusPolizaId
         ddlFormaPago.SelectedValue = poliza.FormaPagoId
         ddlMoneda.SelectedValue = poliza.MonedaId
         txtClaveAgente.Text = poliza.ClaveAgente
         txtFolioPoliza.Text = poliza.FolioPoliza
+
+        ddlProducto.Enabled = False
+        ddlEstatusPoliza.Enabled = True
+
+        If Not String.IsNullOrEmpty(poliza.EstatusPolizaId) AndAlso ddlEstatusPoliza.Items.FindByValue(poliza.EstatusPolizaId) IsNot Nothing Then
+            ddlEstatusPoliza.SelectedValue = poliza.EstatusPolizaId
+        End If
+
+        BienesSession.Clear()
+        If poliza.Bien IsNot Nothing Then
+            For Each b In poliza.Bien
+                BienesSession.Add(b)
+            Next
+        End If
+
+        RiesgosSession = poliza.PolizaMercancia.SelectMany(Function(pm) pm.RiesgoCubierto).ToList()
+
+        CoberturasSession.Clear()
+        If poliza.PolizaContenedor IsNot Nothing AndAlso poliza.PolizaContenedor.Cobertura IsNot Nothing Then
+            For Each c In poliza.PolizaContenedor.Cobertura
+                CoberturasSession.Add(c)
+            Next
+        End If
+
+        GvBienes.DataSource = BienesSession.Where(Function(b) b.TipoBienId = 1 AndAlso b.AdministracionBienId = 1).ToList()
+        GvBienes.DataBind()
+
+        GvBienes2.DataSource = BienesSession.Where(Function(b) b.TipoBienId = 1 AndAlso b.AdministracionBienId = 2).ToList()
+        GvBienes2.DataBind()
+
+        GvBienes3.DataSource = BienesSession.Where(Function(b) b.TipoBienId = 1 AndAlso b.AdministracionBienId = 3).ToList()
+        GvBienes3.DataBind()
+
+        GvBienesExcluidos1.DataSource = BienesSession.Where(Function(b) b.TipoBienId = 2 AndAlso b.AdministracionBienId = 1).ToList()
+        GvBienesExcluidos1.DataBind()
+
+        GvBienesExcluidos2.DataSource = BienesSession.Where(Function(b) b.TipoBienId = 2 AndAlso b.AdministracionBienId = 2).ToList()
+        GvBienesExcluidos2.DataBind()
+
+        GvBienesExcluidos3.DataSource = BienesSession.Where(Function(b) b.TipoBienId = 2 AndAlso b.AdministracionBienId = 3).ToList()
+        GvBienesExcluidos3.DataBind()
+
+        GvBienesSujetosConsulta.DataSource = BienesSession.Where(Function(b) b.TipoBienId = 3 AndAlso b.AdministracionBienId = 1).ToList()
+        GvBienesSujetosConsulta.DataBind()
+
+        GvBienesSujetosConsulta2.DataSource = BienesSession.Where(Function(b) b.TipoBienId = 3 AndAlso b.AdministracionBienId = 2).ToList()
+        GvBienesSujetosConsulta2.DataBind()
+
+        GvBienesSujetosConsulta3.DataSource = BienesSession.Where(Function(b) b.TipoBienId = 3 AndAlso b.AdministracionBienId = 3).ToList()
+        GvBienesSujetosConsulta3.DataBind()
+
+        GvViajeCompleto.DataSource = RiesgosSession.Where(Function(b) b.TipoRiesgoId = 1 AndAlso b.AdministracionBienId = 1).ToList()
+        GvViajeCompleto.DataBind()
+
+        GvViajeCompleto2.DataSource = RiesgosSession.Where(Function(b) b.TipoRiesgoId = 1 AndAlso b.AdministracionBienId = 2).ToList()
+        GvViajeCompleto2.DataBind()
+
+        GvViajeCompleto3.DataSource = RiesgosSession.Where(Function(b) b.TipoRiesgoId = 1 AndAlso b.AdministracionBienId = 3).ToList()
+        GvViajeCompleto3.DataBind()
+
+        GvContinuacionViaje.DataSource = RiesgosSession.Where(Function(b) b.TipoRiesgoId = 2 AndAlso b.AdministracionBienId = 1).ToList()
+        GvContinuacionViaje.DataBind()
+
+        GvContinuacionViaje2.DataSource = RiesgosSession.Where(Function(b) b.TipoRiesgoId = 2 AndAlso b.AdministracionBienId = 2).ToList()
+        GvContinuacionViaje2.DataBind()
+
+        GvContinuacionViaje3.DataSource = RiesgosSession.Where(Function(b) b.TipoRiesgoId = 2 AndAlso b.AdministracionBienId = 3).ToList()
+        GvContinuacionViaje3.DataBind()
+
+        GvCoberturasAdicionales.DataSource = RiesgosSession.Where(Function(b) b.TipoRiesgoId = 3 AndAlso b.AdministracionBienId = 1).ToList()
+        GvCoberturasAdicionales.DataBind()
+
+        GvCoberturasAdicionales2.DataSource = RiesgosSession.Where(Function(b) b.TipoRiesgoId = 3 AndAlso b.AdministracionBienId = 2).ToList()
+        GvCoberturasAdicionales2.DataBind()
+
+        GvCoberturasAdicionales3.DataSource = RiesgosSession.Where(Function(b) b.TipoRiesgoId = 3 AndAlso b.AdministracionBienId = 3).ToList()
+        GvCoberturasAdicionales3.DataBind()
+
+        GvBienContenedor.DataSource = BienesSession.Where(Function(b) b.TipoBienId = 4 AndAlso b.AdministracionBienId = 4).ToList()
+        GvBienContenedor.DataBind()
+
+        GvCoberturasContenedor.DataSource = CoberturasSession
+        GvCoberturasContenedor.DataBind()
+
 
         For Each pm In poliza.PolizaMercancia
 
@@ -325,7 +498,7 @@ ToList()})
                     txtMaquila1.Text = pm.Maquila
                     txtBienesUsados1.Text = pm.BienesUsados
                     txtEmbarquesEntreFiliales1.Text = pm.EmbarqueFiliales
-                    txtOtrosMercancia1.Text = pm.IndemnizacionOtros
+                    txtOtrosBasesIndemnizacion1.Text = pm.IndemnizacionOtros
                     txtCuotaGeneralPoliza1.Text = pm.CuotaGeneralPoliza
                     txtMedicamentos1.Text = pm.Medicamentos
                     txtCobreAluminioAcero1.Text = pm.CobreAluminioAcero
@@ -348,7 +521,7 @@ ToList()})
                     txtMaquila2.Text = pm.Maquila
                     txtBienesUsados2.Text = pm.BienesUsados
                     txtEmbarquesEntreFiliales2.Text = pm.EmbarqueFiliales
-                    txtOtrosMercancia2.Text = pm.IndemnizacionOtros
+                    txtOtrosBasesIndemnizacion2.Text = pm.IndemnizacionOtros
                     txtCuotaGeneralPoliza2.Text = pm.CuotaGeneralPoliza
                     txtMedicamentos2.Text = pm.Medicamentos
                     txtCobreAluminioAcero2.Text = pm.CobreAluminioAcero
@@ -371,7 +544,7 @@ ToList()})
                     txtMaquila3.Text = pm.Maquila
                     txtBienesUsados3.Text = pm.BienesUsados
                     txtEmbarquesEntreFiliales3.Text = pm.EmbarqueFiliales
-                    txtOtrosMercancia3.Text = pm.IndemnizacionOtros
+                    txtOtrosBasesIndemnizacion3.Text = pm.IndemnizacionOtros
                     txtCuotaGeneralPoliza3.Text = pm.CuotaGeneralPoliza
                     txtMedicamentos3.Text = pm.Medicamentos
                     txtCobreAluminioAcero3.Text = pm.CobreAluminioAcero
@@ -397,6 +570,16 @@ ToList()})
             txtFerrocarril.Text = poliza.PolizaContenedor.Ferrocarril
             txtTerrestreMontosPoliza.Text = poliza.PolizaContenedor.Terrestre
             txtCuotaAplicable.Text = poliza.PolizaContenedor.CuotaAplicable
+            txtManiobrasRescateContenedor.Text = poliza.PolizaContenedor.ManiobrasRescate
+            txtPrimaNetaC.Text = poliza.PolizaContenedor.PrimaNeta
+            txtOtrosMontosPolizaC.Text = poliza.PolizaContenedor.OtroPrima
+            txtDerechoPolizaC.Text = poliza.PolizaContenedor.DerechoPoliza
+            txtIVAC.Text = poliza.PolizaContenedor.IVA
+            txtTotalC.Text = poliza.PolizaContenedor.PrimaTotal
+            txtDañoMaterial.Text = poliza.PolizaContenedor.DanioMaterial
+            txtRobo.Text = poliza.PolizaContenedor.Robo
+            txtPerdidaParcial.Text = poliza.PolizaContenedor.PerdidaParcial
+            txtPerdidaTotal.Text = poliza.PolizaContenedor.PerdidaTotal
 
         End If
 
@@ -635,6 +818,11 @@ ToList()})
         txtPerdidaTotal.Text = ""
         txtPerdidaParcial.Text = ""
         txtCoberturaContenedor.Text = ""
+        txtManiobrasRescateContenedor.Text = ""
+        txtPrimaNetaC.Text = ""
+        txtOtrosMontosPolizaC.Text = ""
+        txtDerechoPolizaC.Text = ""
+        txtTotalC.Text = ""
 
         ddlProducto.SelectedIndex = 0
         ddlContratante.SelectedIndex = 0
@@ -642,7 +830,7 @@ ToList()})
         ddlSubRamo.SelectedIndex = 0
         ddlFormaPago.SelectedIndex = 0
         ddlMoneda.SelectedIndex = 0
-        ddlEstatus.SelectedIndex = 0
+        ddlEstatusPoliza.SelectedIndex = 0
 
         BienesSession.Clear()
         CoberturasSession.Clear()

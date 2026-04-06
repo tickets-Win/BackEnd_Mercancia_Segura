@@ -18,6 +18,8 @@ Public Class AdminCliente
             DropdownHelpers.CargarTipoSector(ddlSector)
             DropdownHelpers.CargarRFCGenerico(ddlRFCGenerico)
             DropdownHelpers.CargarTipoCorreo(ddlTipoCorreo)
+            DropdownHelpers.CargarTipoMoneda(ddlMonedaInternacional)
+            DropdownHelpers.CargarTipoMoneda(ddlMonedaNacional)
             Dim tipoPersonaId As Integer = If(ddlTipoPersona.SelectedValue IsNot Nothing, Convert.ToInt32(ddlTipoPersona.SelectedValue), 1)
             DropdownHelpers.CargarRegimenFiscal(ddlRegimenFiscal, tipoPersonaId)
             DropdownHelpers.CargarTipoTarifa(ddlTipoTarifaSecos, ddlTipoRefrigerados, ddlTipoIsotaques)
@@ -147,6 +149,14 @@ Public Class AdminCliente
             rfcGenericoId = Convert.ToInt32(ddlRFCGenerico.SelectedValue)
         End If
 
+        Dim telefono As String = txtTelefono.Text.Trim()
+
+        telefono = telefono.Replace("(", "").Replace(")", "").Replace(" ", "").Replace("-", "")
+
+        If telefono.Length > 13 Then
+            telefono = telefono.Substring(0, 13)
+        End If
+
         Dim cliente As New Cliente With {
         .TipoPersonaId = tipoPersonaId,
         .Clave = txtClave.Text,
@@ -163,7 +173,7 @@ Public Class AdminCliente
         .TipoCuentaId = ddlTipoCuenta.SelectedValue,
         .OrigenClienteId = ddlOrigenCliente.SelectedValue,
         .TipoSectorId = ddlSector.SelectedValue,
-        .Telefono = txtTelefono.Text,
+        .Telefono = telefono,
         .CorreoElectronico = txtCorreo.Text,
         .Nacionalidad = txtNacionalidad.Text,
         .Genero = ddlGenero.SelectedValue,
@@ -542,6 +552,8 @@ if (myModalEl) {{
         ddlTipoTarifaSecos.SelectedIndex = 0
         ddlTipoRefrigerados.SelectedIndex = 0
         ddlTipoIsotaques.SelectedIndex = 0
+        ddlMonedaNacional.SelectedIndex = 0
+        ddlMonedaInternacional.SelectedIndex = 0
 
         hfClienteId.Value = ""
         hfTipoPersona.Value = ""
@@ -557,6 +569,24 @@ if (myModalEl) {{
         gvCorreosAdicionales.DataBind()
     End Sub
 
+    Private Function FormatearTelefonoJS(tel As String) As String
+        If String.IsNullOrWhiteSpace(tel) Then Return ""
+
+        Dim numeros As String = New String(tel.Where(AddressOf Char.IsDigit).ToArray())
+
+        Select Case numeros.Length
+            Case <= 2
+                Return "(" & numeros
+            Case <= 4
+                Return "(" & numeros.Substring(0, 2) & ") " & numeros.Substring(2)
+            Case <= 6
+                Return "(" & numeros.Substring(0, 2) & ") " & numeros.Substring(2, 2) & " " & numeros.Substring(4)
+            Case <= 8
+                Return "(" & numeros.Substring(0, 2) & ") " & numeros.Substring(2, 2) & " " & numeros.Substring(4, 2) & " " & numeros.Substring(6)
+            Case Else
+                Return "(" & numeros.Substring(0, 2) & ") " & numeros.Substring(2, 2) & " " & numeros.Substring(4, 2) & " " & numeros.Substring(6, 2) & " " & numeros.Substring(8, Math.Min(4, numeros.Length - 8))
+        End Select
+    End Function
     Protected Sub EditarCliente(clienteId As Integer)
         Dim api As New ConsumoApi
         Dim jsonCliente As String = api.GetClienteId(clienteId)
@@ -573,7 +603,7 @@ if (myModalEl) {{
         txtNombreCompleto.Text = If(cliente.TipoPersonaId = 1, cliente.NombreCompleto, "")
         txtRazonSocial.Text = If(cliente.TipoPersonaId = 2, cliente.NombreCompleto, "")
         txtRFC.Text = cliente.Rfc
-        txtTelefono.Text = cliente.Telefono
+        txtTelefono.Text = FormatearTelefonoJS(cliente.Telefono)
         txtCorreo.Text = cliente.CorreoElectronico
         txtNacionalidad.Text = cliente.Nacionalidad
         txtColonia.Text = cliente.Colonia
@@ -708,6 +738,8 @@ if (myModalEl) {{
         pnlGestionarCredito.Visible = True
         pnlEstadoCuenta.Visible = True
         lblMensaje.Text = "Editar Cliente"
+
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "formatear", "aplicarFormatoInicial();", True)
     End Sub
 
     Protected Sub btnCancelar_Click(sender As Object, e As EventArgs)

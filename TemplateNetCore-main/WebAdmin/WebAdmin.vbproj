@@ -135,7 +135,11 @@
     <Compile Include="Modelos\Cobertura.vb" />
     <Compile Include="Modelos\Contratante.vb" />
     <Compile Include="Modelos\Correos.vb" />
+    <Compile Include="Modelos\Cotizacion.vb" />
+    <Compile Include="Modelos\CotizacionContenedor.vb" />
+    <Compile Include="Modelos\CotizacionMercancia.vb" />
     <Compile Include="Modelos\Cuota.vb" />
+    <Compile Include="Modelos\EstatusPoliza.vb" />
     <Compile Include="Modelos\FormaPago.vb" />
     <Compile Include="Modelos\Moneda.vb" />
     <Compile Include="Modelos\OrigenCliente.vb" />

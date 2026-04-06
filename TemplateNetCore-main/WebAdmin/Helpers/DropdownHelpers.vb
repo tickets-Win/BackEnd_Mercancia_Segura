@@ -27,6 +27,18 @@ Module DropdownHelpers
         ddlEstatus.DataBind()
 
     End Sub
+    Public Sub CargarTipoEstatusPoliza(ddlEstatusPoliza As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim tipoEstatusPoliza As String = api.GetEstatusPoliza()
+
+        Dim listaTipoEstatusPoliza As List(Of EstatusPoliza) = JsonConvert.DeserializeObject(Of List(Of EstatusPoliza))(tipoEstatusPoliza)
+
+        ddlEstatusPoliza.DataSource = listaTipoEstatusPoliza
+        ddlEstatusPoliza.DataTextField = "Tipo"
+        ddlEstatusPoliza.DataValueField = "EstatusPolizaId"
+        ddlEstatusPoliza.DataBind()
+
+    End Sub
 
     Public Sub CargarTipoSeguro(ddlSeguroContrata As DropDownList)
         Dim api As New ConsumoApi()

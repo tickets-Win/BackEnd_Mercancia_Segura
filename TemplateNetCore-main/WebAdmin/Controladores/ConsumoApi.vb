@@ -102,8 +102,23 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function PostCotizacion(body As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
 
+            Using client As New HttpClient()
+                Dim content As New StringContent(body, Encoding.UTF8, "application/json")
 
+                Dim response As HttpResponseMessage =
+                    client.PostAsync(ConfigurationManager.AppSettings("Cotizacion"), content).Result
+
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
 #End Region
 
 #Region "GET"
@@ -388,6 +403,21 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function GetCargarCotizaciones() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("CargarCotizacion")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
     Public Function GetCargarBeneficiarios() As String
         Try
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
@@ -486,6 +516,21 @@ Public Class ConsumoApi
 
                 Dim response As HttpResponseMessage =
                         client.GetAsync(ConfigurationManager.AppSettings("Producto")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetEstatusPoliza() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("EstatusPoliza")).Result
                 Return response.Content.ReadAsStringAsync().Result
             End Using
 

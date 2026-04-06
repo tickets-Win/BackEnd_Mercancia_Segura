@@ -59,6 +59,15 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents PnlTabla As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
+    '''Control gvCotizaciones.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents gvCotizaciones As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
     '''Control pnlFormularioCotizaciones.
     '''</summary>
     '''<remarks>
@@ -104,6 +113,15 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents ddlTipoCotizacion As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
+    '''Control ddlNombreInternoPoliza.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlNombreInternoPoliza As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
     '''Control txtFechaCotizacion.
     '''</summary>
     '''<remarks>
@@ -120,15 +138,6 @@ Partial Public Class AdminCotizaciones
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents ddlCliente As Global.System.Web.UI.WebControls.DropDownList
-
-    '''<summary>
-    '''Control ddlNombreInternoPoliza.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents ddlNombreInternoPoliza As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''Control ddlBeneficiarioPreferente.
@@ -356,6 +365,33 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents btnAgregarCobertura As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
+    '''Control pnlMedidasSeguridad.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents pnlMedidasSeguridad As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control txtMedidasSeguridad.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtMedidasSeguridad As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtDeducibles.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtDeducibles As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control pnlBienesAsegurados.
     '''</summary>
     '''<remarks>
@@ -390,24 +426,6 @@ Partial Public Class AdminCotizaciones
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents pnlCuotaAplicableMercancia As Global.System.Web.UI.WebControls.Panel
-
-    '''<summary>
-    '''Control txtMedidasSeguridad.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtMedidasSeguridad As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtDeducibles.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtDeducibles As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control chkCuotaAplicableN.

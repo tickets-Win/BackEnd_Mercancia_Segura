@@ -7,10 +7,10 @@ Public Class AdminBeneficiarios
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If Not IsPostBack Then
-            pnlDatosFisica.Visible = True
             DropdownHelpers.CargarTipoPersona(ddlTipoPersona)
             DropdownHelpers.CargarRFCGenerico(ddlRFCGenerico)
             CargarBeneficiarios()
+            pnlDatosFisica.Visible = True
         End If
     End Sub
 
@@ -190,6 +190,7 @@ Public Class AdminBeneficiarios
         hfBeneficiarioId.Value = beneficiario.BeneficiarioPreferenteId.ToString()
 
         ddlTipoPersona.SelectedValue = beneficiario.TipoPersonaId.ToString()
+        MostrarTipoPersona(beneficiario.TipoPersonaId)
         txtClave.Text = beneficiario.Clave
         txtNacionalidad.Text = beneficiario.Nacionalidad
         txtApellidoP.Text = beneficiario.ApellidoPaterno
@@ -198,7 +199,11 @@ Public Class AdminBeneficiarios
         txtRazonSocial.Text = If(beneficiario.TipoPersonaId = 2, beneficiario.NombreCompleto, "")
         txtNombreCompleto.Text = If(beneficiario.TipoPersonaId = 1, beneficiario.NombreCompleto, "")
         txtRFC.Text = beneficiario.RFC
-        ddlRFCGenerico.SelectedValue = beneficiario.RfcGenericoId
+        If beneficiario.RfcGenericoId.HasValue Then
+            ddlRFCGenerico.SelectedValue = beneficiario.RfcGenericoId.Value.ToString()
+        Else
+            ddlRFCGenerico.SelectedIndex = 0
+        End If
         ddlPais.SelectedValue = beneficiario.Pais
         txtEstado.Text = beneficiario.Estado
         txtMunicipio.Text = beneficiario.Municipio
@@ -214,6 +219,19 @@ Public Class AdminBeneficiarios
         PnlEncabezado.Visible = False
     End Sub
 
+    Private Sub MostrarTipoPersona(tipoPersonaId As Integer)
+
+        If tipoPersonaId = 1 Then
+            pnlNombreCompleto.Visible = True
+            pnlRazonSocial.Visible = False
+            pnlDatosFisica.Visible = True
+        Else
+            pnlNombreCompleto.Visible = False
+            pnlRazonSocial.Visible = True
+            pnlDatosFisica.Visible = False
+        End If
+
+    End Sub
     Private Sub LimpiarFormulario()
 
         hfBeneficiarioId.Value = ""
