@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260317222645_UpdateNameTables")]
+    partial class UpdateNameTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,27 +208,19 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("CP");
 
                     b.Property<decimal?>("CuotaAplicableInternacional")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Cuota_Aplicable_Internacional");
 
-                    b.Property<int?>("CuotaAplicableMonedaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Cuota_Aplicable_Moneda_ID");
-
                     b.Property<decimal?>("CuotaAplicableNacional")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Cuota_Aplicable_Nacional");
 
                     b.Property<decimal?>("CuotaMinimaInternacional")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Cuota_Minima_Internacional");
 
-                    b.Property<int?>("CuotaMinimaMonedaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Cuota_Minima_Moneda_ID");
-
                     b.Property<decimal?>("CuotaMinimaNacional")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Cuota_Minima_Nacional");
 
                     b.Property<string>("Estado")
@@ -333,10 +328,6 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Tipo_Seguro_ID");
 
                     b.HasKey("ClienteId");
-
-                    b.HasIndex("CuotaAplicableMonedaId");
-
-                    b.HasIndex("CuotaMinimaMonedaId");
 
                     b.HasIndex("EstatusId");
 
@@ -1200,11 +1191,13 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Nombre");
 
                     b.Property<decimal?>("TipoCambio")
-                        .HasColumnType("decimal(18,6)")
+                        .HasMaxLength(100)
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Tipo_Cambio");
 
                     b.Property<decimal?>("TipoCambioVentanilla")
-                        .HasColumnType("decimal(18,6)")
+                        .HasMaxLength(100)
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Tipo_Cambio_Ventanilla");
 
                     b.HasKey("MonedaId");
@@ -1318,27 +1311,27 @@ namespace MercanciaSegura.DOM.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PolizaContenedorId"));
 
                     b.Property<decimal?>("CuotaAplicable")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Cuota_Aplicable");
 
                     b.Property<decimal?>("DanioMaterial")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Danio_Material");
 
                     b.Property<decimal?>("DerechoPoliza")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Derecho_Poliza");
 
                     b.Property<decimal?>("Ferrocarril")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Ferrocarril");
 
                     b.Property<decimal?>("IVA")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("IVA");
 
                     b.Property<decimal?>("ManiobrasRescate")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Maniobras_Rescate");
 
                     b.Property<string>("MedioTransporte")
@@ -1352,15 +1345,15 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Nombre_Interno_Poliza");
 
                     b.Property<decimal?>("OtroPrima")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Otro_Prima");
 
                     b.Property<decimal?>("PerdidaParcial")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Perdida_Parcial");
 
                     b.Property<decimal?>("PerdidaTotal")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Perdida_Total");
 
                     b.Property<int?>("PolizaId")
@@ -1368,23 +1361,23 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Poliza_ID");
 
                     b.Property<decimal?>("PorContenedor")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Por_Contenedor");
 
                     b.Property<decimal?>("PrimaNeta")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Prima_Neta");
 
                     b.Property<decimal?>("PrimaTotal")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Prima_Total");
 
                     b.Property<decimal?>("Robo")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Robo");
 
                     b.Property<decimal?>("Terrestre")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Terrestre");
 
                     b.Property<string>("TrayectosAsegurados")
@@ -1419,7 +1412,7 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Bienes_Usados");
 
                     b.Property<decimal?>("CobreAluminioAcero")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Cobre_Aluminio_Acero");
 
                     b.Property<string>("Compras")
@@ -1427,7 +1420,7 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Compras");
 
                     b.Property<decimal?>("CuotaGeneralPoliza")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Cuota_General_Poliza");
 
                     b.Property<string>("Deducibles")
@@ -1435,7 +1428,7 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Deducibles");
 
                     b.Property<decimal?>("DerechoPoliza")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Derecho_Poliza");
 
                     b.Property<string>("EmbarqueFiliales")
@@ -1443,11 +1436,11 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Embarque_Filiales");
 
                     b.Property<decimal?>("EqContratistas")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("EQ_Contratistas");
 
                     b.Property<decimal?>("IVA")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("IVA");
 
                     b.Property<string>("IndemnizacionOtros")
@@ -1459,15 +1452,15 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Maquila");
 
                     b.Property<decimal?>("Maritimo")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Maritimo");
 
                     b.Property<decimal?>("Medicamentos")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Medicamentos");
 
                     b.Property<decimal?>("MedicamentosControlados")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Medicamentos_Controlados");
 
                     b.Property<string>("NombreInternoPoliza")
@@ -1476,11 +1469,11 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Nombre_Interno_Poliza");
 
                     b.Property<decimal?>("OtroPrima")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Otro_Prima");
 
                     b.Property<decimal?>("PaqueteriaMensajeria")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Paqueteria_Mensajeria");
 
                     b.Property<int?>("PolizaId")
@@ -1488,15 +1481,15 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Poliza_ID");
 
                     b.Property<decimal?>("PrimaNeta")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Prima_Neta");
 
                     b.Property<decimal?>("PrimaTotal")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Prima_Total");
 
                     b.Property<decimal?>("TerrestreAereo")
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Terrestre_Aereo");
 
                     b.Property<string>("Ventas")
@@ -1972,14 +1965,6 @@ namespace MercanciaSegura.DOM.Migrations
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.Cliente", b =>
                 {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Moneda", "MonedaUno")
-                        .WithMany()
-                        .HasForeignKey("CuotaAplicableMonedaId");
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Moneda", "MonedaDos")
-                        .WithMany()
-                        .HasForeignKey("CuotaMinimaMonedaId");
-
                     b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.TipoEstatus", "TipoEstatus")
                         .WithMany()
                         .HasForeignKey("EstatusId");
@@ -2011,10 +1996,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.TipoSeguro", "TipoSeguro")
                         .WithMany()
                         .HasForeignKey("TipoSeguroId");
-
-                    b.Navigation("MonedaDos");
-
-                    b.Navigation("MonedaUno");
 
                     b.Navigation("OrigenCliente");
 

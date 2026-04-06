@@ -72,6 +72,8 @@ namespace MercanciaSegura.RestAPI.Models.Cliente
         public int? RegimenFiscalId { get; set; }
         public int? TipoPersonaId { get; set; }
         public int? EstatusId { get; set; }
+        public int? CuotaMinimaMonedaId { get; set; }
+        public int? CuotaAplicableMonedaId { get; set; }
 
         // Cuotas
         public decimal? CuotaMinimaInternacional { get; set; }

@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260326165100_CambioDecimalPoliza")]
+    partial class CambioDecimalPoliza
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,10 +211,6 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("Cuota_Aplicable_Internacional");
 
-                    b.Property<int?>("CuotaAplicableMonedaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Cuota_Aplicable_Moneda_ID");
-
                     b.Property<decimal?>("CuotaAplicableNacional")
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("Cuota_Aplicable_Nacional");
@@ -219,10 +218,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Property<decimal?>("CuotaMinimaInternacional")
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("Cuota_Minima_Internacional");
-
-                    b.Property<int?>("CuotaMinimaMonedaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Cuota_Minima_Moneda_ID");
 
                     b.Property<decimal?>("CuotaMinimaNacional")
                         .HasColumnType("decimal(18,6)")
@@ -333,10 +328,6 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Tipo_Seguro_ID");
 
                     b.HasKey("ClienteId");
-
-                    b.HasIndex("CuotaAplicableMonedaId");
-
-                    b.HasIndex("CuotaMinimaMonedaId");
 
                     b.HasIndex("EstatusId");
 
@@ -1200,11 +1191,13 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnName("Nombre");
 
                     b.Property<decimal?>("TipoCambio")
-                        .HasColumnType("decimal(18,6)")
+                        .HasMaxLength(100)
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Tipo_Cambio");
 
                     b.Property<decimal?>("TipoCambioVentanilla")
-                        .HasColumnType("decimal(18,6)")
+                        .HasMaxLength(100)
+                        .HasColumnType("decimal(10,2)")
                         .HasColumnName("Tipo_Cambio_Ventanilla");
 
                     b.HasKey("MonedaId");
@@ -1972,14 +1965,6 @@ namespace MercanciaSegura.DOM.Migrations
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.Cliente", b =>
                 {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Moneda", "MonedaUno")
-                        .WithMany()
-                        .HasForeignKey("CuotaAplicableMonedaId");
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Moneda", "MonedaDos")
-                        .WithMany()
-                        .HasForeignKey("CuotaMinimaMonedaId");
-
                     b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.TipoEstatus", "TipoEstatus")
                         .WithMany()
                         .HasForeignKey("EstatusId");
@@ -2011,10 +1996,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.TipoSeguro", "TipoSeguro")
                         .WithMany()
                         .HasForeignKey("TipoSeguroId");
-
-                    b.Navigation("MonedaDos");
-
-                    b.Navigation("MonedaUno");
 
                     b.Navigation("OrigenCliente");
 

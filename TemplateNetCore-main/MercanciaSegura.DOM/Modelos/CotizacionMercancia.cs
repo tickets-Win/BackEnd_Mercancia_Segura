@@ -78,9 +78,6 @@ namespace MercanciaSegura.DOM.Modelos
         [Column("Total_Seguro_Mercancia", TypeName = "decimal(18,4)")]
         public decimal? TotalSeguroMercancia { get; set; }
 
-        [Column("Total_Seguro_Contenedor", TypeName = "decimal(18,4)")]
-        public decimal? TotalSeguroContenedor { get; set; }
-
         [Column("Total", TypeName = "decimal(18,4)")]
         public decimal? Total { get; set; }
     }

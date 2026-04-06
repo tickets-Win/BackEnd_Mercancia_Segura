@@ -2,7 +2,6 @@
 {
     public class CotizacionContenedorRequest
     {
-        public int CotizacionId { get; set; }
 
         public string? TamanoTipoContendor { get; set; }
         public string? NumeroContenedor { get; set; }
@@ -13,5 +12,6 @@
 
         public decimal? IVA { get; set; }
         public decimal? Total { get; set; }
+        public decimal? TotalSeguroContenedor { get; set; }
     }
 }
