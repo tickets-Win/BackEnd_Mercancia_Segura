@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MercanciaSegura.DOM.Modelos.Poliza;
 
 
 namespace MercanciaSegura.DOM.Modelos.Cliente
@@ -100,16 +101,22 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         [MaxLength(120)]
         public string? NombreCompleto { get; set; }
 
-        [Column("Cuota_Minima_Internacional", TypeName = "decimal(10,2)")]
+        [Column("Cuota_Aplicable_Moneda_ID")]
+        public int? CuotaAplicableMonedaId { get; set; }
+
+        [Column("Cuota_Minima_Internacional", TypeName = "decimal(18,6)")]
         public decimal? CuotaMinimaInternacional { get; set; }
 
-        [Column("Cuota_Minima_Nacional", TypeName = "decimal(10,2)")]
+        [Column("Cuota_Minima_Nacional", TypeName = "decimal(18,6)")]
         public decimal? CuotaMinimaNacional { get; set; }
 
-        [Column("Cuota_Aplicable_Internacional", TypeName = "decimal(10,2)")]
+        [Column("Cuota_Minima_Moneda_ID")]
+        public int? CuotaMinimaMonedaId { get; set; }
+
+        [Column("Cuota_Aplicable_Internacional", TypeName = "decimal(18,6)")]
         public decimal? CuotaAplicableInternacional { get; set; }
 
-        [Column("Cuota_Aplicable_Nacional", TypeName = "decimal(10,2)")]
+        [Column("Cuota_Aplicable_Nacional", TypeName = "decimal(18,6)")]
         public decimal? CuotaAplicableNacional { get; set; }
 
         [Column("Fecha_Actualizacion")]
@@ -125,7 +132,7 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         public DateTime? FechaBaja { get; set; }
 
         [Column("Clave")]
-        [MaxLength(10)]
+        [MaxLength(15)]
         public string? Clave { get; set; }
 
         [Column("Genero")]
@@ -157,6 +164,12 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
 
         [ForeignKey(nameof(RfcGenericoId))]
         public RfcGenerico? RfcGenerico { get; set; }
+
+        [ForeignKey(nameof(CuotaAplicableMonedaId))]
+        public Moneda? MonedaUno { get; set; }
+
+        [ForeignKey(nameof(CuotaMinimaMonedaId))]
+        public Moneda? MonedaDos { get; set; }
 
         public ICollection<ClienteBeneficiario> ClienteBeneficiario { get; set; } = new List<ClienteBeneficiario>();
 

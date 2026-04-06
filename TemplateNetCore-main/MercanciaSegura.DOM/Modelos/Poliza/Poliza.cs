@@ -42,11 +42,11 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         public string? TipoPoliza { get; set; }
 
         [Column("Clave_Agente")]
-        [MaxLength(50)]
+        [MaxLength(100)]
         public string? ClaveAgente { get; set; }
 
         [Column("Folio_Poliza")]
-        [MaxLength(20)]
+        [MaxLength(15)]
         public string? FolioPoliza { get; set; }
 
 

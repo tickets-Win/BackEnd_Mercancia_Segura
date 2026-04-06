@@ -17,5 +17,6 @@ namespace MercanciaSegura.RestAPI.Models.Cotizacion
 
         public decimal? IVA { get; set; }
         public decimal? Total { get; set; }
+        public decimal? TotalSeguroContenedor { get; set; }
     }
 }

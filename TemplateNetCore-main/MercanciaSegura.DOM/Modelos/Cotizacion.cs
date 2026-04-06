@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MercanciaSegura.DOM.Modelos.Cliente;
 
 namespace MercanciaSegura.DOM.Modelos
 {

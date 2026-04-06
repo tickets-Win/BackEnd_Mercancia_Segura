@@ -36,6 +36,9 @@ namespace MercanciaSegura.DOM.Modelos
         [Column("Total")]
         public decimal? Total { get; set; }
 
+        [Column("Total_Seguro_Contenedor", TypeName = "decimal(18,4)")]
+        public decimal? TotalSeguroContenedor { get; set; }
+
         // 🔗 Relación con Cotizacion
         [ForeignKey(nameof(CotizacionId))]
         public Cotizacion? Cotizacion { get; set; }

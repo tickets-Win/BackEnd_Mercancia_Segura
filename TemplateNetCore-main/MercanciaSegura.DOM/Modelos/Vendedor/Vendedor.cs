@@ -36,7 +36,7 @@ namespace MercanciaSegura.DOM.Modelos.Vendedor
         public bool Estatus { get; set; }
 
         [Column("Clave")]
-        [MaxLength(10)]
+        [MaxLength(15)]
         public string? Clave { get; set; }
 
         [Column("RFC")]
