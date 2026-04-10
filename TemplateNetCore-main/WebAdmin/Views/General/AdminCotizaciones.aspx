@@ -71,8 +71,7 @@
     </asp:Panel>
     <asp:Panel ID="pnlFormularioCotizaciones" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>
-                <asp:Label ID="lblMensaje" runat="server"></asp:Label></h2>
+            <h2><asp:Label ID="lblMensaje" runat="server"></asp:Label></h2>
 
             <div>
                 <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" />
