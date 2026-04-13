@@ -10,6 +10,8 @@ Namespace MercanciaSegura.DOM.Modelos
         Public Property TipoCuentaId As Integer?
         Public Property TipoSectorId As Integer?
         Public Property RegimenFiscalId As Integer?
+        Public Property CuotaAplicableMonedaId As Integer?
+        Public Property CuotaMinimaMonedaId As Integer?
         Public Property TipoPersonaId As Integer?
 
         Public Property Rfc As String

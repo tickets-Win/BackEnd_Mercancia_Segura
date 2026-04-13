@@ -192,7 +192,9 @@ Public Class AdminCliente
         .CuotaMinimaNacional = If(String.IsNullOrWhiteSpace(txtMinimoNacional.Text), Nothing, Convert.ToDecimal(txtMinimoNacional.Text)),
         .Correos = sessionCliente.Correos,
         .ClienteBeneficiario = sessionCliente.ClienteBeneficiario,
-        .ClienteVendedor = sessionCliente.ClienteVendedor
+        .ClienteVendedor = sessionCliente.ClienteVendedor,
+        .CuotaAplicableMonedaId = ddlMonedaInternacional.SelectedValue,
+        .CuotaMinimaMonedaId = ddlMonedaNacional.SelectedValue
         }
 
 
