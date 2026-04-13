@@ -20,13 +20,13 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [MaxLength(80)]
         public string? NombreInternoPoliza { get; set; }
 
-        [Column("Terrestre_Aereo", TypeName = "decimal(10,2)")]
+        [Column("Terrestre_Aereo", TypeName = "decimal(18,6)")]
         public decimal? TerrestreAereo { get; set; }
 
-        [Column("Maritimo", TypeName = "decimal(10,2)")]
+        [Column("Maritimo", TypeName = "decimal(18,6)")]
         public decimal? Maritimo { get; set; }
 
-        [Column("Paqueteria_Mensajeria", TypeName = "decimal(10,2)")]
+        [Column("Paqueteria_Mensajeria", TypeName = "decimal(18,6)")]
         public decimal? PaqueteriaMensajeria { get; set; }
 
         [Column("Deducibles", TypeName = "nvarchar(max)")]
@@ -50,34 +50,34 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Indemnizacion_Otros", TypeName = "nvarchar(max)")]
         public string? IndemnizacionOtros { get; set; }
 
-        [Column("Medicamentos", TypeName = "decimal(10,2)")]
+        [Column("Medicamentos", TypeName = "decimal(18,6)")]
         public decimal? Medicamentos { get; set; }
 
-        [Column("Cobre_Aluminio_Acero", TypeName = "decimal(10,2)")]
+        [Column("Cobre_Aluminio_Acero", TypeName = "decimal(18,6)")]
         public decimal? CobreAluminioAcero { get; set; }
 
-        [Column("Medicamentos_Controlados", TypeName = "decimal(10,2)")]
+        [Column("Medicamentos_Controlados", TypeName = "decimal(18,6)")]
         public decimal? MedicamentosControlados { get; set; }
 
-        [Column("EQ_Contratistas", TypeName = "decimal(10,2)")]
+        [Column("EQ_Contratistas", TypeName = "decimal(18,6)")]
         public decimal? EqContratistas { get; set; }
 
-        [Column("Cuota_General_Poliza", TypeName = "decimal(10,2)")]
+        [Column("Cuota_General_Poliza", TypeName = "decimal(18,6)")]
         public decimal? CuotaGeneralPoliza { get; set; }
 
-        [Column("Prima_Neta", TypeName = "decimal(10,2)")]
+        [Column("Prima_Neta", TypeName = "decimal(18,6)")]
         public decimal? PrimaNeta { get; set; }
 
-        [Column("Derecho_Poliza", TypeName = "decimal(10,2)")]
+        [Column("Derecho_Poliza", TypeName = "decimal(18,6)")]
         public decimal? DerechoPoliza { get; set; }
 
-        [Column("Otro_Prima", TypeName = "decimal(10,2)")]
+        [Column("Otro_Prima", TypeName = "decimal(18,6)")]
         public decimal? OtroPrima { get; set; }
 
-        [Column("IVA", TypeName = "decimal(10,2)")]
+        [Column("IVA", TypeName = "decimal(18,6)")]
         public decimal? IVA { get; set; }
 
-        [Column("Prima_Total", TypeName = "decimal(10,2)")]
+        [Column("Prima_Total", TypeName = "decimal(18,6)")]
         public decimal? PrimaTotal { get; set; }
 
 

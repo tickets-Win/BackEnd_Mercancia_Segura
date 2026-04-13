@@ -45,7 +45,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     Tarifa = c.CotizacionContenedor.Tarifa,
                     TotalTarifa = c.CotizacionContenedor.TotalTarifa,
                     IVA = c.CotizacionContenedor.IVA,
-                    Total = c.CotizacionContenedor.Total
+                    Total = c.CotizacionContenedor.Total,
+                    TotalSeguroContenedor = c.CotizacionContenedor.TotalSeguroContenedor,
                 },
 
                 CotizacionMercancia = c.CotizacionMercancia == null ? null : new CotizacionMercanciaResponse
@@ -72,7 +73,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     Subtotal = c.CotizacionMercancia.Subtotal,
                     IVA = c.CotizacionMercancia.IVA,
                     TotalSeguroMercancia = c.CotizacionMercancia.TotalSeguroMercancia,
-                    TotalSeguroContenedor = c.CotizacionMercancia.TotalSeguroContenedor,
                     Total = c.CotizacionMercancia.Total
                 }
             };
@@ -94,7 +94,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             cotizacion.GastosExpedicion = body.GastosExpedicion;
 
             cotizacion.MotivoCancelacion = body.MotivoCancelacion;
-            cotizacion.FechaCancelacion = body.FechaCancelacion;
+
         }
         private void MapToCotizacionMercancia(CotizacionMercancia entity, CotizacionMercanciaRequest body)
         {
@@ -129,7 +129,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             entity.IVA = body.IVA;
 
             entity.TotalSeguroMercancia = body.TotalSeguroMercancia;
-            entity.TotalSeguroContenedor = body.TotalSeguroContenedor;
 
             entity.Total = body.Total;
         }
@@ -146,6 +145,9 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             entity.IVA = body.IVA;
             entity.Total = body.Total;
+
+            entity.TotalSeguroContenedor = body.TotalSeguroContenedor;
+
         }
 
         private IQueryable<Cotizacion> QueryCotizacionCompleta()
@@ -203,7 +205,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 MapToCotizacion(cotizacion, body);
 
                 // 🔹 CotizacionContenedor o CotizacionMercancia
-                if (body.CotizacionContenedor != null)
+                if (body.CotizacionContenedor != null &&
+    !string.IsNullOrEmpty(body.CotizacionContenedor.NumeroContenedor))
                 {
                     var contenedor = new CotizacionContenedor();
 
@@ -211,7 +214,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                     cotizacion.CotizacionContenedor = contenedor;
                 }
-                else if (body.CotizacionMercancia != null)
+                else if (body.CotizacionMercancia != null &&
+                         !string.IsNullOrEmpty(body.CotizacionMercancia.DescripcionMercancia))
                 {
                     var mercancia = new CotizacionMercancia();
 

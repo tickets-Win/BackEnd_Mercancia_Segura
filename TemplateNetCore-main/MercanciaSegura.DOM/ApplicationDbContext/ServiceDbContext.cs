@@ -79,5 +79,12 @@ public class ServiceDbContext : DbContext
     public DbSet<Cotizacion> Cotizacion { get; set; }
     public DbSet<CotizacionMercancia> CotizacionMercancia { get; set; }
     public DbSet<CotizacionContenedor> CotizacionContenedor { get; set; }
+    public DbSet<Certificado> Certificado { get; set; }
+    public DbSet<Siniestros> Siniestros { get; set; }
+    public DbSet<Endosos> Endosos { get; set; }
+    public DbSet<TipoEndoso> TipoEndoso { get; set; }
+    public DbSet<TipoEvento> TipoEvento { get; set; }
+    public DbSet<TipoSiniestro> TipoSiniestro { get; set; }
+
 
 }

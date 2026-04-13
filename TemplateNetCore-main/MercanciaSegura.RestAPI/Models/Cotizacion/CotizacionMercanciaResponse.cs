@@ -46,8 +46,6 @@
 
         public decimal? TotalSeguroMercancia { get; set; }
 
-        public decimal? TotalSeguroContenedor { get; set; }
-
         public decimal? Total { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         public string? RFC { get; set; }
 
         [Column("Clave")]
-        [MaxLength(10)]
+        [MaxLength(15)]
         public string? Clave { get; set; }
 
         [Column("Tipo_Persona_ID")]

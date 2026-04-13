@@ -148,14 +148,14 @@ namespace MercanciaSegura.RestAPI
 						new() {
 							// You can set the Url from the default http request data or by hard coding it
 							// Url = $"{httpReq.Scheme}://{httpReq.Host.Value}",
-							Url = $"https://{httpReq.Host.Value}",
+							Url = $"http://{httpReq.Host.Value}",
 							Description = "Local Mercancia Segura"
                         },
 						// You can add as many OpenApiServer instances as you want by creating them like below
 						new() {
 							// You can set the Url from the default http request data or by hard coding it
 							// Url = $"{httpReq.Scheme}://{httpReq.Host.Value}",
-							Url = $"https://{httpReq.Host.Value}/MercanciaSegura/API",
+							Url = $"http://{httpReq.Host.Value}/MercanciaSegura/API",
 							Description = "Deployed Mercancia Segura"
 						}
 					];

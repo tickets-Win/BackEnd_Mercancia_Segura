@@ -19,12 +19,10 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [MaxLength(100)]
         public string? Nombre { get; set; }
 
-        [Column("Tipo_Cambio", TypeName = "decimal(10,2)")]
-        [MaxLength(100)]
+        [Column("Tipo_Cambio", TypeName = "decimal(18,6)")]
         public decimal? TipoCambio { get; set; }
 
-        [Column("Tipo_Cambio_Ventanilla", TypeName = "decimal(10,2)")]
-        [MaxLength(100)]
+        [Column("Tipo_Cambio_Ventanilla", TypeName = "decimal(18,6)")]
         public decimal? TipoCambioVentanilla { get; set; }
     }
 }

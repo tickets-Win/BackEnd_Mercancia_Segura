@@ -52,6 +52,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 RegimenFiscalId = c.RegimenFiscalId,
                 TipoPersonaId = c.TipoPersonaId,
                 EstatusId = c.EstatusId,
+                CuotaAplicableMonedaId = c.CuotaAplicableMonedaId,
+                NombreCuotaAplicableMonedaId = c.MonedaDos != null ? c.MonedaDos.Nombre : null,
+                CuotaMinimaMonedaId = c.CuotaAplicableMonedaId,
+                NombreCuotaMinimaMonedaId = c.MonedaUno != null ? c.MonedaUno.Nombre: null,
                 Estatus = c.TipoEstatus != null ? c.TipoEstatus.Tipo : null,
                 CuotaMinimaInternacional = c.CuotaMinimaInternacional,
                 CuotaMinimaNacional = c.CuotaMinimaNacional,
@@ -155,6 +159,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             cliente.RegimenFiscalId = body.RegimenFiscalId;
             cliente.TipoPersonaId = body.TipoPersonaId;
             cliente.EstatusId = body.EstatusId;
+            cliente.CuotaMinimaMonedaId = body.CuotaMinimaMonedaId;
+            cliente.CuotaAplicableMonedaId = body.CuotaAplicableMonedaId;
             cliente.CuotaMinimaInternacional = body.CuotaMinimaInternacional;
             cliente.CuotaMinimaNacional = body.CuotaMinimaNacional;
             cliente.CuotaAplicableInternacional = body.CuotaAplicableInternacional;

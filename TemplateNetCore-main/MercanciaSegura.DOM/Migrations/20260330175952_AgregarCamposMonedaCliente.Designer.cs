@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260330175952_AgregarCamposMonedaCliente")]
+    partial class AgregarCamposMonedaCliente
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,10 +211,6 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("Cuota_Aplicable_Internacional");
 
-                    b.Property<int?>("CuotaAplicableMonedaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Cuota_Aplicable_Moneda_ID");
-
                     b.Property<decimal?>("CuotaAplicableNacional")
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("Cuota_Aplicable_Nacional");
@@ -219,10 +218,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Property<decimal?>("CuotaMinimaInternacional")
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("Cuota_Minima_Internacional");
-
-                    b.Property<int?>("CuotaMinimaMonedaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Cuota_Minima_Moneda_ID");
 
                     b.Property<decimal?>("CuotaMinimaNacional")
                         .HasColumnType("decimal(18,6)")
@@ -253,6 +248,14 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasMaxLength(1)
                         .HasColumnType("nvarchar(1)")
                         .HasColumnName("Genero");
+
+                    b.Property<int?>("MonedaCuotaInternacionalId")
+                        .HasColumnType("int")
+                        .HasColumnName("Moneda_Cuota_Internacional_ID");
+
+                    b.Property<int?>("MonedaCuotaNacionalId")
+                        .HasColumnType("int")
+                        .HasColumnName("Moneda_Cuota_Nacional_ID");
 
                     b.Property<string>("Municipio")
                         .HasMaxLength(80)
@@ -334,11 +337,11 @@ namespace MercanciaSegura.DOM.Migrations
 
                     b.HasKey("ClienteId");
 
-                    b.HasIndex("CuotaAplicableMonedaId");
-
-                    b.HasIndex("CuotaMinimaMonedaId");
-
                     b.HasIndex("EstatusId");
+
+                    b.HasIndex("MonedaCuotaInternacionalId");
+
+                    b.HasIndex("MonedaCuotaNacionalId");
 
                     b.HasIndex("OrigenClienteId");
 
@@ -1972,17 +1975,17 @@ namespace MercanciaSegura.DOM.Migrations
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cliente.Cliente", b =>
                 {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Moneda", "MonedaUno")
-                        .WithMany()
-                        .HasForeignKey("CuotaAplicableMonedaId");
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Moneda", "MonedaDos")
-                        .WithMany()
-                        .HasForeignKey("CuotaMinimaMonedaId");
-
                     b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.TipoEstatus", "TipoEstatus")
                         .WithMany()
                         .HasForeignKey("EstatusId");
+
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Moneda", "MonedaDos")
+                        .WithMany()
+                        .HasForeignKey("MonedaCuotaInternacionalId");
+
+                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.Moneda", "MonedaUno")
+                        .WithMany()
+                        .HasForeignKey("MonedaCuotaNacionalId");
 
                     b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.OrigenCliente", "OrigenCliente")
                         .WithMany()
