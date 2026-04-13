@@ -101,8 +101,8 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         [MaxLength(120)]
         public string? NombreCompleto { get; set; }
 
-        [Column("Cuota_Aplicable_Moneda_ID")]
-        public int? CuotaAplicableMonedaId { get; set; }
+        [Column("Cuota_Minima_Nacional_Moneda_ID")]
+        public int? CuotaMinimaNacionalMonedaId { get; set; }
 
         [Column("Cuota_Minima_Internacional", TypeName = "decimal(18,6)")]
         public decimal? CuotaMinimaInternacional { get; set; }
@@ -110,8 +110,8 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         [Column("Cuota_Minima_Nacional", TypeName = "decimal(18,6)")]
         public decimal? CuotaMinimaNacional { get; set; }
 
-        [Column("Cuota_Minima_Moneda_ID")]
-        public int? CuotaMinimaMonedaId { get; set; }
+        [Column("Cuota_Minima_Internacional_Moneda_ID")]
+        public int? CuotaMinimaInternacionalMonedaId { get; set; }
 
         [Column("Cuota_Aplicable_Internacional", TypeName = "decimal(18,6)")]
         public decimal? CuotaAplicableInternacional { get; set; }
@@ -165,10 +165,10 @@ namespace MercanciaSegura.DOM.Modelos.Cliente
         [ForeignKey(nameof(RfcGenericoId))]
         public RfcGenerico? RfcGenerico { get; set; }
 
-        [ForeignKey(nameof(CuotaAplicableMonedaId))]
+        [ForeignKey(nameof(CuotaMinimaNacionalMonedaId))]
         public Moneda? MonedaUno { get; set; }
 
-        [ForeignKey(nameof(CuotaMinimaMonedaId))]
+        [ForeignKey(nameof(CuotaMinimaInternacionalMonedaId))]
         public Moneda? MonedaDos { get; set; }
 
         public ICollection<ClienteBeneficiario> ClienteBeneficiario { get; set; } = new List<ClienteBeneficiario>();
