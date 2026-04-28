@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MercanciaSegura.DOM.Modelos
+namespace MercanciaSegura.DOM.Modelos.Cotizacion
 {
     [Table("Cotizacion_Mercancia")]
     public class CotizacionMercancia
@@ -24,10 +24,13 @@ namespace MercanciaSegura.DOM.Modelos
         [MaxLength(50)]
         public string? Transito { get; set; }
 
-        [Column("Clasificacion")]
-        public string? Clasificacion { get; set; }
+        [Column("Clasificacion_ID")]
+        public int? ClasificacionId { get; set; }
 
-        [Column("Sub_Clasificacion")]
+        [ForeignKey(nameof(ClasificacionId))]
+        public Clasificacion? Clasificacion { get; set; }
+
+        [Column("SubClasificacion")]
         public string? SubClasificacion { get; set; }
 
         [Column("Descripcion_Mercancia")]
@@ -57,28 +60,25 @@ namespace MercanciaSegura.DOM.Modelos
         [Column("Deducibles")]
         public string? Deducibles { get; set; }
 
+        [Column("Moneda_Cuota_Aplicable_ID")]
+        public int? MonedaCuotaAplicableId { get; set; }
+
         [Column("Cuota_Aplicable", TypeName = "decimal(18,4)")]
         public decimal? CuotaAplicable { get; set; }
+
+        [Column("Moneda_Cuota_Minima_ID")]
+        public int? MonedaCuotaMinimaId { get; set; }
 
         [Column("Cuota_Minima", TypeName = "decimal(18,4)")]
         public decimal? CuotaMinima { get; set; }
 
         [Column("Tipo_Cambio_Cotizar", TypeName = "decimal(18,4)")]
         public decimal? TipoCambioCotizar { get; set; }
+        
+        [Column("Moneda_Cotizar_ID")]
+        public int? MonedaCotizarId { get; set; }
 
-        [Column("Prima_Servicio_De_Aseguramiento", TypeName = "decimal(18,4)")]
-        public decimal? PrimaServicioDeAseguramiento { get; set; }
-
-        [Column("Subtotal", TypeName = "decimal(18,4)")]
-        public decimal? Subtotal { get; set; }
-
-        [Column("IVA", TypeName = "decimal(18,4)")]
-        public decimal? IVA { get; set; }
-
-        [Column("Total_Seguro_Mercancia", TypeName = "decimal(18,4)")]
-        public decimal? TotalSeguroMercancia { get; set; }
-
-        [Column("Total", TypeName = "decimal(18,4)")]
-        public decimal? Total { get; set; }
+        [Column("Suma_Asegurada", TypeName = "decimal(18,2)")]
+        public decimal? SumaAsegurada { get; set; }
     }
 }

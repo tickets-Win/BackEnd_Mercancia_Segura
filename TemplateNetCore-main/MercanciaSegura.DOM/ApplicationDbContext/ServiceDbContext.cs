@@ -1,5 +1,6 @@
 using MercanciaSegura.DOM.Modelos;
 using MercanciaSegura.DOM.Modelos.Cliente;
+using MercanciaSegura.DOM.Modelos.Cotizacion;
 using MercanciaSegura.DOM.Modelos.Poliza;
 using MercanciaSegura.DOM.Modelos.Vendedor;
 using Microsoft.EntityFrameworkCore;
@@ -85,6 +86,9 @@ public class ServiceDbContext : DbContext
     public DbSet<TipoEndoso> TipoEndoso { get; set; }
     public DbSet<TipoEvento> TipoEvento { get; set; }
     public DbSet<TipoSiniestro> TipoSiniestro { get; set; }
+    public DbSet<Clasificacion> Clasificacion { get; set; }
+    public DbSet<TipoContenedor> TipoContenedor { get; set; }
+    public DbSet<TamanioContenedor> TamanioContenedor { get; set; }
 
 
 }
