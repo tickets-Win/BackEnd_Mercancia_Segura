@@ -138,7 +138,8 @@ Public Class AdminCotizaciones
             .FechaCotizacion = Date.Now,
             .VigenciaDel = If(String.IsNullOrEmpty(txtVigenciaDel.Text), CType(Nothing, DateTime?), Convert.ToDateTime(txtVigenciaDel.Text)),
             .VigenciaHasta = If(String.IsNullOrEmpty(txtVigenciaHasta.Text), CType(Nothing, DateTime?), Convert.ToDateTime(txtVigenciaHasta.Text)).Value,
-            .SumaAsegurada = If(String.IsNullOrWhiteSpace(txtSumaAsegurada.Text), Nothing, Convert.ToDecimal(txtSumaAsegurada.Text))
-            }
+            .MonedaId = ddlMoneda.SelectedValue,
+            .ClienteId = ddlCliente.SelectedValue
+        }
     End Sub
 End Class

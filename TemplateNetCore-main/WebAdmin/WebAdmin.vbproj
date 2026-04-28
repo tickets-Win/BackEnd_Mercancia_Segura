@@ -128,6 +128,7 @@
     <Compile Include="Modelos\BeneficiarioPreferente.vb" />
     <Compile Include="Modelos\AdministracionBien.vb" />
     <Compile Include="Modelos\Bien.vb" />
+    <Compile Include="Modelos\Clasificacion.vb" />
     <Compile Include="Modelos\Cliente.vb" />
     <Compile Include="Modelos\ClienteBeneficiario.vb" />
     <Compile Include="Modelos\ClienteCredito.vb" />
@@ -151,6 +152,8 @@
     <Compile Include="Modelos\rfcGenerico.vb" />
     <Compile Include="Modelos\RiesgoCubierto.vb" />
     <Compile Include="Modelos\SubRamo.vb" />
+    <Compile Include="Modelos\TamanioContenedor.vb" />
+    <Compile Include="Modelos\TipoContenedor.vb" />
     <Compile Include="Modelos\TipoCorreo.vb" />
     <Compile Include="Modelos\TipoCuenta.vb" />
     <Compile Include="Modelos\TipoEstatus.vb" />

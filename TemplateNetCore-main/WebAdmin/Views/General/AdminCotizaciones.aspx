@@ -41,8 +41,8 @@
                     OnPageIndexChanging="gvCotizaciones_PageIndexChanging">
                     <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
                     <Columns>
+                        <asp:BoundField DataField="nombreCliente" HeaderText="Nombre Cliente" />
                         <asp:BoundField DataField="FechaCotizacion" HeaderText="Fecha Cotizacion" />
-                        <asp:BoundField DataField="SumaAsegurada" HeaderText="Suma Asegurada" />
                         <asp:BoundField DataField="GastosExpedicion" HeaderText="Gastos Expedicion" />
 
                         <asp:TemplateField HeaderText="Acciones">
