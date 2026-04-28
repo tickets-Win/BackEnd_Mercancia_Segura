@@ -1767,9 +1767,10 @@ Eliminar
                 }
             });
 
-            if (!validarPanel("panel-datos", "<%= txtNombreInternoPoliza1.ClientID %>")) return false;
-            if (!validarPanel("panel-credito", "<%= txtNombreInternoPoliza2.ClientID %>")) return false;
-            if (!validarPanel("panel-estado", "<%= txtNombreInternoPoliza3.ClientID %>")) return false;
+            if (!validarPanel("panel-datos", "<%= txtNombreInternoPoliza1.ClientID %>")) valido = false;
+            if (!validarPanel("panel-credito", "<%= txtNombreInternoPoliza2.ClientID %>")) valido = false;
+            if (!validarPanel("panel-estado", "<%= txtNombreInternoPoliza3.ClientID %>")) valido = false;
+
 
             if (!valido) showToast('Corrige los campos marcados', 'danger');
             return valido;
@@ -1986,36 +1987,54 @@ Eliminar
                 let tab = new bootstrap.Tab(tabBtn);
                 tab.show();
             }
-        }
+            function validarPanel(panelId, campoPrincipalId) {
+                let panel = document.getElementById(panelId);
+                let campoPrincipal = document.getElementById(campoPrincipalId);
 
-        function validarPanel(panelId, inputPolizaId) {
-            let panel = document.getElementById(panelId);
-            if (!panel) return true;
+                let campos = panel.querySelectorAll("input, select, textarea");
+                let hayDatos = false;
+                let primerError = null;
 
-            let inputs = panel.querySelectorAll("input, select, textarea");
-            let hayDatos = false;
+                campos.forEach(function (campo) {
+                    let valor = (campo.value || "").toString().trim();
 
-            inputs.forEach(function (el) {
-                if (el.id !== inputPolizaId && el.value && el.value.toString().trim() !== "") {
-                    hayDatos = true;
+                    if (
+                        valor !== "" &&
+                        valor !== "%" &&
+                        valor !== "$0.00" &&
+                        valor !== "0" &&
+                        valor !== "0.00"
+                    ) {
+                        hayDatos = true;
+                    }
+
+                    if (campo.type === "checkbox" && campo.checked) {
+                        hayDatos = true;
+                    }
+                });
+
+                if (!hayDatos) return true;
+
+                let valido = true;
+
+                if (!campoPrincipal.value || campoPrincipal.value.toString().trim() === "") {
+                    marcarError(campoPrincipal, "Debes llenar Nombre Interno de Póliza");
+
+                    primerError = campoPrincipal;
+                    valido = false;
                 }
-            });
 
-            let polizaInput = document.getElementById(inputPolizaId);
+                if (primerError) {
+                    activarTab(panelId);
 
-            if (hayDatos && polizaInput.value.trim() === "") {
-                marcarError(polizaInput, "Este campo es obligatorio");
+                    setTimeout(() => {
+                        primerError.scrollIntoView({ behavior: "smooth", block: "center" });
+                        primerError.focus();
+                    }, 300);
+                }
 
-                activarTab(panelId);
-
-                setTimeout(() => {
-                    polizaInput.focus();
-                }, 200);
-
-                return false;
-            }
-
-            return true;
+                return valido;
+            };
         }
     </script>
     <script>
@@ -2047,5 +2066,36 @@ Eliminar
             calcularTodoMercancias();
             calcularPolizaC();
         }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const checkboxes = [
+        "<%= chkEQAplica.ClientID %>",
+        "<%= chkEQAplica2.ClientID %>",
+        "<%= chkEQAplica3.ClientID %>"
+            ];
+
+            checkboxes.forEach(id => {
+
+                const chk = document.getElementById(id);
+                if (!chk) return;
+
+                function toggleCard() {
+
+                    const card = chk.closest('.card');
+                    const inputs = card.querySelectorAll('input.form-control');
+
+                    inputs.forEach(input => {
+                        input.disabled = chk.checked;
+                        if (chk.checked) input.value = '';
+                    });
+                }
+
+                chk.addEventListener("change", toggleCard);
+                toggleCard(); // estado inicial
+            });
+
+        });
     </script>
 </asp:Content>

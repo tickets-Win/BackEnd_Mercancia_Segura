@@ -11,4 +11,8 @@
         pnlFormularioSiniestros.Visible = True
         lblMensaje.Text = "Nuevo Registro"
     End Sub
+
+    Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
+        Dim api As New ConsumoApi
+    End Sub
 End Class

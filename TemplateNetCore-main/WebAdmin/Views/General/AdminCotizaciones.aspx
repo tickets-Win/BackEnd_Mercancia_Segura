@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminCotizaciones.aspx.vb" Inherits="WebAdmin.AdminCotizaciones" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">   
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -71,11 +71,12 @@
     </asp:Panel>
     <asp:Panel ID="pnlFormularioCotizaciones" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><asp:Label ID="lblMensaje" runat="server"></asp:Label></h2>
+            <h2>
+                <asp:Label ID="lblMensaje" runat="server"></asp:Label></h2>
 
             <div>
                 <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" />
-                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" />
+                <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClick="btnGuardar_Click" />
             </div>
         </div>
         <h5 class="border-bottom pb-2">Datos de la cotización</h5>
@@ -86,10 +87,15 @@
                     <asp:ListItem Text="Mercancia" Value="Mercancia"></asp:ListItem>
                     <asp:ListItem Text="Contenedor" Value="Contenedor"></asp:ListItem>
                 </asp:DropDownList>
-            </div>           
+            </div>
             <div class="col-md-4">
                 <label class="form-label">Nombre Interno Póliza</label>
                 <asp:DropDownList ID="ddlNombreInternoPoliza" CssClass="form-select" runat="server" AutoPostBack="true">
+                </asp:DropDownList>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Moneda</label>
+                <asp:DropDownList ID="ddlMoneda" runat="server" CssClass="form-select">
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -114,35 +120,9 @@
                 <label class="form-label">Vigencia Hasta </label>
                 <asp:TextBox ID="txtVigenciaHasta" runat="server" TextMode="Date" CssClass="form-control"></asp:TextBox>
             </div>
-            <div class="col-md-4">
-                <label class="form-label">Moneda</label>
-                <asp:TextBox ID="txtMoneda" runat="server" CssClass="form-control"></asp:TextBox>
-            </div>
-            <div class="col-md-4">
+            <asp:Panel ID="pnlSumaAsegurada" runat="server" CssClass="col-md-4">
                 <label class="form-label">Suma Asegurada</label>
                 <asp:TextBox ID="txtSumaAsegurada" runat="server" CssClass="form-control"></asp:TextBox>
-            </div>
-
-
-            <asp:Panel ID="pnlContenedor" runat="server" Visible="false">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Tamaño/Tipo de contenedor</label>
-                        <asp:TextBox ID="txtTamanoTipoContenedor" runat="server" CssClass="form-control"></asp:TextBox>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"># Contenedores</label>
-                        <asp:TextBox ID="txtContenedores" runat="server" CssClass="form-control"></asp:TextBox>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Opción de cuota</label>
-                        <asp:TextBox ID="txtOpcionCuota" runat="server" CssClass="form-control"></asp:TextBox>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Tárifa</label>
-                        <asp:TextBox ID="txtTarifa" runat="server" CssClass="form-control"></asp:TextBox>
-                    </div>
-                </div>
             </asp:Panel>
 
             <asp:Panel ID="pnlMercanciaFormulario" runat="server">
@@ -209,30 +189,76 @@
             <div class="col-md-12">
                 <div class="card p-3 shadow-sm">
                     <h5>Coberturas de la cotización</h5>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card shadow-sm bg-light w-100">
+                                <div class="d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleCollapse('coberturas')">
+                                    <h4 class="mb-0">Seleccione una cobertura</h4>
+                                    <i id="icon-coberturas" class="bi bi-chevron-down"></i>
+                                </div>
 
-                    <div class="row g-3">
-                        <div class="row mt-3 gx-0">
-                            <div class="col-md-12 px-2">
-                                <div class="card shadow-sm bg-light w-100">
-                                    <div class="d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleCollapse('coberturas')">
-                                        <h4 class="mb-0">Seleccione una cobertura</h4>
-                                        <i id="icon-coberturas" class="bi bi-chevron-down"></i>
+                                <div id="coberturas" class="collapse-content px-3 pb-3" style="display: none;">
+                                    <asp:DropDownList ID="ddlCoberturas" runat="server" CssClass="form-select mb-3">
+                                        <asp:ListItem>Cobertura  1</asp:ListItem>
+                                        <asp:ListItem>Cobertura 2</asp:ListItem>
+                                    </asp:DropDownList>
+
+                                    <div class="d-flex justify-content-end mb-3">
+                                        <asp:Button ID="btnAgregarCobertura" runat="server" CssClass="btn btn-primary" Text="Agregar" />
                                     </div>
 
-                                    <div id="coberturas" class="collapse-content px-3 pb-3" style="display: none;">
-                                        <asp:DropDownList ID="ddlCoberturas" runat="server" CssClass="form-select mb-3">
-                                            <asp:ListItem>Cobertura  1</asp:ListItem>
-                                            <asp:ListItem>Cobertura 2</asp:ListItem>
+                                    <table class="table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Cobertura</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Mercancía General</td>
+                                                <td>
+                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
+                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Electrónicos</td>
+                                                <td>
+                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
+                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <asp:Panel ID="pnlBienesAsegurados" runat="server" Visible="false">
+                        <h5 class="mt-2 mb-2">Bienes asegurados</h5>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card shadow-sm bg-light w-100 mb-4">
+                                    <div class="d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleCollapse('bienesasegurados')">
+                                        <h4 class="mb-0">Seleccione un bien asegurados</h4>
+                                        <i id="icon-bienesasegurados" class="bi bi-chevron-down"></i>
+                                    </div>
+
+                                    <div id="bienesasegurados" class="collapse-content px-3 pb-3" style="display: none;">
+                                        <asp:DropDownList ID="ddlbienesasegurados" runat="server" CssClass="form-select mb-3">
+                                            <asp:ListItem>bienes asegurados  1</asp:ListItem>
+                                            <asp:ListItem>bienes  asegurados 2</asp:ListItem>
                                         </asp:DropDownList>
 
                                         <div class="d-flex justify-content-end mb-3">
-                                            <asp:Button ID="btnAgregarCobertura" runat="server" CssClass="btn btn-primary" Text="Agregar" />
+                                            <asp:Button ID="btnbienesasegurados" runat="server" CssClass="btn btn-primary" Text="Agregar" />
                                         </div>
 
                                         <table class="table table-bordered">
                                             <thead class="table-light">
                                                 <tr>
-                                                    <th>Cobertura</th>
+                                                    <th>Bienes Asegurados</th>
                                                     <th>Acciones</th>
                                                 </tr>
                                             </thead>
@@ -257,69 +283,16 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </asp:Panel>
                     <asp:Panel ID="pnlMedidasSeguridad" runat="server">
                         <div class="row mb-3">
                             <div class="col col-md-6">
                                 <h6 class="titulo-cuota">Medidas de seguridad adicionales</h6>
-                                <asp:TextBox ID="txtMedidasSeguridad" runat="server" CssClass="form-control"
-                                    placeholder=""></asp:TextBox>
+                                <asp:TextBox ID="txtMedidasSeguridad" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                             </div>
                             <div class="col-md-6">
                                 <h6 class="titulo-cuota">Deducibles</h6>
-                                <asp:TextBox ID="txtDeducibles" runat="server" CssClass="form-control"
-                                    placeholder=""></asp:TextBox>
-                            </div>
-                        </div>
-                    </asp:Panel>
-                    <asp:Panel ID="pnlBienesAsegurados" runat="server" Visible="false">
-                        <h5 class="mt-4">Bienes asegurados</h5>
-                        <div class="row g-3">
-                            <div class="row mt-3 gx-0">
-                                <div class="col-md-12 px-2">
-                                    <div class="card shadow-sm bg-light w-100">
-                                        <div class="d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleCollapse('bienesasegurados')">
-                                            <h4 class="mb-0">Seleccione un bien asegurados</h4>
-                                            <i id="icon-bienesasegurados" class="bi bi-chevron-down"></i>
-                                        </div>
-
-                                        <div id="bienesasegurados" class="collapse-content px-3 pb-3" style="display: none;">
-                                            <asp:DropDownList ID="ddlbienesasegurados" runat="server" CssClass="form-select mb-3">
-                                                <asp:ListItem>bienes asegurados  1</asp:ListItem>
-                                                <asp:ListItem>bienes  asegurados 2</asp:ListItem>
-                                            </asp:DropDownList>
-
-                                            <div class="d-flex justify-content-end mb-3">
-                                                <asp:Button ID="btnbienesasegurados" runat="server" CssClass="btn btn-primary" Text="Agregar" />
-                                            </div>
-
-                                            <table class="table table-bordered">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th>Bienes Asegurados</th>
-                                                        <th>Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Mercancía General</td>
-                                                        <td>
-                                                            <button class="btn btn-warning btn-sm me-2">Editar</button>
-                                                            <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Electrónicos</td>
-                                                        <td>
-                                                            <button class="btn btn-warning btn-sm me-2">Editar</button>
-                                                            <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                                <asp:TextBox ID="txtDeducibles" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                             </div>
                         </div>
                     </asp:Panel>
@@ -371,7 +344,7 @@
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                         <div class="col col-md-6">
-                                            <h6 class="titulo-cuota">Moneda para Cotizar</h6>
+                                            <h6 class="titulo-cuota">Moneda para cotizar</h6>
                                             <asp:DropDownList ID="ddlMonedaCotizar" runat="server" CssClass="form-select">
                                                 <asp:ListItem>Nacional</asp:ListItem>
                                                 <asp:ListItem>Dólares</asp:ListItem>
@@ -406,18 +379,6 @@
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <h6 class="titulo-cuota">Total seguro mercancía</h6>
-                                            <asp:TextBox ID="txtTotalSeguroMercancia" runat="server" CssClass="form-control"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                        <div class="col col-md-6">
-                                            <h6 class="titulo-cuota">Total seguro contenedor</h6>
-                                            <asp:TextBox ID="txtTotalSeguroContenedor" runat="server" CssClass="form-control"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                    </div>
                                     <div class="col col-md-6">
                                         <h6 class="titulo-cuota">Total a Pagar</h6>
                                         <asp:TextBox ID="txtTotalPagar" runat="server" CssClass="form-control"
@@ -428,11 +389,57 @@
                         </div>
                     </asp:Panel>
                     <asp:Panel ID="pnlCuotaAplicableContenedor" runat="server" Visible="false">
+                        <div class="row mb-2">
+                            <div class="col col-md-4">
+                                <label class="form-label" for="ddlUnidades">Unidades (Contenedores)</label>
+                                <asp:DropDownList ID="ddlUnidades" runat="server" CssClass="form-select">
+                                    <asp:ListItem>1</asp:ListItem>
+                                    <asp:ListItem>2</asp:ListItem>
+                                </asp:DropDownList>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <h6 class="mt-2">Detalle de contenedores</h6>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover align-middle mb-2" id="tblContenedores">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>No. Contenedor</th>
+                                                <th>Tipo</th>
+                                                <th>Tamaño</th>
+                                                <th class="text-end">LR (USD)</th>
+                                                <th>Referencia</th>
+                                                <th class="text-end">Cuota (%)</th>
+                                                <th class="text-end">Prima Unit. USD</th>
+                                                <th class="text-end col-tc d-none">T.C.</th>
+                                                <th class="text-end col-prima-mn d-none">Prima Unit. MXN</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyContenedores">
+                                        </tbody>
+                                        <tfoot class="table-light fw-bold">
+                                            <tr>
+                                                <td colspan="3">Totales</td>
+                                                <td class="text-end" id="totalLR">$ 0.00</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="text-end" id="totalPrimaUSD">$ 0.00</td>
+                                                <td class="col-tc d-none"></td>
+                                                <td class="text-end col-prima-mn d-none" id="totalPrimaMN">$ 0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="mt-1">Cuota Aplicable Contenedor</h5>
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <h5 class="mt-1">Cuota Aplicable Contenedor</h5>
                                 <div class="card p-3 shadow-sm">
-                                    <h6>Contenedores Secos</h6>
+                                    <h6 class="mt-2 mb-2">Contenedores Secos</h6>
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
                                             <label class="form-label" for="txtCuotaSecos">Cuota (%)</label>
@@ -447,7 +454,6 @@
                                             </asp:DropDownList>
                                         </div>
                                     </div>
-
                                     <h6>Contenedores Refrigerados</h6>
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
@@ -463,7 +469,6 @@
                                             </asp:DropDownList>
                                         </div>
                                     </div>
-
                                     <h6>Isotanques</h6>
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
@@ -479,29 +484,38 @@
                                             </asp:DropDownList>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card p-3 shadow-sm">
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
-                                            <label class="form-label" for="txtTotalTarifa">Total Tarifa</label>
-                                            <asp:TextBox ID="txtTotalTarifa" runat="server" CssClass="form-control"
-                                                placeholder="$ 0.00"></asp:TextBox>
+                                            <h6 class="titulo-cuota">Prima y servicios de seguramiento</h6>
+                                            <asp:TextBox ID="txtPrimaYSeguramiento2" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
                                         </div>
-                                        <div class="col col-md-6">
-                                            <label class="form-label" for="txtGastosExpedicionContenedor">Gastos de expedición</label>
-                                            <asp:TextBox ID="txtGastosExpedicionContenedor" runat="server" CssClass="form-control"
-                                                placeholder="$ 0.00"></asp:TextBox>
+                                        <div class="col-md-6">
+                                            <h6 class="titulo-cuota">Gastos de expedición</h6>
+                                            <asp:TextBox ID="txtGastosExpedicion2" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
-                                            <label class="form-label" for="txtIvaContenedor">IVA</label>
-                                            <asp:TextBox ID="txtIvaContenedor" runat="server" CssClass="form-control"
-                                                placeholder="$ 0.00"></asp:TextBox>
+                                            <h6 class="titulo-cuota">Subtotal</h6>
+                                            <asp:TextBox ID="txtSubtotal2" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
                                         </div>
                                         <div class="col col-md-6">
-                                            <label class="form-label" for="txtTotalContenedor">Total</label>
-                                            <asp:TextBox ID="txtTotalContenedor" runat="server" CssClass="form-control"
-                                                placeholder="$ 0.00"></asp:TextBox>
+                                            <h6 class="titulo-cuota">IVA</h6>
+                                            <asp:TextBox ID="txtIVA2" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
                                         </div>
+                                    </div>
+                                    <div class="col col-md-6">
+                                        <h6 class="titulo-cuota">Total a Pagar</h6>
+                                        <asp:TextBox ID="txtTotalPagar2" runat="server" CssClass="form-control"
+                                            placeholder="$0.00"></asp:TextBox>
                                     </div>
                                 </div>
                             </div>
@@ -526,5 +540,184 @@
                 icon.classList.add('bi-chevron-down');
             }
         }
-    </script>   
+    </script>
+    <script type="text/javascript">
+        const tiposContenedor = [
+            'DC',
+            'VENTILATED',
+            'OT',
+            'OT HC',
+            'HC',
+            'FR',
+            'FR HC',
+            'PLATAFORMA',
+            'HARD TOP',
+            'REEFER',
+            'REEFER HC',
+            'REEFER HC (Control Atmosf.)',
+            'ISOTANQUE'
+        ];
+
+        const tamanosContenedor = ["20'", "40'", "45'"];
+
+        function generateContainerRows() {
+            const unidades = parseInt(document.getElementById('<%= ddlUnidades.ClientID %>').value) || 1;
+            const tbody = document.getElementById('tbodyContenedores');
+            tbody.innerHTML = '';
+
+            for (let i = 1; i <= unidades; i++) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>
+                    <input type="text" class="form-control form-control-sm" 
+                           id="txtNumContenedor_${i}" 
+                           placeholder="Número" 
+                           maxlength="11" />
+                </td>
+                <td>
+                    <select class="form-select form-select-sm" id="ddlTipoContenedor_${i}">
+                        <option value="">Seleccionar...</option>
+                        ${tiposContenedor.map(t => `<option value="${t}">${t}</option>`).join('')}
+                    </select>
+                </td>
+                <td>
+                    <select class="form-select form-select-sm" id="ddlTamanoContenedor_${i}">
+                        <option value="">Seleccionar...</option>
+                        ${tamanosContenedor.map(t => `<option value="${t}">${t}</option>`).join('')}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm text-end" 
+                           id="txtLR_${i}" 
+                           placeholder="0.00" 
+                           step="0.01"
+                           onchange="calcularPrima(${i})" />
+                </td>
+                <td>
+                    <input type="text" class="form-control form-control-sm" 
+                           id="txtReferencia_${i}" 
+                           placeholder="Referencia" 
+                           maxlength="30" />
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm text-end" 
+                           id="txtCuota_${i}" 
+                           placeholder="0" 
+                           step="0.01"
+                           onchange="calcularPrima(${i})" />
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm text-end bg-light" 
+                           id="txtPrimaUSD_${i}" 
+                           placeholder="0.00" 
+                           readonly />
+                </td>
+                <td class="col-tc d-none">
+                    <input type="number" class="form-control form-control-sm text-end" 
+                           id="txtTC_${i}" 
+                           placeholder="0.00" 
+                           step="0.01"
+                           onchange="calcularPrimaMXN(${i})" />
+                </td>
+                <td class="col-prima-mn d-none">
+                    <input type="number" class="form-control form-control-sm text-end bg-light" 
+                           id="txtPrimaMXN_${i}" 
+                           placeholder="0.00" 
+                           readonly />
+                </td>
+            `;
+                tbody.appendChild(row);
+            }
+
+            calcularTotales();
+        }
+
+        function calcularPrima(rowIndex) {
+            const lr = parseFloat(document.getElementById(`txtLR_${rowIndex}`).value) || 0;
+            const cuota = parseFloat(document.getElementById(`txtCuota_${rowIndex}`).value) || 0;
+            const primaUSD = (lr * cuota) / 100;
+
+            document.getElementById(`txtPrimaUSD_${rowIndex}`).value = primaUSD.toFixed(2);
+
+            calcularPrimaMXN(rowIndex);
+            calcularTotales();
+        }
+
+        function calcularPrimaMXN(rowIndex) {
+            const primaUSD = parseFloat(document.getElementById(`txtPrimaUSD_${rowIndex}`).value) || 0;
+            const tc = parseFloat(document.getElementById(`txtTC_${rowIndex}`).value) || 0;
+            const primaMXN = primaUSD * tc;
+
+            document.getElementById(`txtPrimaMXN_${rowIndex}`).value = primaMXN.toFixed(2);
+
+            calcularTotales();
+        }
+
+        function calcularTotales() {
+            const unidades = parseInt(document.getElementById('<%= ddlUnidades.ClientID %>').value) || 1;
+            let totalLR = 0;
+            let totalPrimaUSD = 0;
+            let totalPrimaMXN = 0;
+
+            for (let i = 1; i <= unidades; i++) {
+                totalLR += parseFloat(document.getElementById(`txtLR_${i}`).value) || 0;
+                totalPrimaUSD += parseFloat(document.getElementById(`txtPrimaUSD_${i}`).value) || 0;
+                totalPrimaMXN += parseFloat(document.getElementById(`txtPrimaMXN_${i}`).value) || 0;
+            }
+
+            document.getElementById('totalLR').textContent = '$ ' + totalLR.toFixed(2);
+            document.getElementById('totalPrimaUSD').textContent = '$ ' + totalPrimaUSD.toFixed(2);
+            document.getElementById('totalPrimaMN').textContent = '$ ' + totalPrimaMXN.toFixed(2);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const ddlUnidades = document.getElementById('<%= ddlUnidades.ClientID %>');
+            if (ddlUnidades) {
+                ddlUnidades.addEventListener('change', generateContainerRows);
+
+                for (let i = 3; i <= 20; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.text = i;
+                    ddlUnidades.add(option);
+                }
+
+                generateContainerRows();
+            }
+
+
+            document.getElementById('<%= ddlMoneda.ClientID %>').addEventListener('change', function () {
+                toggleMXNColumns(this.value === '1');
+            });
+
+        });
+
+        function toggleMXNColumns(showMXN) {
+            const elements = document.querySelectorAll('.col-tc, .col-prima-mn');
+            elements.forEach(el => {
+                if (showMXN) {
+                    el.classList.remove('d-none');
+                } else {
+                    el.classList.add('d-none');
+                }
+            });
+        }
+</script>
+
+    <style>
+        #tblContenedores input.form-control-sm,
+        #tblContenedores select.form-select-sm {
+            min-width: 100px;
+        }
+
+        #tblContenedores input[readonly] {
+            background-color: #f8f9fa !important;
+            cursor: not-allowed;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
 </asp:Content>

@@ -12,6 +12,7 @@ Public Class AdminCotizaciones
             cargarClientes()
             CargarPolizas(ddlTipoCotizacion.SelectedValue)
             CargarBeneficiarios()
+            CargarTipoMoneda(ddlMoneda)
         End If
     End Sub
 
@@ -24,22 +25,22 @@ Public Class AdminCotizaciones
     End Sub
     Protected Sub ddlTipoCotizacion_SelectedIndexChanged(sender As Object, e As EventArgs)
         If ddlTipoCotizacion.SelectedValue = "Mercancia" Then
-            pnlContenedor.Visible = False
             pnlMercanciaFormulario.Visible = True
             pnlCuotaAplicableMercancia.Visible = True
             pnlBienesAsegurados.Visible = False
             pnlCuotaAplicableContenedor.Visible = False
             pnlMedidasSeguridad.Visible = True
+            pnlSumaAsegurada.Visible = True
 
             CargarPolizas("Mercancia")
 
         ElseIf ddlTipoCotizacion.SelectedValue = "Contenedor" Then
-            pnlContenedor.Visible = True
             pnlMercanciaFormulario.Visible = False
             pnlCuotaAplicableMercancia.Visible = False
             pnlBienesAsegurados.Visible = True
             pnlCuotaAplicableContenedor.Visible = True
             pnlMedidasSeguridad.Visible = False
+            pnlSumaAsegurada.Visible = False
 
             CargarPolizas("Contenedor")
 
@@ -128,5 +129,16 @@ Public Class AdminCotizaciones
         ddlBeneficiarioPreferente.DataBind()
 
         ddlBeneficiarioPreferente.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+    End Sub
+
+    Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
+        Dim api As New ConsumoApi
+
+        Dim cotizaciones As New Cotizacion With {
+            .FechaCotizacion = Date.Now,
+            .VigenciaDel = If(String.IsNullOrEmpty(txtVigenciaDel.Text), CType(Nothing, DateTime?), Convert.ToDateTime(txtVigenciaDel.Text)),
+            .VigenciaHasta = If(String.IsNullOrEmpty(txtVigenciaHasta.Text), CType(Nothing, DateTime?), Convert.ToDateTime(txtVigenciaHasta.Text)).Value,
+            .SumaAsegurada = If(String.IsNullOrWhiteSpace(txtSumaAsegurada.Text), Nothing, Convert.ToDecimal(txtSumaAsegurada.Text))
+            }
     End Sub
 End Class

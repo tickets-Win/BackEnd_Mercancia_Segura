@@ -193,8 +193,8 @@ Public Class AdminCliente
         .Correos = sessionCliente.Correos,
         .ClienteBeneficiario = sessionCliente.ClienteBeneficiario,
         .ClienteVendedor = sessionCliente.ClienteVendedor,
-        .CuotaAplicableMonedaId = ddlMonedaInternacional.SelectedValue,
-        .CuotaMinimaMonedaId = ddlMonedaNacional.SelectedValue
+        .CuotaMinimaInternacionalMonedaId = ddlMonedaInternacional.SelectedValue,
+        .CuotaMinimaNacionalMonedaId = ddlMonedaNacional.SelectedValue
         }
 
 
@@ -622,8 +622,22 @@ if (myModalEl) {{
         txtMinimoNacional.Text = If(cliente.CuotaMinimaNacional IsNot Nothing, cliente.CuotaMinimaNacional.ToString(), "")
 
         ddlTipoPersona.Enabled = False
-        ddlEstatus.Enabled = true
+        ddlEstatus.Enabled = True
 
+
+        If cliente.CuotaMinimaNacionalMonedaId IsNot Nothing AndAlso
+       ddlMonedaNacional.Items.FindByValue(cliente.CuotaMinimaNacionalMonedaId.ToString()) IsNot Nothing Then
+            ddlMonedaNacional.SelectedValue = cliente.CuotaMinimaNacionalMonedaId.ToString()
+        Else
+            ddlRFCGenerico.SelectedIndex = 0
+        End If
+
+        If cliente.CuotaMinimaInternacionalMonedaId IsNot Nothing AndAlso
+       ddlMonedaInternacional.Items.FindByValue(cliente.CuotaMinimaInternacionalMonedaId.ToString()) IsNot Nothing Then
+            ddlMonedaInternacional.SelectedValue = cliente.CuotaMinimaInternacionalMonedaId.ToString()
+        Else
+            ddlRFCGenerico.SelectedIndex = 0
+        End If
 
         If cliente.RfcGenericoId IsNot Nothing AndAlso
        ddlRFCGenerico.Items.FindByValue(cliente.RfcGenericoId.ToString()) IsNot Nothing Then
