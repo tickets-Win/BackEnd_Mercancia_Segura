@@ -60,9 +60,6 @@ namespace MercanciaSegura.DOM.Modelos.Cotizacion
 
         [Column("Gastos_Expedicion", TypeName = "decimal(18,2)")]
         public decimal? GastosExpedicion { get; set; }
-
-        [Column("Nombre_Interno_Poliza")]
-        public string? NombreInternoPoliza { get; set; }
         public CotizacionMercancia? CotizacionMercancia { get; set; }
         public List<CotizacionContenedor>? CotizacionContenedor { get; set; }
     }
