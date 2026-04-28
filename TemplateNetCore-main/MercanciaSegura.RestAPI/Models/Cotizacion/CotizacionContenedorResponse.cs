@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MercanciaSegura.RestAPI.Models.Cotizacion
+﻿namespace MercanciaSegura.RestAPI.Models.Cotizacion
 {
     public class CotizacionContenedorResponse
     {
@@ -8,15 +6,26 @@ namespace MercanciaSegura.RestAPI.Models.Cotizacion
 
         public int CotizacionId { get; set; }
 
-        public string? TamanoTipoContendor { get; set; }
+        public int? TamanioContendorId { get; set; }
+        public string? TamanioContenedorNombre { get; set; }
+
+        public int? TipoContenedorId { get; set; }
+        public string? TipoContenedorNombre { get; set; }
+
         public string? NumeroContenedor { get; set; }
 
-        public decimal? OpcionCuota { get; set; }
-        public decimal? Tarifa { get; set; }
-        public decimal? TotalTarifa { get; set; }
+        public decimal? Cuota { get; set; }
 
-        public decimal? IVA { get; set; }
+        public decimal? LR { get; set; }
+
+        public string? Referencia { get; set; }
+
+        public decimal? TC { get; set; }
+
+        public decimal? PrimaUnitariaUSD { get; set; }
+
+        public decimal? PrimaUnitariaMXN { get; set; }
+
         public decimal? Total { get; set; }
-        public decimal? TotalSeguroContenedor { get; set; }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MercanciaSegura.DOM.ApplicationDbContext;
-using MercanciaSegura.DOM.Modelos;
+using MercanciaSegura.DOM.Modelos.Cotizacion;
 using MercanciaSegura.RestAPI.Models.Cotizacion;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,58 +24,109 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             return new CotizacionResponse
             {
                 CotizacionId = c.CotizacionId,
+
                 PolizaId = c.PolizaId,
-                NumeroPoliza = c.Poliza != null ? c.Poliza.NumeroPoliza : null,
+                NumeroPoliza = c.Poliza?.NumeroPoliza,
+
                 FechaCotizacion = c.FechaCotizacion,
+
                 ClienteId = c.ClienteId,
-                NombreCliente = c.Cliente != null ? c.Cliente.NombreCompleto : null,
+                NombreCliente = c.Cliente?.NombreCompleto,
+
+                BeneficiarioPreferenteId = c.BeneficiarioPreferenteId,
+                NombreBeneficiario = c.BeneficiarioPreferente != null
+                    ? c.BeneficiarioPreferente.NombreCompleto
+                    : null,
+
+                MonedaId = c.MonedaId,
+                MonedaNombre = c.Moneda?.Nombre,
+
                 VigenciaDel = c.VigenciaDel,
                 VigenciaHasta = c.VigenciaHasta,
-                SumaAsegurada = c.SumaAsegurada,
-                GastosExpedicion = c.GastosExpedicion,
-                MotivoCancelacion = c.MotivoCancelacion,
+
                 FechaCancelacion = c.FechaCancelacion,
 
-                CotizacionContenedor = c.CotizacionContenedor == null ? null : new CotizacionContenedorResponse
-                {
-                    CotizacionContenedorId = c.CotizacionContenedor.CotizacionContenedorId,
-                    CotizacionId = c.CotizacionContenedor.CotizacionId,
-                    TamanoTipoContendor = c.CotizacionContenedor.TamanoTipoContendor,
-                    NumeroContenedor = c.CotizacionContenedor.NumeroContenedor,
-                    OpcionCuota = c.CotizacionContenedor.OpcionCuota,
-                    Tarifa = c.CotizacionContenedor.Tarifa,
-                    TotalTarifa = c.CotizacionContenedor.TotalTarifa,
-                    IVA = c.CotizacionContenedor.IVA,
-                    Total = c.CotizacionContenedor.Total,
-                    TotalSeguroContenedor = c.CotizacionContenedor.TotalSeguroContenedor,
-                },
+                PrimaServicioDeAseguramiento = c.PrimaServicioDeAseguramiento,
+                Subtotal = c.Subtotal,
+                IVA = c.IVA,
+                Total = c.Total,
 
-                CotizacionMercancia = c.CotizacionMercancia == null ? null : new CotizacionMercanciaResponse
-                {
-                    CotizacionMercanciaId = c.CotizacionMercancia.CotizacionMercanciaId,
-                    CotizacionId = c.CotizacionMercancia.CotizacionId,
-                    CotizacionCliente = c.CotizacionMercancia.CotizacionCliente,
-                    Transito = c.CotizacionMercancia.Transito,
-                    Clasificacion = c.CotizacionMercancia.Clasificacion,
-                    SubClasificacion = c.CotizacionMercancia.SubClasificacion,
-                    DescripcionMercancia = c.CotizacionMercancia.DescripcionMercancia,
-                    TipoEmpaque = c.CotizacionMercancia.TipoEmpaque,
-                    Origen = c.CotizacionMercancia.Origen,
-                    Destino = c.CotizacionMercancia.Destino,
-                    MedioDeConduccion = c.CotizacionMercancia.MedioDeConduccion,
-                    MedioDeTransporte = c.CotizacionMercancia.MedioDeTransporte,
-                    Observaciones = c.CotizacionMercancia.Observaciones,
-                    MedidasDeSeguridadAdicionales = c.CotizacionMercancia.MedidasDeSeguridadAdicionales,
-                    Deducibles = c.CotizacionMercancia.Deducibles,
-                    CuotaAplicable = c.CotizacionMercancia.CuotaAplicable,
-                    CuotaMinima = c.CotizacionMercancia.CuotaMinima,
-                    TipoCambioCotizar = c.CotizacionMercancia.TipoCambioCotizar,
-                    PrimaServicioDeAseguramiento = c.CotizacionMercancia.PrimaServicioDeAseguramiento,
-                    Subtotal = c.CotizacionMercancia.Subtotal,
-                    IVA = c.CotizacionMercancia.IVA,
-                    TotalSeguroMercancia = c.CotizacionMercancia.TotalSeguroMercancia,
-                    Total = c.CotizacionMercancia.Total
-                }
+                GastosExpedicion = c.GastosExpedicion,
+
+                CotizacionMercancia = c.CotizacionMercancia != null
+                    ? MapMercancia(c.CotizacionMercancia)
+                    : null,
+
+                CotizacionContenedor = c.CotizacionContenedor != null
+                    ? c.CotizacionContenedor.Select(MapContenedor).ToList()
+                    : null
+            };
+        }
+
+        private CotizacionMercanciaResponse MapMercancia(CotizacionMercancia m)
+        {
+            return new CotizacionMercanciaResponse
+            {
+                CotizacionMercanciaId = m.CotizacionMercanciaId,
+                CotizacionId = m.CotizacionId,
+
+                CotizacionCliente = m.CotizacionCliente,
+                Transito = m.Transito,
+
+                ClasificacionId = m.ClasificacionId,
+                ClasificacionNombre = m.Clasificacion?.Nombre,
+
+                SubClasificacion = m.SubClasificacion,
+                DescripcionMercancia = m.DescripcionMercancia,
+                TipoEmpaque = m.TipoEmpaque,
+
+                Origen = m.Origen,
+                Destino = m.Destino,
+
+                MedioDeConduccion = m.MedioDeConduccion,
+                MedioDeTransporte = m.MedioDeTransporte,
+
+                Observaciones = m.Observaciones,
+                MedidasDeSeguridadAdicionales = m.MedidasDeSeguridadAdicionales,
+                Deducibles = m.Deducibles,
+
+                MonedaCuotaAplicableId = m.MonedaCuotaAplicableId,
+                CuotaAplicable = m.CuotaAplicable,
+
+                MonedaCuotaMinimaId = m.MonedaCuotaMinimaId,
+                CuotaMinima = m.CuotaMinima,
+
+                TipoCambioCotizar = m.TipoCambioCotizar,
+                MonedaCotizarId = m.MonedaCotizarId,
+
+                SumaAsegurada = m.SumaAsegurada
+            };
+        }
+
+        private CotizacionContenedorResponse MapContenedor(CotizacionContenedor c)
+        {
+            return new CotizacionContenedorResponse
+            {
+                CotizacionContenedorId = c.CotizacionContenedorId,
+                CotizacionId = c.CotizacionId,
+
+                TamanioContendorId = c.TamanioContendorId,
+                TamanioContenedorNombre = c.TamanioContenedor?.Nombre,
+
+                TipoContenedorId = c.TipoContenedorId,
+                TipoContenedorNombre = c.TipoContenedor?.Nombre,
+
+                NumeroContenedor = c.NumeroContenedor?.ToString(),
+
+                Cuota = c.Cuota,
+                LR = c.LR,
+                Referencia = c.Referencia,
+                TC = c.TC,
+
+                PrimaUnitariaUSD = c.PrimaUnitariaUSD,
+                PrimaUnitariaMXN = c.PrimaUnitariaMXN,
+
+                Total = c.Total
             };
         }
 
@@ -87,13 +139,16 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             cotizacion.FechaCotizacion = body.FechaCotizacion;
             cotizacion.ClienteId = body.ClienteId;
 
+            cotizacion.BeneficiarioPreferenteId = body.BeneficiarioPreferenteId;
+            cotizacion.MonedaId = body.MonedaId;
+
             cotizacion.VigenciaDel = body.VigenciaDel;
             cotizacion.VigenciaHasta = body.VigenciaHasta;
-
-            cotizacion.SumaAsegurada = body.SumaAsegurada;
             cotizacion.GastosExpedicion = body.GastosExpedicion;
-
-            cotizacion.MotivoCancelacion = body.MotivoCancelacion;
+            cotizacion.PrimaServicioDeAseguramiento = body.PrimaServicioDeAseguramiento;
+            cotizacion.Subtotal = body.Subtotal;
+            cotizacion.IVA = body.IVA;
+            cotizacion.Total = body.Total;
 
         }
         private void MapToCotizacionMercancia(CotizacionMercancia entity, CotizacionMercanciaRequest body)
@@ -102,7 +157,9 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             entity.CotizacionCliente = body.CotizacionCliente;
             entity.Transito = body.Transito;
-            entity.Clasificacion = body.Clasificacion;
+
+            entity.ClasificacionId = body.ClasificacionId;
+
             entity.SubClasificacion = body.SubClasificacion;
             entity.DescripcionMercancia = body.DescripcionMercancia;
             entity.TipoEmpaque = body.TipoEmpaque;
@@ -118,36 +175,37 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             entity.Deducibles = body.Deducibles;
 
+            entity.MonedaCuotaAplicableId = body.MonedaCuotaAplicableId;
             entity.CuotaAplicable = body.CuotaAplicable;
+
+            entity.MonedaCuotaMinimaId = body.MonedaCuotaMinimaId;
             entity.CuotaMinima = body.CuotaMinima;
 
             entity.TipoCambioCotizar = body.TipoCambioCotizar;
+            entity.MonedaCotizarId = body.MonedaCotizarId;
 
-            entity.PrimaServicioDeAseguramiento = body.PrimaServicioDeAseguramiento;
-
-            entity.Subtotal = body.Subtotal;
-            entity.IVA = body.IVA;
-
-            entity.TotalSeguroMercancia = body.TotalSeguroMercancia;
-
-            entity.Total = body.Total;
+            entity.SumaAsegurada = body.SumaAsegurada;
         }
         private void MapToCotizacionContenedor(CotizacionContenedor entity, CotizacionContenedorRequest body)
         {
             if (entity == null || body == null) return;
 
-            entity.TamanoTipoContendor = body.TamanoTipoContendor;
+            entity.TamanioContendorId = body.TamanioContendorId;
+            entity.TipoContenedorId = body.TipoContenedorId;
+
             entity.NumeroContenedor = body.NumeroContenedor;
 
-            entity.OpcionCuota = body.OpcionCuota;
-            entity.Tarifa = body.Tarifa;
-            entity.TotalTarifa = body.TotalTarifa;
+            entity.Cuota = body.Cuota;
+            entity.LR = body.LR;
 
-            entity.IVA = body.IVA;
+            entity.Referencia = body.Referencia;
+
+            entity.TC = body.TC;
+
+            entity.PrimaUnitariaUSD = body.PrimaUnitariaUSD;
+            entity.PrimaUnitariaMXN = body.PrimaUnitariaMXN;
+
             entity.Total = body.Total;
-
-            entity.TotalSeguroContenedor = body.TotalSeguroContenedor;
-
         }
 
         private IQueryable<Cotizacion> QueryCotizacionCompleta()
@@ -155,22 +213,34 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             return _context.Cotizacion
                 .Include(x => x.Poliza)
                 .Include(x => x.Cliente)
+                .Include(x => x.Moneda)
+                .Include(x => x.BeneficiarioPreferente)
+
                 .Include(x => x.CotizacionMercancia)
-                .Include(x => x.CotizacionContenedor);
+                    .ThenInclude(m => m.Clasificacion)
+
+                .Include(x => x.CotizacionContenedor)
+                    .ThenInclude(c => c.TipoContenedor)
+
+                .Include(x => x.CotizacionContenedor)
+                    .ThenInclude(c => c.TamanioContenedor);
         }
-
-
 
         public override async Task<IActionResult> GetCotizacionAsync(string version)
         {
+            int page = 1;
+            int pageSize = 50;
+
             var cotizaciones = await QueryCotizacionCompleta()
                 .AsNoTracking()
                 .Where(c => c.FechaCancelacion == null)
                 .OrderByDescending(c => c.FechaCotizacion)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             var response = cotizaciones
-                .Select(c => MapToResponse(c))
+                .Select(MapToResponse)
                 .ToList();
 
             return Ok(response);
@@ -180,49 +250,75 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         {
             var cotizacion = await QueryCotizacionCompleta()
                 .AsNoTracking()
-                .Where(c => c.FechaCancelacion == null)
-                .FirstOrDefaultAsync(c => c.CotizacionId == idCotizacion);
+                .FirstOrDefaultAsync(c =>
+                    c.CotizacionId == idCotizacion &&
+                    c.FechaCancelacion == null
+                );
 
             if (cotizacion == null)
                 return NotFound();
 
             return Ok(MapToResponse(cotizacion));
         }
+
         public override async Task<IActionResult> CreateCotizacionAsync(string version, [FromBody] CotizacionRequest body)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            // 🔥 VALIDACIÓN REAL
+            if (body.CotizacionMercancia != null && body.CotizacionContenedor?.Any() == true)
+                return BadRequest("Solo se permite un tipo de cotización");
+
+            if (body.CotizacionMercancia == null && !(body.CotizacionContenedor?.Any() == true))
+                return BadRequest("Debe enviar mercancía o contenedor");
+
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
-                var cotizacion = new Cotizacion
-                {
-                    FechaCotizacion = DateTime.Now
-                };
+                var cotizacion = new Cotizacion();
 
                 MapToCotizacion(cotizacion, body);
 
-                // 🔹 CotizacionContenedor o CotizacionMercancia
-                if (body.CotizacionContenedor != null &&
-    !string.IsNullOrEmpty(body.CotizacionContenedor.NumeroContenedor))
-                {
-                    var contenedor = new CotizacionContenedor();
+                // 🔹 FORZAR fecha backend
+                cotizacion.FechaCotizacion = DateTime.UtcNow;
 
-                    MapToCotizacionContenedor(contenedor, body.CotizacionContenedor);
-
-                    cotizacion.CotizacionContenedor = contenedor;
-                }
-                else if (body.CotizacionMercancia != null &&
-                         !string.IsNullOrEmpty(body.CotizacionMercancia.DescripcionMercancia))
+                // 🔹 MERCANCIA
+                if (body.CotizacionMercancia != null)
                 {
                     var mercancia = new CotizacionMercancia();
 
                     MapToCotizacionMercancia(mercancia, body.CotizacionMercancia);
 
                     cotizacion.CotizacionMercancia = mercancia;
+
+                    // 👉 ejemplo cálculo (ajústalo a tu lógica real)
+                    cotizacion.Subtotal = mercancia.SumaAsegurada;
                 }
+
+                // 🔹 CONTENEDOR
+                if (body.CotizacionContenedor != null && body.CotizacionContenedor.Any())
+                {
+                    cotizacion.CotizacionContenedor = new List<CotizacionContenedor>();
+
+                    foreach (var item in body.CotizacionContenedor)
+                    {
+                        var contenedor = new CotizacionContenedor();
+
+                        MapToCotizacionContenedor(contenedor, item);
+
+                        cotizacion.CotizacionContenedor.Add(contenedor);
+                    }
+
+                    // ejemplo cálculo (suma todos)
+                    cotizacion.Subtotal = cotizacion.CotizacionContenedor
+                        .Sum(x => x.PrimaUnitariaMXN ?? 0);
+                }
+
+                // 🔥 CÁLCULOS CENTRALIZADOS
+                cotizacion.IVA = (cotizacion.Subtotal ?? 0) * 0.16m;
+                cotizacion.Total = (cotizacion.Subtotal ?? 0) + (cotizacion.IVA ?? 0);
 
                 _context.Cotizacion.Add(cotizacion);
 
@@ -242,11 +338,17 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             }
         }
 
-
         public override async Task<IActionResult> UpdateCotizacionAsync(string version, int idCotizacion, [FromBody] CotizacionRequest body)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            // 🔥 VALIDACIÓN CLAVE
+            if (body.CotizacionMercancia != null && body.CotizacionContenedor?.Any() == true)
+                return BadRequest("Solo se permite un tipo de cotización");
+
+            if (body.CotizacionMercancia == null && !(body.CotizacionContenedor?.Any() == true))
+                return BadRequest("Debe enviar mercancía o contenedor");
 
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -263,32 +365,44 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 if (cotizacion.FechaCancelacion != null)
                     return BadRequest("La cotización está cancelada y no puede modificarse");
 
-                // 🔹 actualizar datos generales
+                // 🔹 actualizar datos generales (excepto fecha)
+                var fechaOriginal = cotizacion.FechaCotizacion;
+
                 MapToCotizacion(cotizacion, body);
 
-                // 🔹 Contenedor o Mercancia (solo uno)
-                if (body.CotizacionContenedor != null)
+                cotizacion.FechaCotizacion = fechaOriginal; // 🔒 proteger fecha
+
+                decimal subtotal = 0;
+
+                // 🔹 CONTENEDOR
+                if (body.CotizacionContenedor != null && body.CotizacionContenedor.Any())
                 {
-                    if (cotizacion.CotizacionContenedor == null)
+                    // eliminar anteriores
+                    if (cotizacion.CotizacionContenedor != null)
                     {
-                        cotizacion.CotizacionContenedor = new CotizacionContenedor
+                        _context.CotizacionContenedor.RemoveRange(cotizacion.CotizacionContenedor);
+                    }
+
+                    cotizacion.CotizacionContenedor = new List<CotizacionContenedor>();
+
+                    foreach (var item in body.CotizacionContenedor)
+                    {
+                        var contenedor = new CotizacionContenedor
                         {
                             CotizacionId = cotizacion.CotizacionId
                         };
 
-                        _context.CotizacionContenedor.Add(cotizacion.CotizacionContenedor);
+                        MapToCotizacionContenedor(contenedor, item);
+
+                        cotizacion.CotizacionContenedor.Add(contenedor);
                     }
 
-                    MapToCotizacionContenedor(cotizacion.CotizacionContenedor, body.CotizacionContenedor);
-
-                    // eliminar mercancia si existía
-                    if (cotizacion.CotizacionMercancia != null)
-                    {
-                        _context.CotizacionMercancia.Remove(cotizacion.CotizacionMercancia);
-                        cotizacion.CotizacionMercancia = null;
-                    }
+                    subtotal = cotizacion.CotizacionContenedor
+                        .Sum(x => x.PrimaUnitariaMXN ?? 0);
                 }
-                else if (body.CotizacionMercancia != null)
+
+                // 🔹 MERCANCIA
+                if (body.CotizacionMercancia != null)
                 {
                     if (cotizacion.CotizacionMercancia == null)
                     {
@@ -302,13 +416,20 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                     MapToCotizacionMercancia(cotizacion.CotizacionMercancia, body.CotizacionMercancia);
 
-                    // eliminar contenedor si existía
+                    subtotal = cotizacion.CotizacionMercancia.SumaAsegurada ?? 0;
+
+                    // eliminar contenedor
                     if (cotizacion.CotizacionContenedor != null)
                     {
-                        _context.CotizacionContenedor.Remove(cotizacion.CotizacionContenedor);
+                        _context.CotizacionContenedor.RemoveRange(cotizacion.CotizacionContenedor);
                         cotizacion.CotizacionContenedor = null;
                     }
                 }
+
+                // 🔥 RECALCULAR SIEMPRE
+                cotizacion.Subtotal = subtotal;
+                cotizacion.IVA = subtotal * 0.16m;
+                cotizacion.Total = subtotal + cotizacion.IVA;
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -325,7 +446,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 throw;
             }
         }
-
         public override async Task<IActionResult> DeleteCotizacionAsync(string version, int idCotizacion)
         {
             var cotizacion = await _context.Cotizacion
@@ -337,19 +457,31 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             if (cotizacion.FechaCancelacion != null)
                 return BadRequest(new { message = "La cotización ya está cancelada" });
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             try
             {
-                cotizacion.FechaCancelacion = DateTime.Now;
+                cotizacion.FechaCancelacion = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
-                return Ok(new { message = "Cotización cancelada correctamente" });
+                return Ok(new
+                {
+                    message = "Cotización cancelada correctamente",
+                    cotizacionId = cotizacion.CotizacionId
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Error al cancelar la cotización", detail = ex.Message });
+                await transaction.RollbackAsync();
+
+                return StatusCode(500, new
+                {
+                    message = "Error al cancelar la cotización",
+                    detail = ex.Message
+                });
             }
         }
-
     }
 }
