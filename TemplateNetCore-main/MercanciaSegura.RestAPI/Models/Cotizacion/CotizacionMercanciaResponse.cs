@@ -10,7 +10,9 @@
 
         public string? Transito { get; set; }
 
-        public string? Clasificacion { get; set; }
+        public int? ClasificacionId { get; set; }
+
+        public string? ClasificacionNombre { get; set; }
 
         public string? SubClasificacion { get; set; }
 
@@ -32,20 +34,18 @@
 
         public string? Deducibles { get; set; }
 
+        public int? MonedaCuotaAplicableId { get; set; }
+
         public decimal? CuotaAplicable { get; set; }
+
+        public int? MonedaCuotaMinimaId { get; set; }
 
         public decimal? CuotaMinima { get; set; }
 
         public decimal? TipoCambioCotizar { get; set; }
 
-        public decimal? PrimaServicioDeAseguramiento { get; set; }
+        public int? MonedaCotizarId { get; set; }
 
-        public decimal? Subtotal { get; set; }
-
-        public decimal? IVA { get; set; }
-
-        public decimal? TotalSeguroMercancia { get; set; }
-
-        public decimal? Total { get; set; }
+        public decimal? SumaAsegurada { get; set; }
     }
 }
