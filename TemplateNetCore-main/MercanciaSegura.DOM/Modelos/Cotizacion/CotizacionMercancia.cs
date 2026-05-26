@@ -20,9 +20,11 @@ namespace MercanciaSegura.DOM.Modelos.Cotizacion
         [MaxLength(100)]
         public string? CotizacionCliente { get; set; }
 
-        [Column("Transito")]
-        [MaxLength(50)]
-        public string? Transito { get; set; }
+        [Column("Transito_ID")]
+        public int? TransitoId { get; set; }
+
+        [ForeignKey(nameof(TransitoId))]
+        public Transito? Transito { get; set; }
 
         [Column("Clasificacion_ID")]
         public int? ClasificacionId { get; set; }

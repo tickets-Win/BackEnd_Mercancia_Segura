@@ -59,6 +59,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                 CotizacionContenedor = c.CotizacionContenedor != null
                     ? c.CotizacionContenedor.Select(MapContenedor).ToList()
+                    : null,
+
+                BienCotizacion = c.BienCotizacion != null
+                    ? c.BienCotizacion.Select(MapBien).ToList()
                     : null
             };
         }
@@ -71,7 +75,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 CotizacionId = m.CotizacionId,
 
                 CotizacionCliente = m.CotizacionCliente,
-                Transito = m.Transito,
+                TransitoId = m.TransitoId,
 
                 ClasificacionId = m.ClasificacionId,
                 ClasificacionNombre = m.Clasificacion?.Nombre,
@@ -130,6 +134,19 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             };
         }
 
+        private BienCotizacionResponse MapBien(BienCotizacion b)
+        {
+            return new BienCotizacionResponse
+            {
+                BienCotizacionId = b.BienCotizacionId,
+                CotizacionId = b.CotizacionId,
+                AdministracionBienId = b.AdministracionBienId,
+                TipoBienId = b.TipoBienId,
+                NombreTipoBien = b.TipoBien?.Nombre,
+                Nombre = b.Nombre
+            };
+        }
+
 
         private void MapToCotizacion(Cotizacion cotizacion, CotizacionRequest body)
         {
@@ -156,7 +173,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             if (entity == null || body == null) return;
 
             entity.CotizacionCliente = body.CotizacionCliente;
-            entity.Transito = body.Transito;
+            entity.TransitoId = body.TransitoId;
 
             entity.ClasificacionId = body.ClasificacionId;
 
@@ -208,6 +225,15 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             entity.Total = body.Total;
         }
 
+        private void MapToBien(BienCotizacion entity, BienCotizacionRequest body)
+        {
+            if (entity == null || body == null) return;
+
+            entity.TipoBienId = body.TipoBienId;
+            entity.AdministracionBienId = body.AdministracionBienId;
+            entity.Nombre = body.Nombre;
+        }
+
         private IQueryable<Cotizacion> QueryCotizacionCompleta()
         {
             return _context.Cotizacion
@@ -223,7 +249,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     .ThenInclude(c => c.TipoContenedor)
 
                 .Include(x => x.CotizacionContenedor)
-                    .ThenInclude(c => c.TamanioContenedor);
+                    .ThenInclude(c => c.TamanioContenedor)
+
+                .Include(x => x.BienCotizacion)
+                    .ThenInclude(b => b.TipoBien);
         }
 
         public override async Task<IActionResult> GetCotizacionAsync(string version)
@@ -320,6 +349,20 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 cotizacion.IVA = (cotizacion.Subtotal ?? 0) * 0.16m;
                 cotizacion.Total = (cotizacion.Subtotal ?? 0) + (cotizacion.IVA ?? 0);
 
+                if (body.BienCotizacion?.Any() == true)
+                {
+                    cotizacion.BienCotizacion = new List<BienCotizacion>();
+
+                    foreach (var item in body.BienCotizacion)
+                    {
+                        var bien = new BienCotizacion();
+
+                        MapToBien(bien, item);
+
+                        cotizacion.BienCotizacion.Add(bien);
+                    }
+                }
+
                 _context.Cotizacion.Add(cotizacion);
 
                 await _context.SaveChangesAsync();
@@ -357,6 +400,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 var cotizacion = await _context.Cotizacion
                     .Include(c => c.CotizacionContenedor)
                     .Include(c => c.CotizacionMercancia)
+                    .Include(c => c.BienCotizacion)
                     .FirstOrDefaultAsync(c => c.CotizacionId == idCotizacion);
 
                 if (cotizacion == null)
@@ -374,9 +418,17 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                 decimal subtotal = 0;
 
+
                 // 🔹 CONTENEDOR
                 if (body.CotizacionContenedor != null && body.CotizacionContenedor.Any())
                 {
+
+                    if (cotizacion.CotizacionMercancia != null)
+                    {
+                        _context.CotizacionMercancia.Remove(cotizacion.CotizacionMercancia);
+                        cotizacion.CotizacionMercancia = null;
+                    }
+
                     // eliminar anteriores
                     if (cotizacion.CotizacionContenedor != null)
                     {
@@ -404,6 +456,12 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 // 🔹 MERCANCIA
                 if (body.CotizacionMercancia != null)
                 {
+                    if (cotizacion.CotizacionContenedor != null)
+                    {
+                        _context.CotizacionContenedor.RemoveRange(cotizacion.CotizacionContenedor);
+                        cotizacion.CotizacionContenedor = null;
+                    }
+
                     if (cotizacion.CotizacionMercancia == null)
                     {
                         cotizacion.CotizacionMercancia = new CotizacionMercancia
@@ -414,22 +472,43 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                         _context.CotizacionMercancia.Add(cotizacion.CotizacionMercancia);
                     }
 
-                    MapToCotizacionMercancia(cotizacion.CotizacionMercancia, body.CotizacionMercancia);
+                    MapToCotizacionMercancia(
+                        cotizacion.CotizacionMercancia,
+                        body.CotizacionMercancia
+                    );
 
                     subtotal = cotizacion.CotizacionMercancia.SumaAsegurada ?? 0;
-
-                    // eliminar contenedor
-                    if (cotizacion.CotizacionContenedor != null)
-                    {
-                        _context.CotizacionContenedor.RemoveRange(cotizacion.CotizacionContenedor);
-                        cotizacion.CotizacionContenedor = null;
-                    }
                 }
 
                 // 🔥 RECALCULAR SIEMPRE
                 cotizacion.Subtotal = subtotal;
                 cotizacion.IVA = subtotal * 0.16m;
                 cotizacion.Total = subtotal + cotizacion.IVA;
+
+                if (body.BienCotizacion != null)
+                {
+                    if (cotizacion.BienCotizacion != null)
+                        _context.BienCotizacion.RemoveRange(cotizacion.BienCotizacion);
+
+                    cotizacion.BienCotizacion = null;
+
+                    if (body.BienCotizacion.Any())
+                    {
+                        cotizacion.BienCotizacion = new List<BienCotizacion>();
+
+                        foreach (var item in body.BienCotizacion)
+                        {
+                            var bien = new BienCotizacion
+                            {
+                                CotizacionId = cotizacion.CotizacionId
+                            };
+
+                            MapToBien(bien, item);
+
+                            cotizacion.BienCotizacion.Add(bien);
+                        }
+                    }
+                }
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();

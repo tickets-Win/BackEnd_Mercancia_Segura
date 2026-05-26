@@ -1,10 +1,10 @@
-﻿namespace MercanciaSegura.RestAPI.Models.Poliza
+﻿namespace MercanciaSegura.RestAPI.Models.Cotizacion
 {
-    public class BienResponse
+    public class BienCotizacionResponse
     {
-        public int BienId { get; set; }
+        public int BienCotizacionId { get; set; }
 
-        public int? PolizaId { get; set; }
+        public int? CotizacionId { get; set; }
 
         public int? AdministracionBienId { get; set; }
 
