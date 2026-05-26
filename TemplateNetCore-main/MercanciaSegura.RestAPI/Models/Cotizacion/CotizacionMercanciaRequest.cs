@@ -4,7 +4,7 @@
     {
         public string? CotizacionCliente { get; set; }
 
-        public string? Transito { get; set; }
+        public int? TransitoId { get; set; }
 
         public int? ClasificacionId { get; set; }
 

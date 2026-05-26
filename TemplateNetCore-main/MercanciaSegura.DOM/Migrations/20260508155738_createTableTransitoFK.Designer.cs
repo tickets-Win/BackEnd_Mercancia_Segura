@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260508155738_createTableTransitoFK")]
+    partial class createTableTransitoFK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -736,42 +739,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.HasIndex("VendedorId");
 
                     b.ToTable("Cliente_Vendedor");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cotizacion.BienCotizacion", b =>
-                {
-                    b.Property<int>("BienCotizacionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Bien_Cotizacion_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BienCotizacionId"));
-
-                    b.Property<int?>("AdministracionBienId")
-                        .HasColumnType("int")
-                        .HasColumnName("Administracion_Bien_ID");
-
-                    b.Property<int?>("CotizacionId")
-                        .HasColumnType("int")
-                        .HasColumnName("Cotizacion_ID");
-
-                    b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Nombre");
-
-                    b.Property<int?>("TipoBienId")
-                        .HasColumnType("int")
-                        .HasColumnName("Tipo_Bien");
-
-                    b.HasKey("BienCotizacionId");
-
-                    b.HasIndex("AdministracionBienId");
-
-                    b.HasIndex("CotizacionId");
-
-                    b.HasIndex("TipoBienId");
-
-                    b.ToTable("Bien_Cotizacion");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cotizacion.Clasificacion", b =>
@@ -2248,27 +2215,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Navigation("Vendedor");
                 });
 
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cotizacion.BienCotizacion", b =>
-                {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.AdministracionBien", "AdministracionBien")
-                        .WithMany()
-                        .HasForeignKey("AdministracionBienId");
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Cotizacion.Cotizacion", "Cotizacion")
-                        .WithMany("BienCotizacion")
-                        .HasForeignKey("CotizacionId");
-
-                    b.HasOne("MercanciaSegura.DOM.Modelos.Poliza.TipoBien", "TipoBien")
-                        .WithMany()
-                        .HasForeignKey("TipoBienId");
-
-                    b.Navigation("AdministracionBien");
-
-                    b.Navigation("Cotizacion");
-
-                    b.Navigation("TipoBien");
-                });
-
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cotizacion.Cotizacion", b =>
                 {
                     b.HasOne("MercanciaSegura.DOM.Modelos.Cliente.BeneficiarioPreferente", "BeneficiarioPreferente")
@@ -2528,8 +2474,6 @@ namespace MercanciaSegura.DOM.Migrations
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Cotizacion.Cotizacion", b =>
                 {
-                    b.Navigation("BienCotizacion");
-
                     b.Navigation("CotizacionContenedor");
 
                     b.Navigation("CotizacionMercancia");

@@ -89,6 +89,8 @@ public class ServiceDbContext : DbContext
     public DbSet<Clasificacion> Clasificacion { get; set; }
     public DbSet<TipoContenedor> TipoContenedor { get; set; }
     public DbSet<TamanioContenedor> TamanioContenedor { get; set; }
+    public DbSet<Transito> Transito { get; set; }
+    public DbSet<BienCotizacion> BienCotizacion { get; set; }
 
 
 }
