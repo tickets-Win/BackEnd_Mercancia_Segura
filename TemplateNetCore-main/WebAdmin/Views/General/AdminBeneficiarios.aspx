@@ -6,6 +6,11 @@
     <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <%-- Encabezado y tabla juntos en una region AJAX: el buscador filtra conforme
+         se escribe y solo se repinta el listado. Van juntos porque su Visible
+         cambia en bloque al abrir el formulario. --%>
+    <asp:UpdatePanel ID="UpListado" runat="server" UpdateMode="Always">
+        <ContentTemplate>
     <asp:Panel ID="PnlEncabezado" runat="server">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Beneficiario</h2>
@@ -28,7 +33,8 @@
                     DataKeyNames="BeneficiarioPreferenteId"
                     AllowPaging="True"
                     PageSize="10"
-                    OnPageIndexChanging="gvBeneficiariosPreferentes_PageIndexChanging">
+                    OnPageIndexChanging="gvBeneficiariosPreferentes_PageIndexChanging"
+                    OnRowDataBound="gvBeneficiariosPreferentes_RowDataBound">
                     <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
                     <Columns>
                         <asp:BoundField DataField="Clave" HeaderText="Clave" />
@@ -60,6 +66,15 @@
             </div>
         </div>
     </asp:Panel>
+        </ContentTemplate>
+        <Triggers>
+            <%-- Agregar muestra pnlFormularioBeneficiario, que vive FUERA de este
+                 UpdatePanel: con postback parcial ese cambio no llegaria al
+                 navegador y la pantalla quedaria en blanco. Los botones de la
+                 tabla se registran en RowDataBound por lo mismo. --%>
+            <asp:PostBackTrigger ControlID="btnAgregarBeneficiarios" />
+        </Triggers>
+    </asp:UpdatePanel>
     <asp:Panel ID="pnlFormularioBeneficiario" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <asp:HiddenField ID="hfBeneficiarioId" runat="server" />
@@ -341,6 +356,11 @@
 
              });
 
+         });
+
+         // Buscador incremental. El helper vive en Default.Master.
+         document.addEventListener('DOMContentLoaded', function () {
+             msBuscadorIncremental('<%= txtBuscarBeneficiarios.ClientID %>', '<%= txtBuscarBeneficiarios.UniqueID %>', 400);
          });
      </script>
 </asp:Content>

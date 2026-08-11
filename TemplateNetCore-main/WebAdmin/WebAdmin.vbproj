@@ -103,6 +103,7 @@
     <Content Include="Views\General\AdminBeneficiarios.aspx" />
     <Content Include="Views\General\AdminCertificados.aspx" />
     <Content Include="Views\General\AdminCliente.aspx" />
+    <Content Include="Views\General\AdminCobranza.aspx" />
     <Content Include="Views\General\AdminCotizaciones.aspx" />
     <Content Include="Views\General\AdminEndosos.aspx" />
     <Content Include="Views\General\AdminGestionPolizas.aspx" />
@@ -162,6 +163,7 @@
     <Compile Include="Modelos\TipoSeguro.vb" />
     <Compile Include="Modelos\TipoTarifa.vb" />
     <Compile Include="Modelos\TipoVendedor.vb" />
+    <Compile Include="Modelos\Transito.vb" />
     <Compile Include="Modelos\Usuario.vb" />
     <Compile Include="Modelos\Vendedor.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -211,6 +213,13 @@
     <Compile Include="Views\General\AdminCliente.aspx.vb">
       <DependentUpon>AdminCliente.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\General\AdminCobranza.aspx.designer.vb">
+      <DependentUpon>AdminCobranza.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\General\AdminCobranza.aspx.vb">
+      <DependentUpon>AdminCobranza.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Views\General\AdminCotizaciones.aspx.designer.vb">
       <DependentUpon>AdminCotizaciones.aspx</DependentUpon>

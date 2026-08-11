@@ -6,7 +6,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">  
+    <asp:UpdatePanel ID="UpListado" runat="server" UpdateMode="Always">
+        <ContentTemplate>
     <asp:Panel ID="pnlEncabezado" runat="server">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Cotizaciones</h2>
@@ -14,16 +16,17 @@
         </div>
         <div class="mb-4">
             <asp:TextBox ID="txtBuscarCotizacion" runat="server" CssClass="form-control"
-                placeholder="🔍 Buscar cotizaciones..."></asp:TextBox>
+                placeholder="🔍 Buscar por cotización..."
+                AutoPostBack="True" OnTextChanged="txtBuscarCotizacion_TextChanged"></asp:TextBox>
         </div>
         <div class="d-flex justify-content-left mb-4">
-            <label for="ddlTipoPolizas" class="form-label visually-hidden">Filtrar</label>
-            <asp:DropDownList ID="ddlTipoPolizas" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto">
+            <label for="ddlTipoPolizas" class="form-label visually-hidden">Filtrar</label>          
+            <asp:DropDownList ID="ddlTipoPolizas" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto"
+                AutoPostBack="True" OnSelectedIndexChanged="ddlTipoPolizas_SelectedIndexChanged">
                 <asp:ListItem Text="-- Todos --" Value="0" />
                 <asp:ListItem Text="Hoy" Value="1" />
                 <asp:ListItem Text="Mes actual" Value="2" />
                 <asp:ListItem Text="Mes anterior" Value="3" />
-                <asp:ListItem Text="Canceladas" Value="4" />
             </asp:DropDownList>
         </div>
     </asp:Panel>
@@ -54,7 +57,7 @@
 
                                 <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("CotizacionId") %>'
                                     CssClass="icon-btn action-icon" ToolTip="Eliminar"
-                                    OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
+                                    OnClientClick="return confirm('¿Seguro que deseas cancelar esta cotización?');">
                                 <i class="bi bi-trash"></i>
                                 </asp:LinkButton>
 
@@ -65,17 +68,26 @@
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
+
+                    <EmptyDataTemplate>
+                        <div class="text-muted py-3">No se encontraron cotizaciones con ese criterio.</div>
+                    </EmptyDataTemplate>
                 </asp:GridView>
             </div>
         </div>
     </asp:Panel>
+        </ContentTemplate>
+    </asp:UpdatePanel>  
+    <asp:UpdatePanel ID="UpFormularioCotizacion" runat="server" UpdateMode="Always">
+        <ContentTemplate>
     <asp:Panel ID="pnlFormularioCotizaciones" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
+            <asp:HiddenField ID="hfCotizacionId" runat="server" Value="" />
             <h2>
                 <asp:Label ID="lblMensaje" runat="server"></asp:Label></h2>
 
             <div>
-                <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" />
+                <asp:Button ID="btnCancelar" runat="server" CssClass="btn me-2" BackColor="#97BAA0" ForeColor="White" Text="Cancelar" OnClick="btnCancelar_Click" />
                 <asp:Button ID="btnGuardar" runat="server" CssClass="btn me-2" BackColor="#1294D4" ForeColor="White" Text="Guardar" OnClick="btnGuardar_Click" />
             </div>
         </div>
@@ -90,7 +102,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Nombre Interno Póliza</label>
-                <asp:DropDownList ID="ddlNombreInternoPoliza" CssClass="form-select" runat="server" AutoPostBack="true">
+                <asp:DropDownList ID="ddlNombreInternoPoliza" CssClass="form-select" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlNombreInternoPoliza_SelectedIndexChanged">
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -104,7 +116,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Cliente</label>
-                <asp:DropDownList ID="ddlCliente" CssClass="form-select" runat="server" AutoPostBack="true">
+                <asp:DropDownList ID="ddlCliente" CssClass="form-select" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlCliente_SelectedIndexChanged">
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -134,15 +146,11 @@
                     <div class="col-md-4">
                         <label class="form-label">Tránsito</label>
                         <asp:DropDownList ID="ddlTransito" runat="server" CssClass="form-select">
-                            <asp:ListItem>Internacional</asp:ListItem>
-                            <asp:ListItem>Nacional</asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Clasificación</label>
                         <asp:DropDownList ID="ddlClasificacion" runat="server" CssClass="form-select">
-                            <asp:ListItem>Alimentos y Bebidas</asp:ListItem>
-                            <asp:ListItem>Alimentos y Bebidas</asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div class="col-md-4">
@@ -199,38 +207,40 @@
 
                                 <div id="coberturas" class="collapse-content px-3 pb-3" style="display: none;">
                                     <asp:DropDownList ID="ddlCoberturas" runat="server" CssClass="form-select mb-3">
-                                        <asp:ListItem>Cobertura  1</asp:ListItem>
-                                        <asp:ListItem>Cobertura 2</asp:ListItem>
                                     </asp:DropDownList>
 
                                     <div class="d-flex justify-content-end mb-3">
-                                        <asp:Button ID="btnAgregarCobertura" runat="server" CssClass="btn btn-primary" Text="Agregar" />
+                                        <asp:Button ID="btnAgregarCobertura" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnAgregarCobertura_Click" />
                                     </div>
 
-                                    <table class="table table-bordered">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Cobertura</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Mercancía General</td>
-                                                <td>
-                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
-                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Electrónicos</td>
-                                                <td>
-                                                    <button class="btn btn-warning btn-sm me-2">Editar</button>
-                                                    <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    <asp:GridView ID="GvCoberturasCotizacion" runat="server" AutoGenerateColumns="False"
+                                        CssClass="table table-bordered table-hover align-middle"
+                                        HeaderStyle-CssClass="table-light"
+                                        DataKeyNames="CoberturaId"
+                                        OnRowCommand="GvCoberturasCotizacion_RowCommand"
+                                        AllowPaging="True"
+                                        PageSize="10"
+                                        OnPageIndexChanging="GvCoberturasCotizacion_PageIndexChanging">
+                                        <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+
+                                        <Columns>
+                                            <asp:BoundField DataField="Nombre" HeaderText="Cobertura" />
+
+                                            <asp:TemplateField HeaderText="Acciones">
+                                                <ItemTemplate>
+                                                    <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("CoberturaId") %>'
+                                                        CssClass="btn btn-danger btn-sm"
+                                                        OnClientClick="return confirm('¿Seguro que deseas eliminar esta cobertura?');">
+Eliminar
+                                                    </asp:LinkButton>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+                                        </Columns>
+
+                                        <EmptyDataTemplate>
+                                            <div class="text-muted py-2">Aún no se han agregado coberturas.</div>
+                                        </EmptyDataTemplate>
+                                    </asp:GridView>
                                 </div>
                             </div>
                         </div>
@@ -247,38 +257,40 @@
 
                                     <div id="bienesasegurados" class="collapse-content px-3 pb-3" style="display: none;">
                                         <asp:DropDownList ID="ddlbienesasegurados" runat="server" CssClass="form-select mb-3">
-                                            <asp:ListItem>bienes asegurados  1</asp:ListItem>
-                                            <asp:ListItem>bienes  asegurados 2</asp:ListItem>
                                         </asp:DropDownList>
 
                                         <div class="d-flex justify-content-end mb-3">
-                                            <asp:Button ID="btnbienesasegurados" runat="server" CssClass="btn btn-primary" Text="Agregar" />
+                                            <asp:Button ID="btnbienesasegurados" runat="server" CssClass="btn btn-primary" Text="Agregar" OnClick="btnbienesasegurados_Click" />
                                         </div>
 
-                                        <table class="table table-bordered">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>Bienes Asegurados</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Mercancía General</td>
-                                                    <td>
-                                                        <button class="btn btn-warning btn-sm me-2">Editar</button>
-                                                        <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Electrónicos</td>
-                                                    <td>
-                                                        <button class="btn btn-warning btn-sm me-2">Editar</button>
-                                                        <button class="btn btn-danger btn-sm">Eliminar</button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        <asp:GridView ID="GvBienesCotizacion" runat="server" AutoGenerateColumns="False"
+                                            CssClass="table table-bordered table-hover align-middle"
+                                            HeaderStyle-CssClass="table-light"
+                                            DataKeyNames="BienId"
+                                            OnRowCommand="GvBienesCotizacion_RowCommand"
+                                            AllowPaging="True"
+                                            PageSize="10"
+                                            OnPageIndexChanging="GvBienesCotizacion_PageIndexChanging">
+                                            <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+
+                                            <Columns>
+                                                <asp:BoundField DataField="Nombre" HeaderText="Bienes Asegurados" />
+
+                                                <asp:TemplateField HeaderText="Acciones">
+                                                    <ItemTemplate>
+                                                        <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("BienId") %>'
+                                                            CssClass="btn btn-danger btn-sm"
+                                                            OnClientClick="return confirm('¿Seguro que deseas eliminar este bien asegurado?');">
+Eliminar
+                                                        </asp:LinkButton>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+                                            </Columns>
+
+                                            <EmptyDataTemplate>
+                                                <div class="text-muted py-2">Aún no se han agregado bienes asegurados.</div>
+                                            </EmptyDataTemplate>
+                                        </asp:GridView>
                                     </div>
                                 </div>
                             </div>
@@ -525,20 +537,74 @@
             </div>
         </div>
     </asp:Panel>
+        </ContentTemplate>
+        <Triggers>          
+            <asp:PostBackTrigger ControlID="btnGuardar" />
+            <asp:PostBackTrigger ControlID="btnCancelar" />
+        </Triggers>
+    </asp:UpdatePanel>    
+    <input type="hidden" id="hdnSeccionesAbiertas" value="" />
+
+    <div id="alertPlaceholder" class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;"></div>
+
     <script>
-        function toggleCollapse(id) {
+        function showToast(message, type) {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = `
+        <div class="toast align-items-center text-bg-${type} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+            document.getElementById('alertPlaceholder').append(wrapper);
+            setTimeout(() => {
+                wrapper.querySelector('.toast').classList.remove('show');
+                wrapper.remove();
+            }, 4000);
+        }
+    </script>
+
+    <script>
+        function msSeccionesAbiertas() {
+            const h = document.getElementById('hdnSeccionesAbiertas');
+            if (!h || !h.value) { return []; }
+            return h.value.split(',');
+        }
+
+        function msGuardarSecciones(lista) {
+            const h = document.getElementById('hdnSeccionesAbiertas');
+            if (h) { h.value = lista.join(','); }
+        }
+
+        function msAbrirSeccion(id, abrir) {
             const content = document.getElementById(id);
             const icon = document.getElementById('icon-' + id);
-
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-                icon.classList.remove('bi-chevron-down');
-                icon.classList.add('bi-chevron-up');
-            } else {
-                content.style.display = 'none';
-                icon.classList.remove('bi-chevron-up');
-                icon.classList.add('bi-chevron-down');
+            if (content) { content.style.display = abrir ? 'block' : 'none'; }
+            if (icon) {
+                icon.classList.remove(abrir ? 'bi-chevron-down' : 'bi-chevron-up');
+                icon.classList.add(abrir ? 'bi-chevron-up' : 'bi-chevron-down');
             }
+        }
+
+        function toggleCollapse(id) {
+            const content = document.getElementById(id);
+            if (!content) { return; }
+
+            const abrir = content.style.display === 'none';
+            msAbrirSeccion(id, abrir);
+
+            const abiertas = msSeccionesAbiertas();
+            const i = abiertas.indexOf(id);
+
+            if (abrir && i === -1) { abiertas.push(id); }
+            if (!abrir && i !== -1) { abiertas.splice(i, 1); }
+
+            msGuardarSecciones(abiertas);
+        }
+        function msRestaurarSecciones() {
+            msSeccionesAbiertas().forEach(function (id) { msAbrirSeccion(id, true); });
         }
     </script>
     <script type="text/javascript">
@@ -569,9 +635,9 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                 <td>
-                    <input type="text" class="form-control form-control-sm" 
-                           id="txtNumContenedor_${i}" 
-                           placeholder="Número" 
+                    <input type="text" class="form-control form-control-sm"
+                           id="txtNumContenedor_${i}"
+                           placeholder="Número"
                            maxlength="11" />
                 </td>
                 <td>
@@ -587,42 +653,42 @@
                     </select>
                 </td>
                 <td>
-                    <input type="number" class="form-control form-control-sm text-end" 
-                           id="txtLR_${i}" 
-                           placeholder="0.00" 
+                    <input type="number" class="form-control form-control-sm text-end"
+                           id="txtLR_${i}"
+                           placeholder="0.00"
                            step="0.01"
                            onchange="calcularPrima(${i})" />
                 </td>
                 <td>
-                    <input type="text" class="form-control form-control-sm" 
-                           id="txtReferencia_${i}" 
-                           placeholder="Referencia" 
+                    <input type="text" class="form-control form-control-sm"
+                           id="txtReferencia_${i}"
+                           placeholder="Referencia"
                            maxlength="30" />
                 </td>
                 <td>
-                    <input type="number" class="form-control form-control-sm text-end" 
-                           id="txtCuota_${i}" 
-                           placeholder="0" 
+                    <input type="number" class="form-control form-control-sm text-end"
+                           id="txtCuota_${i}"
+                           placeholder="0"
                            step="0.01"
                            onchange="calcularPrima(${i})" />
                 </td>
                 <td>
-                    <input type="number" class="form-control form-control-sm text-end bg-light" 
-                           id="txtPrimaUSD_${i}" 
-                           placeholder="0.00" 
+                    <input type="number" class="form-control form-control-sm text-end bg-light"
+                           id="txtPrimaUSD_${i}"
+                           placeholder="0.00"
                            readonly />
                 </td>
                 <td class="col-tc d-none">
-                    <input type="number" class="form-control form-control-sm text-end" 
-                           id="txtTC_${i}" 
-                           placeholder="0.00" 
+                    <input type="number" class="form-control form-control-sm text-end"
+                           id="txtTC_${i}"
+                           placeholder="0.00"
                            step="0.01"
                            onchange="calcularPrimaMXN(${i})" />
                 </td>
                 <td class="col-prima-mn d-none">
-                    <input type="number" class="form-control form-control-sm text-end bg-light" 
-                           id="txtPrimaMXN_${i}" 
-                           placeholder="0.00" 
+                    <input type="number" class="form-control form-control-sm text-end bg-light"
+                           id="txtPrimaMXN_${i}"
+                           placeholder="0.00"
                            readonly />
                 </td>
             `;
@@ -669,10 +735,204 @@
             document.getElementById('totalPrimaUSD').textContent = '$ ' + totalPrimaUSD.toFixed(2);
             document.getElementById('totalPrimaMN').textContent = '$ ' + totalPrimaMXN.toFixed(2);
         }
+        var msBuscarTimer = null;
+        var msBuscarEnfocar = false;
 
-        document.addEventListener('DOMContentLoaded', function () {
+        function msEngancharBuscador() {
+            const el = document.getElementById('<%= txtBuscarCotizacion.ClientID %>');
+            if (!el || el.dataset.msWired) { return; }
+            el.dataset.msWired = '1';
+
+            el.addEventListener('input', function () {
+                clearTimeout(msBuscarTimer);
+                msBuscarEnfocar = true;
+
+                msBuscarTimer = setTimeout(function () {
+                    __doPostBack('<%= txtBuscarCotizacion.UniqueID %>', '');
+                }, 400);
+            });
+        }       
+        if (typeof Sys !== 'undefined' && Sys.WebForms) {
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
+                if (!msBuscarEnfocar) { return; }
+
+                const el = document.getElementById('<%= txtBuscarCotizacion.ClientID %>');
+                if (!el) { return; }
+
+                el.focus();
+
+                const valor = el.value;
+                el.value = '';
+                el.value = valor;
+            });
+        }
+
+        const MS_IVA = 0.16;
+
+        const MS_BLOQUES = [
+            {
+                prima: '<%= txtPrimaYSeguramiento.ClientID %>',
+                gastos: '<%= txtGastosExpedicion.ClientID %>',
+                subtotal: '<%= txtSubtotal.ClientID %>',
+                iva: '<%= txtIVA.ClientID %>',
+                total: '<%= txtTotalPagar.ClientID %>'
+            },
+            {
+                prima: '<%= txtPrimaYSeguramiento2.ClientID %>',
+                gastos: '<%= txtGastosExpedicion2.ClientID %>',
+                subtotal: '<%= txtSubtotal2.ClientID %>',
+                iva: '<%= txtIVA2.ClientID %>',
+                total: '<%= txtTotalPagar2.ClientID %>'
+            }
+        ];
+
+        function msNumero(valor) {
+            if (!valor) { return 0; }
+            const n = parseFloat(String(valor).replace(/[^0-9.\-]/g, ''));
+            return isNaN(n) ? 0 : n;
+        }
+
+        function msSufijoMoneda() {
+            const ddl = document.getElementById('<%= ddlMoneda.ClientID %>');
+            return (ddl && ddl.value === '2') ? 'US' : 'MN';
+        }
+
+        function msFormatoMoneda(n) {
+            return '$' + n.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }) + ' ' + msSufijoMoneda();
+        }
+
+        function msCalcularPrima(ids) {
+            const prima = document.getElementById(ids.prima);
+            const gastos = document.getElementById(ids.gastos);
+            const subtotal = document.getElementById(ids.subtotal);
+            const iva = document.getElementById(ids.iva);
+            const total = document.getElementById(ids.total);
+
+            if (!prima || !gastos || !subtotal || !iva || !total) { return; }
+
+            if (!prima.value && !gastos.value) { return; }
+
+            const sub = msNumero(prima.value) + msNumero(gastos.value);
+            const impuesto = sub * MS_IVA;
+
+            subtotal.value = msFormatoMoneda(sub);
+            iva.value = msFormatoMoneda(impuesto);
+            total.value = msFormatoMoneda(sub + impuesto);
+        }
+
+        function msRecalcularTodo() {
+            MS_BLOQUES.forEach(function (ids) { msCalcularPrima(ids); });
+        }
+
+     
+        const MS_CUOTA_APLICABLE = {
+            checks: ['<%= chkCuotaAplicableN.ClientID %>', '<%= chkCuotaAplicableI.ClientID %>'],
+            campo: '<%= txtCuotaAplicable.ClientID %>'
+        };
+
+        const MS_CUOTA_MINIMA = {
+            checks: ['<%= chkCuotaMinimaN.ClientID %>', '<%= chkCuotaMinimaI.ClientID %>'],
+            campo: '<%= txtCuotaMinima.ClientID %>'
+        };
+
+        function msBloqueActivo(grupo) {
+            return grupo.checks.some(function (id) {
+                const el = document.getElementById(id);
+                return el && el.checked;
+            });
+        }
+
+        function msHabilitarBloque(grupo, habilitar) {
+            grupo.checks.forEach(function (id) {
+                const el = document.getElementById(id);
+                if (!el) { return; }
+                el.disabled = !habilitar;
+                if (!habilitar) { el.checked = false; }
+            });
+
+            const campo = document.getElementById(grupo.campo);
+            if (!campo) { return; }
+
+          
+            campo.readOnly = !habilitar;
+            campo.classList.toggle('bg-light', !habilitar);
+            if (!habilitar) { campo.value = ''; }
+        }
+
+        function msSincronizarCuotas() {
+            const aplicable = msBloqueActivo(MS_CUOTA_APLICABLE);
+            const minima = msBloqueActivo(MS_CUOTA_MINIMA);
+
+            msHabilitarBloque(MS_CUOTA_APLICABLE, !minima);
+            msHabilitarBloque(MS_CUOTA_MINIMA, !aplicable);
+        }
+
+        function msEngancharCuotas() {
+            [
+                { grupo: MS_CUOTA_APLICABLE, otro: MS_CUOTA_MINIMA },
+                { grupo: MS_CUOTA_MINIMA, otro: MS_CUOTA_APLICABLE }
+            ].forEach(function (par) {
+                par.grupo.checks.forEach(function (id) {
+                    const el = document.getElementById(id);
+                    if (!el || el.dataset.msWired) { return; }
+                    el.dataset.msWired = '1';
+
+                    el.addEventListener('change', function () {
+                        if (el.checked) {
+                            par.grupo.checks.forEach(function (otroId) {
+                                if (otroId === id) { return; }
+                                const hermano = document.getElementById(otroId);
+                                if (hermano) { hermano.checked = false; }
+                            });
+
+                            msHabilitarBloque(par.otro, false);
+                        }
+
+                        msSincronizarCuotas();
+                    });
+                });
+            });
+
+            msSincronizarCuotas();
+        }
+
+        function msEngancharPrima(ids) {
+            const recalcular = function () { msCalcularPrima(ids); };
+
+            [ids.prima, ids.gastos].forEach(function (id) {
+                const el = document.getElementById(id);
+                if (el && !el.dataset.msWired) {
+                    el.dataset.msWired = '1';
+
+                    el.addEventListener('input', recalcular);
+
+                    el.addEventListener('change', function () {
+                        if (this.value) { this.value = msFormatoMoneda(msNumero(this.value)); }
+                        recalcular();
+                    });
+                }
+            });
+
+          
+            [ids.subtotal, ids.iva, ids.total].forEach(function (id) {
+                const el = document.getElementById(id);
+                if (el && !el.readOnly) {
+                    el.readOnly = true;
+                    el.classList.add('bg-light');
+                }
+            });
+
+            recalcular();
+        }
+
+       
+        function msEngancharEventos() {
             const ddlUnidades = document.getElementById('<%= ddlUnidades.ClientID %>');
-            if (ddlUnidades) {
+            if (ddlUnidades && !ddlUnidades.dataset.msWired) {
+                ddlUnidades.dataset.msWired = '1';
                 ddlUnidades.addEventListener('change', generateContainerRows);
 
                 for (let i = 3; i <= 20; i++) {
@@ -685,12 +945,28 @@
                 generateContainerRows();
             }
 
+            const ddlMoneda = document.getElementById('<%= ddlMoneda.ClientID %>');
+            if (ddlMoneda && !ddlMoneda.dataset.msWired) {
+                ddlMoneda.dataset.msWired = '1';
+                ddlMoneda.addEventListener('change', function () {
+                    toggleMXNColumns(this.value === '1');
+                    msRecalcularTodo();
+                });
+            }
 
-            document.getElementById('<%= ddlMoneda.ClientID %>').addEventListener('change', function () {
-                toggleMXNColumns(this.value === '1');
-            });
+            MS_BLOQUES.forEach(function (ids) { msEngancharPrima(ids); });
 
-        });
+            msEngancharCuotas();
+            msEngancharBuscador();
+
+            msRestaurarSecciones();
+        }
+
+        function pageLoad() {
+            msEngancharEventos();
+        }
+
+        document.addEventListener('DOMContentLoaded', msEngancharEventos);
 
         function toggleMXNColumns(showMXN) {
             const elements = document.querySelectorAll('.col-tc, .col-prima-mn');

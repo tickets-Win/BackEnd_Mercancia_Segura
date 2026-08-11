@@ -237,6 +237,32 @@ Module DropdownHelpers
         ddlProducto.DataValueField = "ProductoId"
         ddlProducto.DataBind()
     End Sub
+    Public Sub CargarClasificacion(ddlClasificacion As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim clasificacion As String = api.GetClasificacion()
+
+        Dim listaClasificacion As List(Of Clasificacion) = JsonConvert.DeserializeObject(Of List(Of Clasificacion))(clasificacion)
+
+        ddlClasificacion.DataSource = listaClasificacion
+        ddlClasificacion.DataTextField = "Nombre"
+        ddlClasificacion.DataValueField = "ClasificacionId"
+        ddlClasificacion.DataBind()
+        ddlClasificacion.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
+    End Sub
+    Public Sub CargarTransito(ddlTransito As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim transito As String = api.GetTransito()
+
+        Dim listaTransito As List(Of Transito) = JsonConvert.DeserializeObject(Of List(Of Transito))(transito)
+
+        ddlTransito.DataSource = listaTransito
+        ddlTransito.DataTextField = "Nombre"
+        ddlTransito.DataValueField = "TransitoId"
+        ddlTransito.DataBind()
+        ddlTransito.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
+    End Sub
     Public Sub CargarBeneficiario(ddlBeneficiario As DropDownList)
         Dim api As New ConsumoApi()
         Dim beneficiarios As String = api.GetCargarBeneficiarios()

@@ -108,11 +108,126 @@ Public Class AdminGestionPolizas
         Dim api As New ConsumoApi
         Dim cargarPolizas As String = api.GetCargarPolizas()
 
-        Dim lstPolizas As List(Of Poliza) = JsonConvert.DeserializeObject(Of List(Of Poliza))(cargarPolizas)
+        Dim lstPolizas As New List(Of Poliza)
+
+        If Not String.IsNullOrWhiteSpace(cargarPolizas) AndAlso
+           cargarPolizas <> "null" AndAlso
+           Not cargarPolizas.StartsWith("ERROR") Then
+
+            lstPolizas = JsonConvert.DeserializeObject(Of List(Of Poliza))(cargarPolizas)
+            If lstPolizas Is Nothing Then lstPolizas = New List(Of Poliza)
+        End If
+
+        ' Los filtros viven aquí y no en sus eventos, para que la paginación no
+        ' los pierda al cambiar de página.
+        Dim busqueda As String = txtBuscarPolizas.Text.Trim()
+
+        If busqueda.Length > 0 Then
+            lstPolizas = lstPolizas.
+                Where(Function(p) Contiene(p.NumeroPoliza, busqueda) OrElse
+                                  Contiene(p.nombreAseguradora, busqueda) OrElse
+                                  Contiene(p.nombreContratante, busqueda) OrElse
+                                  Contiene(p.FolioPoliza, busqueda)).
+                ToList()
+        End If
+
+        lstPolizas = AplicarFiltroPeriodo(lstPolizas)
+
+        Dim ultimaPagina As Integer = 0
+
+        If lstPolizas.Count > 0 Then
+            ultimaPagina = CInt(Math.Ceiling(lstPolizas.Count / CDbl(gvPolizas.PageSize))) - 1
+        End If
+
+        If gvPolizas.PageIndex > ultimaPagina Then
+            gvPolizas.PageIndex = ultimaPagina
+        End If
 
         gvPolizas.DataSource = lstPolizas
         gvPolizas.DataBind()
     End Sub
+
+    Protected Sub txtBuscarPolizas_TextChanged(sender As Object, e As EventArgs)
+        ' Una búsqueda nueva siempre arranca en la primera página.
+        gvPolizas.PageIndex = 0
+
+        cargarPolizas()
+    End Sub
+
+    Protected Sub ddlTipoPolizas_SelectedIndexChanged(sender As Object, e As EventArgs)
+        gvPolizas.PageIndex = 0
+
+        cargarPolizas()
+    End Sub
+
+    Protected Sub gvPolizas_RowDataBound(sender As Object, e As GridViewRowEventArgs)
+        If e.Row.RowType <> DataControlRowType.DataRow Then Exit Sub
+
+        RegistrarPostbackCompleto(e.Row)
+    End Sub
+
+    ''' <summary>
+    ''' Los botones de la tabla muestran pnlFormularioPolizas, que vive fuera del
+    ''' UpdatePanel del listado. Con un postback parcial esos cambios de visibilidad
+    ''' no llegan al navegador y la pantalla queda en blanco, así que se fuerzan a
+    ''' postback completo. Al estar dentro de una plantilla del GridView no se
+    ''' pueden declarar como PostBackTrigger por ID.
+    ''' </summary>
+    Private Sub RegistrarPostbackCompleto(contenedor As Control)
+        Dim sm As ScriptManager = ScriptManager.GetCurrent(Page)
+
+        If sm Is Nothing Then Exit Sub
+
+        For Each ctl As Control In contenedor.Controls
+            If TypeOf ctl Is IButtonControl Then sm.RegisterPostBackControl(ctl)
+
+            If ctl.HasControls() Then RegistrarPostbackCompleto(ctl)
+        Next
+    End Sub
+
+    ''' <summary>
+    ''' Filtro del combo de periodo. Las fechas se comparan contra FechaRegistro,
+    ''' que es cuando se dio de alta la póliza.
+    ''' </summary>
+    Private Function AplicarFiltroPeriodo(lista As List(Of Poliza)) As List(Of Poliza)
+
+        Dim filtro As Integer
+        Integer.TryParse(ddlTipoPolizas.SelectedValue, filtro)
+
+        Select Case filtro
+
+            Case 1 ' Hoy
+                Return lista.Where(Function(p) p.FechaRegistro.Date = Date.Today).ToList()
+
+            Case 2 ' Mes actual
+                Return lista.Where(Function(p) EsDelMismoMes(p.FechaRegistro, Date.Today)).ToList()
+
+            Case 3 ' Mes anterior
+                Return lista.Where(Function(p) EsDelMismoMes(p.FechaRegistro, Date.Today.AddMonths(-1))).ToList()
+
+                ' No hay opción "Canceladas": el endpoint del API filtra las pólizas
+                ' con FechaBaja, así que nunca llegan a esta lista.
+
+            Case Else ' Todos
+                Return lista
+
+        End Select
+    End Function
+
+    Private Function EsDelMismoMes(fecha As DateTime, referencia As DateTime) As Boolean
+        Return fecha.Year = referencia.Year AndAlso fecha.Month = referencia.Month
+    End Function
+
+    ''' <summary>
+    ''' Búsqueda parcial que ignora mayúsculas y acentos, y tolera nulos.
+    ''' </summary>
+    Private Function Contiene(valor As String, busqueda As String) As Boolean
+        If String.IsNullOrEmpty(valor) Then Return False
+
+        Return Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(
+            valor, busqueda,
+            Globalization.CompareOptions.IgnoreCase Or Globalization.CompareOptions.IgnoreNonSpace) >= 0
+    End Function
 
     Protected Sub gvPolizas_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
         gvPolizas.PageIndex = e.NewPageIndex

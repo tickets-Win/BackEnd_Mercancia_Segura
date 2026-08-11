@@ -130,11 +130,52 @@ Public Class AdminVendedor
         Dim api As New ConsumoApi()
         Dim cargarVendedores As String = api.GetCargarVendedores()
 
-        Dim listavendedores As List(Of Vendedor) = JsonConvert.DeserializeObject(Of List(Of Vendedor))(cargarVendedores)
+        Dim listavendedores As New List(Of Vendedor)
+
+        If Not String.IsNullOrWhiteSpace(cargarVendedores) AndAlso
+           cargarVendedores <> "null" AndAlso
+           Not cargarVendedores.StartsWith("ERROR") Then
+
+            listavendedores = JsonConvert.DeserializeObject(Of List(Of Vendedor))(cargarVendedores)
+            If listavendedores Is Nothing Then listavendedores = New List(Of Vendedor)
+        End If
+
+        ' El filtro vive aquí y no en el TextChanged, para que la paginación no
+        ' pierda la búsqueda al cambiar de página.
+        Dim busqueda As String = txtBuscarVendedor.Text.Trim()
+
+        If busqueda.Length > 0 Then
+            listavendedores = listavendedores.
+                Where(Function(v) Contiene(v.NombreCompleto, busqueda) OrElse
+                                  Contiene(v.Rfc, busqueda) OrElse
+                                  Contiene(v.Clave, busqueda)).
+                ToList()
+        End If
+
+        Dim ultimaPagina As Integer = 0
+
+        If listavendedores.Count > 0 Then
+            ultimaPagina = CInt(Math.Ceiling(listavendedores.Count / CDbl(gvVendedores.PageSize))) - 1
+        End If
+
+        If gvVendedores.PageIndex > ultimaPagina Then
+            gvVendedores.PageIndex = ultimaPagina
+        End If
 
         gvVendedores.DataSource = listavendedores
         gvVendedores.DataBind()
     End Sub
+
+    ''' <summary>
+    ''' Búsqueda parcial que ignora mayúsculas y acentos, y tolera nulos.
+    ''' </summary>
+    Private Function Contiene(valor As String, busqueda As String) As Boolean
+        If String.IsNullOrEmpty(valor) Then Return False
+
+        Return Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(
+            valor, busqueda,
+            Globalization.CompareOptions.IgnoreCase Or Globalization.CompareOptions.IgnoreNonSpace) >= 0
+    End Function
 
     Protected Sub gvVendedores_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
         gvVendedores.PageIndex = e.NewPageIndex
@@ -260,20 +301,35 @@ Public Class AdminVendedor
     End Sub
 
     Protected Sub txtBuscarVendedor_TextChanged(sender As Object, e As EventArgs)
-        Dim api As New ConsumoApi()
-        Dim json As String = api.GetCargarVendedores()
+        ' Una búsqueda nueva siempre arranca en la primera página.
+        gvVendedores.PageIndex = 0
 
-        Dim lista As List(Of Vendedor) =
-        JsonConvert.DeserializeObject(Of List(Of Vendedor))(json)
+        CargarVendedores()
+    End Sub
 
-        Dim texto As String = txtBuscarVendedor.Text.Trim().ToLower()
+    Protected Sub gvVendedores_RowDataBound(sender As Object, e As GridViewRowEventArgs)
+        If e.Row.RowType <> DataControlRowType.DataRow Then Exit Sub
 
-        Dim filtrados = lista.Where(Function(v) _
-            v.NombreCompleto.ToLower().Contains(texto) OrElse
-            v.Rfc.ToLower().Contains(texto)).ToList()
+        RegistrarPostbackCompleto(e.Row)
+    End Sub
 
-        gvVendedores.DataSource = filtrados
-        gvVendedores.DataBind()
+    ''' <summary>
+    ''' Los botones de la tabla muestran pnlFormularioVendedor, que vive fuera del
+    ''' UpdatePanel del listado. Con un postback parcial esos cambios de visibilidad
+    ''' no llegan al navegador y la pantalla queda en blanco, así que se fuerzan a
+    ''' postback completo. Al estar dentro de una plantilla del GridView no se
+    ''' pueden declarar como PostBackTrigger por ID.
+    ''' </summary>
+    Private Sub RegistrarPostbackCompleto(contenedor As Control)
+        Dim sm As ScriptManager = ScriptManager.GetCurrent(Page)
+
+        If sm Is Nothing Then Exit Sub
+
+        For Each ctl As Control In contenedor.Controls
+            If TypeOf ctl Is IButtonControl Then sm.RegisterPostBackControl(ctl)
+
+            If ctl.HasControls() Then RegistrarPostbackCompleto(ctl)
+        Next
     End Sub
 
     Protected Sub ddlTipoEstatusCliente_SelectedIndexChanged(sender As Object, e As EventArgs)

@@ -4,73 +4,91 @@
     <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <asp:Panel ID="PnlEncabezado" runat="server">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Vendedor</h2>
-            <asp:Button ID="btnAgregarVendedor" runat="server" CssClass="btn btn-primary btn-add"
-                Text="Agregar Vendedor" OnClick="btnAgregarVendedor_Click" />
-        </div>
-        <div class="mb-4">
-            <asp:TextBox ID="txtBuscarVendedor" runat="server" CssClass="form-control"
-                placeholder="🔍 Buscar vendedores..." AutoPostBack="true" OnTextChanged="txtBuscarVendedor_TextChanged"></asp:TextBox>
-        </div>
-        <div class="d-flex justify-content-left mb-4">
-            <label for="ddlTipoEstatusCliente" class="form-label visually-hidden">Filtrar</label>
-            <asp:DropDownList ID="ddlTipoEstatusCliente" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoEstatusCliente_SelectedIndexChanged">
-                <asp:ListItem Text="-- Todos --" Value="0" />
-                <asp:ListItem Text="Activo" Value="1" />
-                <asp:ListItem Text="Suspendido" Value="2" />
-            </asp:DropDownList>
-        </div>
-    </asp:Panel>
-    <asp:Panel ID="PnlTabla" runat="server">
-        <div class="card card-shadow p-4 mb-4">
-            <div style="overflow-x: auto; width: 100%;">
-                <asp:GridView ID="gvVendedores" runat="server"
-                    CssClass="table table-hover align-middle"
-                    AutoGenerateColumns="False"
-                    OnRowCommand="gvVendedores_RowCommand"
-                    HeaderStyle-CssClass="table-light"
-                    DataKeyNames="VendedorId"
-                    AllowPaging="True"
-                    PageSize="10"
-                    OnPageIndexChanging="gvVendedores_PageIndexChanging">
-                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
-                    <Columns>
-                        <asp:BoundField DataField="Clave" HeaderText="Clave" />
-                        <asp:TemplateField HeaderText="Estatus">
-                            <ItemTemplate>
-                                <%# If(Eval("Estatus"), "Activo", "Suspendido") %>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                        <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
-                        <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
-                        <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
+    <%-- Encabezado y tabla juntos en una region AJAX: el buscador filtra conforme
+         se escribe y solo se repinta el listado. Van juntos porque su Visible
+         cambia en bloque al abrir el formulario. --%>
+    <asp:UpdatePanel ID="UpListado" runat="server" UpdateMode="Always">
+        <ContentTemplate>
+            <asp:Panel ID="PnlEncabezado" runat="server">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Vendedor</h2>
+                    <asp:Button ID="btnAgregarVendedor" runat="server" CssClass="btn btn-primary btn-add"
+                        Text="Agregar Vendedor" OnClick="btnAgregarVendedor_Click" />
+                </div>
+                <div class="mb-4">
+                    <asp:TextBox ID="txtBuscarVendedor" runat="server" CssClass="form-control"
+                        placeholder="🔍 Buscar vendedores..." AutoPostBack="true" OnTextChanged="txtBuscarVendedor_TextChanged"></asp:TextBox>
+                </div>
+                <div class="d-flex justify-content-left mb-4">
+                    <label for="ddlTipoEstatusCliente" class="form-label visually-hidden">Filtrar</label>
+                    <asp:DropDownList ID="ddlTipoEstatusCliente" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoEstatusCliente_SelectedIndexChanged">
+                        <asp:ListItem Text="-- Todos --" Value="0" />
+                        <asp:ListItem Text="Activo" Value="1" />
+                        <asp:ListItem Text="Suspendido" Value="2" />
+                    </asp:DropDownList>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="PnlTabla" runat="server">
+                <div class="card card-shadow p-4 mb-4">
+                    <div style="overflow-x: auto; width: 100%;">
+                        <asp:GridView ID="gvVendedores" runat="server"
+                            CssClass="table table-hover align-middle"
+                            AutoGenerateColumns="False"
+                            OnRowCommand="gvVendedores_RowCommand"
+                            HeaderStyle-CssClass="table-light"
+                            DataKeyNames="VendedorId"
+                            AllowPaging="True"
+                            PageSize="10"
+                            OnPageIndexChanging="gvVendedores_PageIndexChanging"
+                            OnRowDataBound="gvVendedores_RowDataBound">
+                            <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                            <Columns>
+                                <asp:BoundField DataField="Clave" HeaderText="Clave" />
+                                <asp:TemplateField HeaderText="Estatus">
+                                    <ItemTemplate>
+                                        <%# If(Eval("Estatus"), "Activo", "Suspendido") %>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
+                                <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
+                                <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
 
-                        <asp:TemplateField HeaderText="Acciones">
-                            <ItemTemplate>
-                                <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("VendedorId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Editar">
+                                <asp:TemplateField HeaderText="Acciones">
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("VendedorId") %>'
+                                            CssClass="icon-btn action-icon" ToolTip="Editar">
                                 <i class="bi bi-pencil"></i>
-                                </asp:LinkButton>
+                                        </asp:LinkButton>
 
-                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("VendedorId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Eliminar"
-                                    OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
+                                        <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("VendedorId") %>'
+                                            CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                            OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
                                 <i class="bi bi-trash"></i>
-                                </asp:LinkButton>
+                                        </asp:LinkButton>
 
-                                <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("VendedorId") %>'
-                                    CssClass="icon-btn" ToolTip="Enviar correo">
+                                        <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("VendedorId") %>'
+                                            CssClass="icon-btn" ToolTip="Enviar correo">
                                 <i class="bi bi-envelope"></i>
-                                </asp:LinkButton>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
-            </div>
-        </div>
-    </asp:Panel>
+                                        </asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                            <EmptyDataTemplate>
+                                <div class="text-muted py-3">No se encontraron vendedores con ese criterio.</div>
+                            </EmptyDataTemplate>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+        </ContentTemplate>
+        <Triggers>
+            <%-- Agregar muestra pnlFormularioVendedor, que vive FUERA de este
+                 UpdatePanel: con postback parcial ese cambio no llegaria al
+                 navegador y la pantalla quedaria en blanco. Los botones de la
+                 tabla se registran en gvVendedores_RowDataBound por lo mismo. --%>
+            <asp:PostBackTrigger ControlID="btnAgregarVendedor" />
+        </Triggers>
+    </asp:UpdatePanel>
 
     <!-- FORMULARIO DE REGISTRO / EDICIÓN DE VENDEDOR -->
     <asp:Panel ID="pnlFormularioVendedor" runat="server" CssClass="card p-4 mt-4" Visible="false">
@@ -428,6 +446,11 @@
 
             });
 
+        });
+
+        // Buscador incremental. El helper vive en Default.Master.
+        document.addEventListener('DOMContentLoaded', function () {
+            msBuscadorIncremental('<%= txtBuscarVendedor.ClientID %>', '<%= txtBuscarVendedor.UniqueID %>', 400);
         });
     </script>
 </asp:Content>

@@ -61,6 +61,59 @@
             font-weight: 500;
         }
     </style>
+    <script>
+        // Convierte un cuadro de texto con AutoPostBack en un buscador incremental.
+        // Espera a que el usuario deje de teclear antes de ir al servidor, para no
+        // lanzar una consulta por cada letra, y le devuelve el foco cuando el
+        // UpdatePanel vuelve a pintar el control.
+        //
+        // El filtrado se queda en el servidor a proposito: filtrar en el navegador
+        // solo alcanzaria las filas de la pagina visible del GridView.
+        //
+        // Se define en el encabezado a proposito: las pantallas lo invocan desde
+        // sus propios scripts, que el navegador ejecuta antes de llegar al final
+        // del documento. Cada pantalla debe llamarlo dentro de DOMContentLoaded,
+        // para que el cuadro de texto y el objeto Sys del ScriptManager existan.
+        function msBuscadorIncremental(clientId, uniqueId, retraso) {
+            var timer = null;
+            var enfocar = false;
+
+            function enganchar() {
+                var el = document.getElementById(clientId);
+                if (!el || el.dataset.msBuscador) { return; }
+                el.dataset.msBuscador = '1';
+
+                el.addEventListener('input', function () {
+                    clearTimeout(timer);
+                    enfocar = true;
+
+                    timer = setTimeout(function () {
+                        __doPostBack(uniqueId, '');
+                    }, retraso || 400);
+                });
+            }
+
+            enganchar();
+
+            if (typeof Sys !== 'undefined' && Sys.WebForms) {
+                Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
+                    // El control es un nodo nuevo tras el postback parcial.
+                    enganchar();
+
+                    if (!enfocar) { return; }
+
+                    var el = document.getElementById(clientId);
+                    if (!el) { return; }
+
+                    el.focus();
+
+                    var valor = el.value;
+                    el.value = '';
+                    el.value = valor;
+                });
+            }
+        }
+    </script>
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 </head>
@@ -122,7 +175,7 @@
                         </asp:HyperLink>
                     </li>
                     <li class="nav-item">
-                        <asp:HyperLink ID="hlCobranza" runat="server" NavigateUrl="~/Views/General/AdminPortabilidad.aspx" CssClass="nav-link text-dark">
+                        <asp:HyperLink ID="hlCobranza" runat="server" NavigateUrl="~/Views/General/AdminCobranza.aspx" CssClass="nav-link text-dark">
                    <i class="bi bi-cash-coin me-2"></i>Cobranza
                         </asp:HyperLink>
                     </li>

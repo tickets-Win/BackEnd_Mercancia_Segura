@@ -21,20 +21,35 @@ Public Class AdminBeneficiarios
     End Sub
 
     Protected Sub txtBuscarBeneficiarios_TextChanged(sender As Object, e As EventArgs)
-        Dim api As New ConsumoApi()
-        Dim json As String = api.GetCargarBeneficiarios()
+        ' Una búsqueda nueva siempre arranca en la primera página.
+        gvBeneficiariosPreferentes.PageIndex = 0
 
-        Dim lista As List(Of BeneficiarioPreferente) =
-        JsonConvert.DeserializeObject(Of List(Of BeneficiarioPreferente))(json)
+        CargarBeneficiarios()
+    End Sub
 
-        Dim texto As String = txtBuscarBeneficiarios.Text.Trim().ToLower()
+    Protected Sub gvBeneficiariosPreferentes_RowDataBound(sender As Object, e As GridViewRowEventArgs)
+        If e.Row.RowType <> DataControlRowType.DataRow Then Exit Sub
 
-        Dim filtrados = lista.Where(Function(v) _
-            v.NombreCompleto.ToLower().Contains(texto) OrElse
-            v.Rfc.ToLower().Contains(texto)).ToList()
+        RegistrarPostbackCompleto(e.Row)
+    End Sub
 
-        gvBeneficiariosPreferentes.DataSource = filtrados
-        gvBeneficiariosPreferentes.DataBind()
+    ''' <summary>
+    ''' Los botones de la tabla muestran pnlFormularioBeneficiario, que vive fuera
+    ''' del UpdatePanel del listado. Con un postback parcial esos cambios de
+    ''' visibilidad no llegan al navegador y la pantalla queda en blanco, así que se
+    ''' fuerzan a postback completo. Al estar dentro de una plantilla del GridView
+    ''' no se pueden declarar como PostBackTrigger por ID.
+    ''' </summary>
+    Private Sub RegistrarPostbackCompleto(contenedor As Control)
+        Dim sm As ScriptManager = ScriptManager.GetCurrent(Page)
+
+        If sm Is Nothing Then Exit Sub
+
+        For Each ctl As Control In contenedor.Controls
+            If TypeOf ctl Is IButtonControl Then sm.RegisterPostBackControl(ctl)
+
+            If ctl.HasControls() Then RegistrarPostbackCompleto(ctl)
+        Next
     End Sub
 
     Protected Sub ddlTipoPersona_SelectedIndexChanged(sender As Object, e As EventArgs)
@@ -98,11 +113,51 @@ Public Class AdminBeneficiarios
         Dim api As New ConsumoApi
         Dim cargarBeneficiarios As String = api.GetCargarBeneficiarios()
 
-        Dim listaBeneficiarios As List(Of BeneficiarioPreferente) = JsonConvert.DeserializeObject(Of List(Of BeneficiarioPreferente))(cargarBeneficiarios)
+        Dim listaBeneficiarios As New List(Of BeneficiarioPreferente)
+
+        If Not String.IsNullOrWhiteSpace(cargarBeneficiarios) AndAlso
+           cargarBeneficiarios <> "null" AndAlso
+           Not cargarBeneficiarios.StartsWith("ERROR") Then
+
+            listaBeneficiarios = JsonConvert.DeserializeObject(Of List(Of BeneficiarioPreferente))(cargarBeneficiarios)
+            If listaBeneficiarios Is Nothing Then listaBeneficiarios = New List(Of BeneficiarioPreferente)
+        End If
+
+        ' El filtro vive aquí y no en el TextChanged, para que la paginación no
+        ' pierda la búsqueda al cambiar de página.
+        Dim busqueda As String = txtBuscarBeneficiarios.Text.Trim()
+
+        If busqueda.Length > 0 Then
+            listaBeneficiarios = listaBeneficiarios.
+                Where(Function(b) Contiene(b.NombreCompleto, busqueda) OrElse
+                                  Contiene(b.Rfc, busqueda)).
+                ToList()
+        End If
+
+        Dim ultimaPagina As Integer = 0
+
+        If listaBeneficiarios.Count > 0 Then
+            ultimaPagina = CInt(Math.Ceiling(listaBeneficiarios.Count / CDbl(gvBeneficiariosPreferentes.PageSize))) - 1
+        End If
+
+        If gvBeneficiariosPreferentes.PageIndex > ultimaPagina Then
+            gvBeneficiariosPreferentes.PageIndex = ultimaPagina
+        End If
 
         gvBeneficiariosPreferentes.DataSource = listaBeneficiarios
         gvBeneficiariosPreferentes.DataBind()
     End Sub
+
+    ''' <summary>
+    ''' Búsqueda parcial que ignora mayúsculas y acentos, y tolera nulos.
+    ''' </summary>
+    Private Function Contiene(valor As String, busqueda As String) As Boolean
+        If String.IsNullOrEmpty(valor) Then Return False
+
+        Return Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(
+            valor, busqueda,
+            Globalization.CompareOptions.IgnoreCase Or Globalization.CompareOptions.IgnoreNonSpace) >= 0
+    End Function
 
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
         Dim api As New ConsumoApi()

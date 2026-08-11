@@ -3,9 +3,10 @@
         Public Property CotizacionMercanciaId As Integer
         Public Property CotizacionId As Integer
         Public Property CotizacionCliente As String
-        Public Property Transito As String
+        Public Property TransitoId As Integer?
         Public Property ClasificacionId As Integer
         Public Property SubClasificacion As String
+        Public Property DescripcionMercancia As String
         Public Property TipoEmpaque As String
         Public Property Origen As String
         Public Property Destino As String

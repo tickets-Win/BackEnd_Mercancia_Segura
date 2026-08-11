@@ -14,6 +14,15 @@ Option Explicit On
 Partial Public Class AdminCotizaciones
 
     '''<summary>
+    '''Control UpListado.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpListado As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control pnlEncabezado.
     '''</summary>
     '''<remarks>
@@ -68,6 +77,15 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents gvCotizaciones As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
+    '''Control UpFormularioCotizacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpFormularioCotizacion As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control pnlFormularioCotizaciones.
     '''</summary>
     '''<remarks>
@@ -75,6 +93,15 @@ Partial Public Class AdminCotizaciones
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents pnlFormularioCotizaciones As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control hfCotizacionId.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfCotizacionId As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
     '''Control lblMensaje.
@@ -329,6 +356,15 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents btnAgregarCobertura As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
+    '''Control GvCoberturasCotizacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvCoberturasCotizacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
     '''Control pnlBienesAsegurados.
     '''</summary>
     '''<remarks>
@@ -354,6 +390,15 @@ Partial Public Class AdminCotizaciones
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnbienesasegurados As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control GvBienesCotizacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvBienesCotizacion As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
     '''Control pnlMedidasSeguridad.

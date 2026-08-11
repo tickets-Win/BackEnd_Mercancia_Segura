@@ -2,6 +2,7 @@
     Public Class Cotizacion
         Public Property CotizacionId As Integer
         Public Property PolizaId As Integer
+        Public Property NumeroPoliza As String
         Public Property FechaCotizacion As DateTime
         Public Property ClienteId As Integer
         Public Property nombreCliente As String

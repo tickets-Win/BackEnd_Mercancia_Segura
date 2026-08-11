@@ -116,7 +116,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 TipoContenedorId = c.TipoContenedorId,
                 TipoContenedorNombre = c.TipoContenedor?.Nombre,
 
-                NumeroContenedor = c.NumeroContenedor?.ToString(),
+                NumeroContenedor = c.NumeroContenedor,
 
                 Cuota = c.Cuota,
                 LR = c.LR,

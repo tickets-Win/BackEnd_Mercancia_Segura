@@ -7,74 +7,93 @@
     <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <asp:Panel ID="pnlEncabezado" runat="server">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Gestión de Pólizas</h2>
-            <asp:Button ID="btnAgregarPoliza" runat="server" CssClass="btn btn-primary btn-add"
-                Text="Agregar Póliza" OnClick="btnAgregarPoliza_Click" />
-        </div>
-        <div class="mb-4">
-            <asp:TextBox ID="txtBuscarPolizas" runat="server" CssClass="form-control"
-                placeholder="🔍 Buscar pólizas..."></asp:TextBox>
-        </div>
-        <div class="d-flex justify-content-left mb-4">
-            <label for="ddlTipoPolizas" class="form-label visually-hidden">Filtrar</label>
-            <asp:DropDownList ID="ddlTipoPolizas" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto">
-                <asp:ListItem Text="-- Todos --" Value="0" />
-                <asp:ListItem Text="Hoy" Value="1" />
-                <asp:ListItem Text="Mes actual" Value="2" />
-                <asp:ListItem Text="Mes anterior" Value="3" />
-                <asp:ListItem Text="Canceladas" Value="4" />
-            </asp:DropDownList>
-        </div>
-    </asp:Panel>
+    <%-- Encabezado y tabla juntos en una region AJAX: el buscador filtra conforme
+         se escribe y solo se repinta el listado. Van juntos porque su Visible
+         cambia en bloque al abrir el formulario. --%>
+    <asp:UpdatePanel ID="UpListado" runat="server" UpdateMode="Always">
+        <ContentTemplate>
+            <asp:Panel ID="pnlEncabezado" runat="server">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Gestión de Pólizas</h2>
+                    <asp:Button ID="btnAgregarPoliza" runat="server" CssClass="btn btn-primary btn-add"
+                        Text="Agregar Póliza" OnClick="btnAgregarPoliza_Click" />
+                </div>
+                <div class="mb-4">
+                    <asp:TextBox ID="txtBuscarPolizas" runat="server" CssClass="form-control"
+                        placeholder="🔍 Buscar por póliza..."
+                        AutoPostBack="True" OnTextChanged="txtBuscarPolizas_TextChanged"></asp:TextBox>
+                </div>
+                <div class="d-flex justify-content-left mb-4">
+                    <label for="ddlTipoPolizas" class="form-label visually-hidden">Filtrar</label>
+                    <asp:DropDownList ID="ddlTipoPolizas" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto"
+                        AutoPostBack="True" OnSelectedIndexChanged="ddlTipoPolizas_SelectedIndexChanged">
+                        <asp:ListItem Text="-- Todos --" Value="0" />
+                        <asp:ListItem Text="Hoy" Value="1" />
+                        <asp:ListItem Text="Mes actual" Value="2" />
+                        <asp:ListItem Text="Mes anterior" Value="3" />
+                    </asp:DropDownList>
+                </div>
+            </asp:Panel>
 
-    <asp:Panel ID="PnlTabla" runat="server">
-        <div class="card card-shadow p-4 mb-4">
-            <div style="overflow-x: auto; width: 100%;">
-                <asp:GridView ID="gvPolizas" runat="server" Style="min-width: 1200px; white-space: nowrap;"
-                    CssClass="table table-hover align-middle"
-                    AutoGenerateColumns="False"
-                    OnRowCommand="gvPolizas_RowCommand"
-                    HeaderStyle-CssClass="table-light"
-                    DataKeyNames="PolizaId"
-                    AllowPaging="True"
-                    PageSize="10"
-                    OnPageIndexChanging="gvPolizas_PageIndexChanging">
-                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
-                    <Columns>
-                        <asp:BoundField DataField="nombreAseguradora" HeaderText="Aseguradora" />
-                        <asp:BoundField DataField="NumeroPoliza" HeaderText="N° Póliza" />
-                        <asp:BoundField DataField="nombreContratante" HeaderText="Contratante" />
-                        <asp:BoundField DataField="VigenciaDel" HeaderText="Vigencia del" DataFormatString="{0:dd/MM/yyyy}" />
-                        <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia hasta" DataFormatString="{0:dd/MM/yyyy}" />
-                        <asp:BoundField DataField="nombreEstatusPoliza" HeaderText="Estatus" />
-                        <asp:BoundField DataField="nombreMoneda" HeaderText="Moneda" />
+            <asp:Panel ID="PnlTabla" runat="server">
+                <div class="card card-shadow p-4 mb-4">
+                    <div style="overflow-x: auto; width: 100%;">
+                        <asp:GridView ID="gvPolizas" runat="server" Style="min-width: 1200px; white-space: nowrap;"
+                            CssClass="table table-hover align-middle"
+                            AutoGenerateColumns="False"
+                            OnRowCommand="gvPolizas_RowCommand"
+                            HeaderStyle-CssClass="table-light"
+                            DataKeyNames="PolizaId"
+                            AllowPaging="True"
+                            PageSize="10"
+                            OnPageIndexChanging="gvPolizas_PageIndexChanging"
+                            OnRowDataBound="gvPolizas_RowDataBound">
+                            <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                            <Columns>
+                                <asp:BoundField DataField="nombreAseguradora" HeaderText="Aseguradora" />
+                                <asp:BoundField DataField="NumeroPoliza" HeaderText="N° Póliza" />
+                                <asp:BoundField DataField="nombreContratante" HeaderText="Contratante" />
+                                <asp:BoundField DataField="VigenciaDel" HeaderText="Vigencia del" DataFormatString="{0:dd/MM/yyyy}" />
+                                <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia hasta" DataFormatString="{0:dd/MM/yyyy}" />
+                                <asp:BoundField DataField="nombreEstatusPoliza" HeaderText="Estatus" />
+                                <asp:BoundField DataField="nombreMoneda" HeaderText="Moneda" />
 
-                        <asp:TemplateField HeaderText="Acciones">
-                            <ItemTemplate>
-                                <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("PolizaId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Editar">
+                                <asp:TemplateField HeaderText="Acciones">
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("PolizaId") %>'
+                                            CssClass="icon-btn action-icon" ToolTip="Editar">
           <i class="bi bi-pencil"></i>
-                                </asp:LinkButton>
+                                        </asp:LinkButton>
 
-                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("PolizaId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Eliminar"
-                                    OnClientClick="return confirm('¿Seguro que deseas eliminar esta póliza?');">
+                                        <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("PolizaId") %>'
+                                            CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                            OnClientClick="return confirm('¿Seguro que deseas eliminar esta póliza?');">
           <i class="bi bi-trash"></i>
-                                </asp:LinkButton>
+                                        </asp:LinkButton>
 
-                                <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("PolizaId") %>'
-                                    CssClass="icon-btn" ToolTip="Enviar correo">
+                                        <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("PolizaId") %>'
+                                            CssClass="icon-btn" ToolTip="Enviar correo">
           <i class="bi bi-envelope"></i>
-                                </asp:LinkButton>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
-            </div>
-        </div>
-    </asp:Panel>
+                                        </asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                            <EmptyDataTemplate>
+                                <div class="text-muted py-3">No se encontraron pólizas con ese criterio.</div>
+                            </EmptyDataTemplate>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+        </ContentTemplate>
+        <Triggers>
+            <%-- Agregar muestra pnlFormularioPolizas, que vive FUERA de este
+                 UpdatePanel: con postback parcial ese cambio no llegaria al
+                 navegador y la pantalla quedaria en blanco. Los botones de la
+                 tabla se registran en gvPolizas_RowDataBound por lo mismo. --%>
+            <asp:PostBackTrigger ControlID="btnAgregarPoliza" />
+        </Triggers>
+    </asp:UpdatePanel>
     <asp:Panel ID="pnlFormularioPolizas" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <asp:HiddenField ID="hfPolizaId" runat="server" />
@@ -2096,6 +2115,11 @@ Eliminar
                 toggleCard(); // estado inicial
             });
 
+        });
+
+        // Buscador incremental. El helper vive en Default.Master.
+        document.addEventListener('DOMContentLoaded', function () {
+            msBuscadorIncremental('<%= txtBuscarPolizas.ClientID %>', '<%= txtBuscarPolizas.UniqueID %>', 400);
         });
     </script>
 </asp:Content>

@@ -102,6 +102,12 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    ''' <summary>
+    ''' A diferencia del resto de los Post de esta clase, este sí revisa el código
+    ''' HTTP. El API responde los errores de validación en texto plano
+    ''' (ej. "Debe enviar mercancía o contenedor"), que no se pueden distinguir de
+    ''' una respuesta correcta buscando palabras en el cuerpo.
+    ''' </summary>
     Public Function PostCotizacion(body As String) As String
         Try
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
@@ -112,7 +118,13 @@ Public Class ConsumoApi
                 Dim response As HttpResponseMessage =
                     client.PostAsync(ConfigurationManager.AppSettings("Cotizacion"), content).Result
 
-                Return response.Content.ReadAsStringAsync().Result
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
             End Using
 
         Catch ex As Exception
@@ -418,6 +430,20 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function GetCotizacionId(cotizacionId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = $"{ConfigurationManager.AppSettings("ConsultarCotizacionId")}/{cotizacionId}"
+                Dim response As HttpResponseMessage = client.GetAsync(url).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
     Public Function GetCargarBeneficiarios() As String
         Try
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
@@ -538,6 +564,36 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    Public Function GetClasificacion() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("Clasificacion")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetTransito() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("Transito")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
 #End Region
 
 #Region "PUT"
@@ -601,9 +657,60 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+    ''' <summary>
+    ''' Revisa el código HTTP, por la misma razón que PostCotizacion.
+    ''' </summary>
+    Public Function PutEditarCotizacion(cotizacionId As Integer, json As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = $"{ConfigurationManager.AppSettings("EditarCotizacion")}/{cotizacionId}"
+                Dim content As New StringContent(json, Encoding.UTF8, "application/json")
+                Dim response As HttpResponseMessage = client.PutAsync(url, content).Result
+
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
 #End Region
 
 #Region "DELETE"
+    ''' <summary>
+    ''' Baja lógica: el API no borra el renglón, le pone FechaCancelacion y deja de
+    ''' devolverla en el listado. Revisa el código HTTP porque los motivos de
+    ''' rechazo (ej. "La cotización ya está cancelada") vienen en el cuerpo.
+    ''' </summary>
+    Public Function DeleteCotizacion(cotizacionId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = $"{ConfigurationManager.AppSettings("EliminarCotizacion")}/{cotizacionId}"
+                Dim response As HttpResponseMessage = client.DeleteAsync(url).Result
+
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
     Public Function DeleteVendedores(vendedorId As Integer) As String
         Try
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12

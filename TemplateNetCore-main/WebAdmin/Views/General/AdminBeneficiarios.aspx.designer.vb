@@ -300,4 +300,13 @@ Partial Public Class AdminBeneficiarios
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtPoblacion As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control UpListado.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpListado As Global.System.Web.UI.UpdatePanel
 End Class

@@ -66,15 +66,67 @@ Public Class AdminCliente
         DropdownHelpers.CargarRegimenFiscal(ddlRegimenFiscal, tipoPersonaId)
     End Sub
 
+    ''' <summary>
+    ''' Carga el listado aplicando el buscador y el filtro de estatus. El filtro
+    ''' vive aquí para que la paginación no lo pierda al cambiar de página.
+    ''' </summary>
     Protected Sub cargarClientes()
         Dim api As New ConsumoApi()
         Dim cargarClientes As String = api.GetCargarClientes()
 
-        Dim listaClientes As List(Of Cliente) = JsonConvert.DeserializeObject(Of List(Of Cliente))(cargarClientes)
+        Dim listaClientes As New List(Of Cliente)
+
+        If Not String.IsNullOrWhiteSpace(cargarClientes) AndAlso
+           cargarClientes <> "null" AndAlso
+           Not cargarClientes.StartsWith("ERROR") Then
+
+            listaClientes = JsonConvert.DeserializeObject(Of List(Of Cliente))(cargarClientes)
+            If listaClientes Is Nothing Then listaClientes = New List(Of Cliente)
+        End If
+
+        Dim busqueda As String = txtBuscarCliente.Text.Trim()
+
+        Dim estatusSeleccionado As Integer
+        Integer.TryParse(ddlTipoEstatusCliente.SelectedValue, estatusSeleccionado)
+
+        If busqueda.Length > 0 Then
+            listaClientes = listaClientes.
+                Where(Function(c) Contiene(c.NombreCompleto, busqueda) OrElse
+                                  Contiene(c.Rfc, busqueda) OrElse
+                                  Contiene(c.Clave, busqueda)).
+                ToList()
+        End If
+
+        If estatusSeleccionado <> 0 Then
+            listaClientes = listaClientes.
+                Where(Function(c) c.EstatusId = estatusSeleccionado).
+                ToList()
+        End If
+
+        Dim ultimaPagina As Integer = 0
+
+        If listaClientes.Count > 0 Then
+            ultimaPagina = CInt(Math.Ceiling(listaClientes.Count / CDbl(gvClientes.PageSize))) - 1
+        End If
+
+        If gvClientes.PageIndex > ultimaPagina Then
+            gvClientes.PageIndex = ultimaPagina
+        End If
 
         gvClientes.DataSource = listaClientes
         gvClientes.DataBind()
     End Sub
+
+    ''' <summary>
+    ''' Búsqueda parcial que ignora mayúsculas y acentos, y tolera nulos.
+    ''' </summary>
+    Private Function Contiene(valor As String, busqueda As String) As Boolean
+        If String.IsNullOrEmpty(valor) Then Return False
+
+        Return Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(
+            valor, busqueda,
+            Globalization.CompareOptions.IgnoreCase Or Globalization.CompareOptions.IgnoreNonSpace) >= 0
+    End Function
     Protected Sub gvClientes_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Editar" Then
             Dim clienteId As Integer = Convert.ToInt32(e.CommandArgument)
@@ -784,24 +836,35 @@ if (myModalEl) {{
     End Sub
 
     Protected Sub filtrarClientes()
-        Dim api As New ConsumoApi()
-        Dim json As String = api.GetCargarClientes()
-        Dim lista As List(Of Cliente) = JsonConvert.DeserializeObject(Of List(Of Cliente))(json)
+        ' Una búsqueda nueva siempre arranca en la primera página.
+        gvClientes.PageIndex = 0
 
-        Dim texto As String = txtBuscarCliente.Text.Trim().ToLower()
-        Dim estatusSeleccionado As Integer = Convert.ToInt32(ddlTipoEstatusCliente.SelectedValue)
+        cargarClientes()
+    End Sub
 
+    Protected Sub gvClientes_RowDataBound(sender As Object, e As GridViewRowEventArgs)
+        If e.Row.RowType <> DataControlRowType.DataRow Then Exit Sub
 
-        Dim filtrados = lista.Where(Function(v)
-                                        Dim coincideTexto As Boolean = String.IsNullOrEmpty(texto) OrElse
-                                       (If(v.NombreCompleto, "").ToLower().Contains(texto)) OrElse
-                                       (If(v.Rfc, "").ToLower().Contains(texto))
-                                        Dim coincideEstatus As Boolean = estatusSeleccionado = 0 OrElse v.EstatusId = estatusSeleccionado
-                                        Return coincideTexto AndAlso coincideEstatus
-                                    End Function).ToList()
+        RegistrarPostbackCompleto(e.Row)
+    End Sub
 
-        gvClientes.DataSource = filtrados
-        gvClientes.DataBind()
+    ''' <summary>
+    ''' Los botones de la tabla muestran pnlFormularioCliente, que vive fuera del
+    ''' UpdatePanel del listado. Con un postback parcial esos cambios de visibilidad
+    ''' no llegan al navegador y la pantalla queda en blanco, así que se fuerzan a
+    ''' postback completo. Al estar dentro de una plantilla del GridView no se
+    ''' pueden declarar como PostBackTrigger por ID.
+    ''' </summary>
+    Private Sub RegistrarPostbackCompleto(contenedor As Control)
+        Dim sm As ScriptManager = ScriptManager.GetCurrent(Page)
+
+        If sm Is Nothing Then Exit Sub
+
+        For Each ctl As Control In contenedor.Controls
+            If TypeOf ctl Is IButtonControl Then sm.RegisterPostBackControl(ctl)
+
+            If ctl.HasControls() Then RegistrarPostbackCompleto(ctl)
+        Next
     End Sub
 
     Protected Sub ddlTipoEstatusCliente_SelectedIndexChanged(sender As Object, e As EventArgs)
