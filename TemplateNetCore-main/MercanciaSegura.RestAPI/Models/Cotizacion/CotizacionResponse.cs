@@ -40,5 +40,6 @@ namespace MercanciaSegura.RestAPI.Models.Cotizacion
         public CotizacionMercanciaResponse? CotizacionMercancia { get; set; }
 
         public List<CotizacionContenedorResponse>? CotizacionContenedor { get; set; }
+        public List<BienCotizacionResponse>? BienCotizacion { get; set; }
     }
 }
