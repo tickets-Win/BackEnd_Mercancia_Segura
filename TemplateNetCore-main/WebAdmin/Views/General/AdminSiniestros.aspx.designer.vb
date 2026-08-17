@@ -87,4 +87,5 @@ Partial Public Class AdminSiniestros
 
     '''<summary>Control txtSumaAsegurada.</summary>
     Protected WithEvents txtSumaAsegurada As Global.System.Web.UI.WebControls.TextBox
+
 End Class

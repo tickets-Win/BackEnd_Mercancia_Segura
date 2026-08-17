@@ -34,8 +34,12 @@
             </asp:Panel>
 
             <asp:Panel ID="PnlTabla" runat="server">
-                <div class="table-responsive">
+                <%-- Mismo esquema que polizas: el contenedor desplaza en
+                     horizontal y el grid no parte renglones, para que los iconos
+                     de Acciones no se bajen a otra linea. --%>
+                <div style="overflow-x: auto; width: 100%;">
                     <asp:GridView ID="gvSiniestros" runat="server"
+                        Style="min-width: 1000px; white-space: nowrap;"
                         AutoGenerateColumns="False"
                         CssClass="table table-bordered"
                         HeaderStyle-CssClass="table-light"
@@ -44,11 +48,14 @@
                         OnPageIndexChanging="gvSiniestros_PageIndexChanging">
 
                         <Columns>
-                            <asp:BoundField DataField="Folio" HeaderText="Folio" />
-                            <asp:BoundField DataField="Poliza" HeaderText="Poliza" />
-                            <asp:BoundField DataField="Certificado" HeaderText="Certificado" />
-                            <asp:BoundField DataField="Vigencia" HeaderText="Vigencia" />
-                            <asp:BoundField DataField="Estatus" HeaderText="Estatus" />
+                            <asp:BoundField DataField="NumeroReporte" HeaderText="N° Reporte" />
+                            <asp:BoundField DataField="Cliente" HeaderText="Cliente" />
+                            <asp:BoundField DataField="FechaSiniestro" HeaderText="Fecha siniestro"
+                                DataFormatString="{0:dd/MM/yyyy}" />
+                            <asp:BoundField DataField="NumeroSiniestro" HeaderText="N° Siniestro" />
+                            <asp:BoundField DataField="TipoSiniestro" HeaderText="Tipo siniestro" />
+                            <asp:BoundField DataField="MontoReclamo" HeaderText="Monto de reclamo"
+                                DataFormatString="{0:C2}" />
 
                             <asp:TemplateField HeaderText="Acciones">
                                 <ItemTemplate>
@@ -147,8 +154,9 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Suma asegurada</label>
-                        <asp:TextBox ID="txtSumaAsegurada" runat="server" CssClass="form-control"></asp:TextBox>
-                        <small class="text-muted">se toma del certificado</small>
+                        <asp:TextBox ID="txtSumaAsegurada" runat="server" CssClass="form-control bg-light"
+                            ReadOnly="True"></asp:TextBox>
+                        <small class="text-muted">viene del certificado</small>
                     </div>
                 </div>
             </asp:Panel>
@@ -161,6 +169,41 @@
         document.addEventListener('DOMContentLoaded', function () {
             msBuscadorIncremental('<%= txtBuscarSiniestro.ClientID %>', '<%= txtBuscarSiniestro.UniqueID %>', 500);
         });
+
+        // Los importes se muestran como $1,234.56 al salir del campo. El servidor
+        // limpia el simbolo y las comas antes de guardar, asi que el formato es
+        // solo de presentacion.
+        function msImporteSiniestro(id) {
+
+            var campo = document.getElementById(id);
+            if (!campo) { return; }
+
+            campo.addEventListener('blur', function () {
+
+                var limpio = (campo.value || '').replace(/[^0-9.\-]/g, '');
+
+                if (limpio === '' || isNaN(parseFloat(limpio))) { campo.value = ''; return; }
+
+                campo.value = '$' + parseFloat(limpio).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            });
+        }
+
+        function msEngancharImportesSiniestro() {
+            msImporteSiniestro('<%= txtMontoReclamo.ClientID %>');
+            msImporteSiniestro('<%= txtMontoIndemnizacion.ClientID %>');
+        }
+
+        document.addEventListener('DOMContentLoaded', msEngancharImportesSiniestro);
+
+        // El formulario vive en un UpdatePanel: al repintarse hay que volver a
+        // enganchar los campos.
+        if (typeof Sys !== 'undefined' && Sys.WebForms) {
+            Sys.WebForms.PageRequestManager.getInstance()
+                .add_endRequest(msEngancharImportesSiniestro);
+        }
     </script>
 
 </asp:Content>

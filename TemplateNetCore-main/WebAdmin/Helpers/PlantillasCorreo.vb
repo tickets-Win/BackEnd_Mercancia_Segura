@@ -1,17 +1,12 @@
-﻿Imports WebAdmin.MercanciaSegura.DOM.Modelos
+﻿Imports Newtonsoft.Json
+Imports WebAdmin.MercanciaSegura.DOM.Modelos
 
 ''' <summary>
-''' Catálogo de plantillas de correo y sustitución de los campos {{...}}.
-''' Es el único lugar donde viven las plantillas: lo usan la pantalla de
-''' Plantillas y la de Envío de correo. Cuando exista el endpoint, se cambia
-''' Todas() por la llamada al API y lo demás sigue igual.
+''' Acceso a las plantillas de correo y sustitución de los campos {{...}}.
+''' Es el único lugar donde se consultan: lo usan la pantalla de Plantillas y el
+''' control de envío de correo.
 ''' </summary>
 Public Module PlantillasCorreo
-
-    Public ReadOnly Categorias As String() = {
-        "Directorio", "Documentos", "Pagos", "Endosos",
-        "Siniestros", "Reclamaciones", "General"
-    }
 
     ''' <summary>Campos que se pueden insertar en el cuerpo del correo.</summary>
     Public ReadOnly Campos As String() = {
@@ -29,146 +24,83 @@ Public Module PlantillasCorreo
         }
     End Function
 
-    Private Const Remitente As String = "Mercancia Segura"
+#Region "Consultas al API"
 
+    ''' <summary>
+    ''' Todas las plantillas activas. Se cachean por petición: la pantalla las usa
+    ''' varias veces al pintar categorías y tarjetas.
+    ''' </summary>
     Public Function Todas() As List(Of PlantillaCorreo)
 
-        Return New List(Of PlantillaCorreo) From {
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 1,
-                .Categoria = "Directorio",
-                .Remitente = Remitente,
-                .Nombre = "Primer contacto cliente",
-                .Asunto = "Bienvenida a Mercancía Segura",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Agradecemos su interés en nuestro servicio. Atendiendo a su solicitud de información " &
-                          "acerca de nuestro sistema Mercancía Segura, nos es grato poder atenderle." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 0
-            },
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 2,
-                .Categoria = "Directorio",
-                .Remitente = Remitente,
-                .Nombre = "Bienvenida a nuevo cliente",
-                .Asunto = "Bienvenido a Mercancía Segura",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Le damos la bienvenida. A partir de hoy su ejecutivo asignado es {{Ejecutivo}}, " &
-                          "quien atenderá cualquier requerimiento relacionado con su cuenta." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 1
-            },
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 3,
-                .Categoria = "Documentos",
-                .Remitente = Remitente,
-                .Nombre = "Envío de póliza",
-                .Asunto = "Envío de póliza {{Póliza}}",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Adjuntamos la póliza {{Póliza}} correspondiente a su cobertura contratada." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 2
-            },
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 4,
-                .Categoria = "Documentos",
-                .Remitente = Remitente,
-                .Nombre = "Solicitud de documentación",
-                .Asunto = "Documentación pendiente",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Para continuar con su trámite requerimos la documentación pendiente. " &
-                          "En cuanto la recibamos daremos seguimiento." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 0
-            },
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 5,
-                .Categoria = "Pagos",
-                .Remitente = Remitente,
-                .Nombre = "Recordatorio de pago",
-                .Asunto = "Recordatorio de pago",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Le recordamos que tiene un pago próximo a vencer correspondiente a la póliza {{Póliza}}." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 0
-            },
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 6,
-                .Categoria = "Pagos",
-                .Remitente = Remitente,
-                .Nombre = "Confirmación de pago",
-                .Asunto = "Confirmación de pago recibido",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Confirmamos la recepción de su pago. Adjuntamos el comprobante correspondiente." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 1
-            },
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 7,
-                .Categoria = "Endosos",
-                .Remitente = Remitente,
-                .Nombre = "Notificación de endoso",
-                .Asunto = "Endoso aplicado a su póliza {{Póliza}}",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Le informamos que se aplicó un endoso a su póliza {{Póliza}}." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 1
-            },
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 8,
-                .Categoria = "Siniestros",
-                .Remitente = Remitente,
-                .Nombre = "Aviso de siniestro recibido",
-                .Asunto = "Hemos recibido su reporte de siniestro",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Hemos recibido su reporte de siniestro y lo turnamos al área correspondiente." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 0
-            },
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 9,
-                .Categoria = "Siniestros",
-                .Remitente = Remitente,
-                .Nombre = "Seguimiento de siniestro",
-                .Asunto = "Seguimiento a su siniestro",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Le compartimos el avance de su siniestro. Cualquier novedad se la haremos saber." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 0
-            },
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 10,
-                .Categoria = "Reclamaciones",
-                .Remitente = Remitente,
-                .Nombre = "Acuse de reclamación",
-                .Asunto = "Acuse de su reclamación",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Acusamos recibo de su reclamación y la turnamos al área correspondiente." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 0
-            },
-            New PlantillaCorreo With {
-                .PlantillaCorreoId = 11,
-                .Categoria = "General",
-                .Remitente = Remitente,
-                .Nombre = "Aviso general",
-                .Asunto = "Información de su interés",
-                .Cuerpo = "Estimado(a) {{Nombre Completo}}," & vbCrLf & vbCrLf &
-                          "Le compartimos la siguiente información de su interés." & vbCrLf & vbCrLf &
-                          "Quedamos a sus órdenes.",
-                .Adjuntos = 0
-            }
-        }
+        Dim contexto = HttpContext.Current
 
+        If contexto IsNot Nothing AndAlso contexto.Items("PlantillasCorreo") IsNot Nothing Then
+            Return DirectCast(contexto.Items("PlantillasCorreo"), List(Of PlantillaCorreo))
+        End If
+
+        Dim api As New ConsumoApi()
+        Dim lista = Deserializar(Of PlantillaCorreo)(api.GetPlantillasCorreo())
+
+        If lista Is Nothing Then lista = New List(Of PlantillaCorreo)
+
+        If contexto IsNot Nothing Then contexto.Items("PlantillasCorreo") = lista
+
+        Return lista
     End Function
 
-    Public Function PorCategoria(categoria As String) As List(Of PlantillaCorreo)
-        Return Todas().Where(Function(p) p.Categoria = categoria).ToList()
+    Public Function Categorias() As List(Of CategoriaPlantilla)
+
+        Dim contexto = HttpContext.Current
+
+        If contexto IsNot Nothing AndAlso contexto.Items("CategoriasPlantilla") IsNot Nothing Then
+            Return DirectCast(contexto.Items("CategoriasPlantilla"), List(Of CategoriaPlantilla))
+        End If
+
+        Dim api As New ConsumoApi()
+        Dim lista = Deserializar(Of CategoriaPlantilla)(api.GetCategoriasPlantilla())
+
+        If lista Is Nothing Then lista = New List(Of CategoriaPlantilla)
+
+        If contexto IsNot Nothing Then contexto.Items("CategoriasPlantilla") = lista
+
+        Return lista
+    End Function
+
+    Public Function PorCategoria(categoriaId As Integer) As List(Of PlantillaCorreo)
+        Return Todas().Where(Function(p) p.CategoriaPlantillaId = categoriaId).ToList()
     End Function
 
     Public Function PorId(plantillaCorreoId As Integer) As PlantillaCorreo
         Return Todas().FirstOrDefault(Function(p) p.PlantillaCorreoId = plantillaCorreoId)
     End Function
+
+    ''' <summary>Limpia el caché tras guardar o borrar, para que se relea.</summary>
+    Public Sub Refrescar()
+
+        Dim contexto = HttpContext.Current
+
+        If contexto Is Nothing Then Exit Sub
+
+        contexto.Items.Remove("PlantillasCorreo")
+        contexto.Items.Remove("CategoriasPlantilla")
+    End Sub
+
+    Private Function Deserializar(Of T)(json As String) As List(Of T)
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then Return Nothing
+
+        Try
+            Return JsonConvert.DeserializeObject(Of List(Of T))(json)
+        Catch
+            Return Nothing
+        End Try
+    End Function
+
+#End Region
+
+#Region "Campos {{...}}"
 
     ''' <summary>
     ''' Cambia los {{Campo}} del texto por sus valores. Los campos que no vengan
@@ -207,5 +139,7 @@ Public Module PlantillasCorreo
 
         Return pendientes
     End Function
+
+#End Region
 
 End Module

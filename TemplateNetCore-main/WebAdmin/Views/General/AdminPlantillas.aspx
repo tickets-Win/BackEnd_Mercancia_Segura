@@ -283,6 +283,12 @@
     <asp:UpdatePanel ID="UpPlantillas" runat="server" UpdateMode="Always">
         <ContentTemplate>
 
+            <asp:Panel ID="pnlAviso" runat="server" Visible="false">
+                <asp:Label ID="lblAviso" runat="server"></asp:Label>
+            </asp:Panel>
+
+            <asp:HiddenField ID="hfPlantillaId" runat="server" Value="" />
+
             <%-- ======================== LISTADO ======================== --%>
             <asp:Panel ID="pnlListado" runat="server">
 
@@ -319,16 +325,16 @@
                         <asp:Repeater ID="rptCategorias" runat="server" OnItemCommand="rptCategorias_ItemCommand">
                             <ItemTemplate>
                                 <asp:LinkButton runat="server" CommandName="Seleccionar"
-                                    CommandArgument='<%# Container.DataItem %>'
-                                    CssClass='<%# ClaseCategoria(Container.DataItem) %>'
-                                    Text='<%# Container.DataItem %>' />
+                                    CommandArgument='<%# Eval("CategoriaPlantillaId") %>'
+                                    CssClass='<%# ClaseCategoria(Eval("CategoriaPlantillaId")) %>'
+                                    Text='<%# Eval("Nombre") %>' />
                             </ItemTemplate>
                         </asp:Repeater>
                     </div>
 
                     <%-- ------------------- PLANTILLAS ------------------- --%>
                     <div class="col-md-9 col-lg-10">
-                        <asp:Repeater ID="rptPlantillas" runat="server">
+                        <asp:Repeater ID="rptPlantillas" runat="server" OnItemCommand="rptPlantillas_ItemCommand">
                             <HeaderTemplate>
                                 <div class="row g-3">
                             </HeaderTemplate>
@@ -340,9 +346,22 @@
                                         <div class="plt-tarjeta-encabezado">
                                             <span class="plt-remitente"><%# Eval("Remitente") %></span>
                                             <span class="plt-acciones">
-                                                <a href="javascript:void(0)" class="plt-icono plt-icono-editar" title="Editar"><i class="bi bi-pencil-fill"></i></a>
-                                                <a href="javascript:void(0)" class="plt-icono plt-icono-copiar" title="Duplicar"><i class="bi bi-files"></i></a>
-                                                <a href="javascript:void(0)" class="plt-icono plt-icono-borrar" title="Eliminar"><i class="bi bi-trash"></i></a>
+                                                <asp:LinkButton runat="server" CommandName="Editar"
+                                                    CommandArgument='<%# Eval("PlantillaCorreoId") %>'
+                                                    CssClass="plt-icono plt-icono-editar" ToolTip="Editar">
+                                                    <i class="bi bi-pencil-fill"></i>
+                                                </asp:LinkButton>
+                                                <asp:LinkButton runat="server" CommandName="Duplicar"
+                                                    CommandArgument='<%# Eval("PlantillaCorreoId") %>'
+                                                    CssClass="plt-icono plt-icono-copiar" ToolTip="Duplicar">
+                                                    <i class="bi bi-files"></i>
+                                                </asp:LinkButton>
+                                                <asp:LinkButton runat="server" CommandName="Eliminar"
+                                                    CommandArgument='<%# Eval("PlantillaCorreoId") %>'
+                                                    CssClass="plt-icono plt-icono-borrar" ToolTip="Eliminar"
+                                                    OnClientClick="return confirm('¿Seguro que deseas eliminar esta plantilla?');">
+                                                    <i class="bi bi-trash"></i>
+                                                </asp:LinkButton>
                                             </span>
                                         </div>
 
@@ -386,7 +405,8 @@
                     <div class="d-flex gap-2">
                         <asp:LinkButton ID="lnkCancelar" runat="server" CssClass="btn btn-light border"
                             OnClick="lnkCancelar_Click">Cancelar</asp:LinkButton>
-                        <asp:LinkButton ID="lnkGuardar" runat="server" CssClass="btn btn-primary">Guardar</asp:LinkButton>
+                        <asp:LinkButton ID="lnkGuardar" runat="server" CssClass="btn btn-primary"
+                            OnClick="lnkGuardar_Click">Guardar</asp:LinkButton>
                     </div>
                 </div>
 

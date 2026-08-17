@@ -217,6 +217,105 @@ Public Class ConsumoApi
         Return TraerCatalogo("TipoSiniestro")
     End Function
 
+    Public Function GetPlantillasCorreo() As String
+        Return TraerCatalogo("PlantillaCorreo")
+    End Function
+
+    Public Function GetCategoriasPlantilla() As String
+        Return TraerCatalogo("CategoriaPlantilla")
+    End Function
+
+    Public Function GetPlantillaCorreoId(plantillaId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = ConfigurationManager.AppSettings("PlantillaCorreo") & "/" & plantillaId
+
+                Dim response As HttpResponseMessage = client.GetAsync(url).Result
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    Public Function PostPlantillaCorreo(body As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim content As New StringContent(body, Encoding.UTF8, "application/json")
+
+                Dim response As HttpResponseMessage =
+                    client.PostAsync(ConfigurationManager.AppSettings("PlantillaCorreo"), content).Result
+
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    Public Function PutEditarPlantillaCorreo(plantillaId As Integer, body As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim content As New StringContent(body, Encoding.UTF8, "application/json")
+                Dim url As String = ConfigurationManager.AppSettings("PlantillaCorreo") & "/" & plantillaId
+
+                Dim response As HttpResponseMessage = client.PutAsync(url, content).Result
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    Public Function DeletePlantillaCorreo(plantillaId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = ConfigurationManager.AppSettings("PlantillaCorreo") & "/" & plantillaId
+
+                Dim response As HttpResponseMessage = client.DeleteAsync(url).Result
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
     Public Function GetSiniestroId(siniestroId As Integer) As String
         Try
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12

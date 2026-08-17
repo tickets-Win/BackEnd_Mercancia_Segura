@@ -4,6 +4,7 @@ using MercanciaSegura.DOM.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MercanciaSegura.DOM.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    partial class ServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260817182707_db_17_08_26")]
+    partial class db_17_08_26
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,33 +24,6 @@ namespace MercanciaSegura.DOM.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.CategoriaPlantilla", b =>
-                {
-                    b.Property<int>("CategoriaPlantillaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Categoria_Plantilla_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoriaPlantillaId"));
-
-                    b.Property<bool>("EsSistema")
-                        .HasColumnType("bit")
-                        .HasColumnName("Es_Sistema");
-
-                    b.Property<DateTime>("FechaRegistro")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Fecha_Registro");
-
-                    b.Property<string>("Nombre")
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)")
-                        .HasColumnName("Nombre");
-
-                    b.HasKey("CategoriaPlantillaId");
-
-                    b.ToTable("Categoria_Plantilla");
-                });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Certificado", b =>
                 {
@@ -1245,52 +1221,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.HasIndex("TipoEndosoId");
 
                     b.ToTable("Endosos");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.PlantillaCorreo", b =>
-                {
-                    b.Property<int>("PlantillaCorreoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Plantilla_Correo_ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PlantillaCorreoId"));
-
-                    b.Property<bool>("Activa")
-                        .HasColumnType("bit")
-                        .HasColumnName("Activa");
-
-                    b.Property<string>("Asunto")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
-                        .HasColumnName("Asunto");
-
-                    b.Property<int>("CategoriaPlantillaId")
-                        .HasColumnType("int")
-                        .HasColumnName("Categoria_Plantilla_ID");
-
-                    b.Property<string>("CuerpoHtml")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Cuerpo_HTML");
-
-                    b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Fecha_Actualizacion");
-
-                    b.Property<DateTime>("FechaRegistro")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Fecha_Registro");
-
-                    b.Property<string>("Nombre")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("Nombre");
-
-                    b.HasKey("PlantillaCorreoId");
-
-                    b.HasIndex("CategoriaPlantillaId");
-
-                    b.ToTable("Plantilla_Correo");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.AdministracionBien", b =>
@@ -2500,17 +2430,6 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Navigation("Certificado");
 
                     b.Navigation("TipoEndoso");
-                });
-
-            modelBuilder.Entity("MercanciaSegura.DOM.Modelos.PlantillaCorreo", b =>
-                {
-                    b.HasOne("MercanciaSegura.DOM.Modelos.CategoriaPlantilla", "CategoriaPlantilla")
-                        .WithMany()
-                        .HasForeignKey("CategoriaPlantillaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CategoriaPlantilla");
                 });
 
             modelBuilder.Entity("MercanciaSegura.DOM.Modelos.Poliza.Bien", b =>

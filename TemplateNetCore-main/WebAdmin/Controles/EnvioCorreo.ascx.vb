@@ -121,10 +121,14 @@ Public Class EnvioCorreoControl
         Adjuntos.Clear()
         CargarAdjuntos()
 
-        ddlPlantilla.DataSource = PlantillasCorreo.Todas()
-        ddlPlantilla.DataTextField = "Nombre"
-        ddlPlantilla.DataValueField = "PlantillaCorreoId"
-        ddlPlantilla.DataBind()
+        Dim plantillas = PlantillasCorreo.Todas()
+
+        ddlPlantilla.Items.Clear()
+        ddlPlantilla.Items.Add(New ListItem("-- Sin plantilla --", ""))
+
+        For Each p In plantillas
+            ddlPlantilla.Items.Add(New ListItem(p.Nombre, p.PlantillaCorreoId.ToString()))
+        Next
 
         ddlCuenta.Items.Clear()
         ddlCuenta.Items.Add(New ListItem("Seleccione una cuenta", ""))
@@ -166,7 +170,13 @@ Public Class EnvioCorreoControl
     Private Sub AplicarPlantilla()
 
         Dim id As Integer
-        If Not Integer.TryParse(ddlPlantilla.SelectedValue, id) Then Exit Sub
+
+        ' Sin plantilla elegida se deja el correo en blanco para redactarlo libre.
+        If Not Integer.TryParse(ddlPlantilla.SelectedValue, id) Then
+            txtAsunto.Text = String.Empty
+            Cuerpo = String.Empty
+            Exit Sub
+        End If
 
         Dim plantilla = PlantillasCorreo.PorId(id)
         If plantilla Is Nothing Then Exit Sub
@@ -174,7 +184,9 @@ Public Class EnvioCorreoControl
         Dim valores = ValoresCampos
 
         txtAsunto.Text = PlantillasCorreo.Resolver(plantilla.Asunto, valores)
-        Cuerpo = TextoAHtml(PlantillasCorreo.Resolver(plantilla.Cuerpo, valores))
+
+        ' El cuerpo de la plantilla ya viene en HTML desde el editor.
+        Cuerpo = PlantillasCorreo.Resolver(plantilla.CuerpoHtml, valores)
     End Sub
 
     Protected Sub ddlPlantilla_SelectedIndexChanged(sender As Object, e As EventArgs)

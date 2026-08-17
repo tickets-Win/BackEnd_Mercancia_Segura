@@ -5,16 +5,17 @@ Public Class AdminSiniestros
     Inherits System.Web.UI.Page
 
     ''' <summary>
-    ''' Fila del listado. El siniestro no trae póliza ni vigencia: salen del
-    ''' certificado al que apunta.
+    ''' Fila del listado. El cliente no está en el siniestro: sale del certificado
+    ''' al que apunta.
     ''' </summary>
     Public Class RenglonSiniestro
         Public Property SiniestroId As Integer
-        Public Property Folio As String
-        Public Property Poliza As String
-        Public Property Certificado As String
-        Public Property Vigencia As String
-        Public Property Estatus As String
+        Public Property NumeroReporte As String
+        Public Property Cliente As String
+        Public Property FechaSiniestro As DateTime
+        Public Property NumeroSiniestro As String
+        Public Property TipoSiniestro As String
+        Public Property MontoReclamo As Decimal?
     End Class
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -75,10 +76,10 @@ Public Class AdminSiniestros
 
         If busqueda.Length > 0 Then
             renglones = renglones.Where(Function(r)
-                                            Return Contiene(r.Folio, busqueda) OrElse
-                                                   Contiene(r.Poliza, busqueda) OrElse
-                                                   Contiene(r.Certificado, busqueda) OrElse
-                                                   Contiene(r.Estatus, busqueda)
+                                            Return Contiene(r.NumeroReporte, busqueda) OrElse
+                                                   Contiene(r.Cliente, busqueda) OrElse
+                                                   Contiene(r.NumeroSiniestro, busqueda) OrElse
+                                                   Contiene(r.TipoSiniestro, busqueda)
                                         End Function).ToList()
         End If
 
@@ -98,19 +99,14 @@ Public Class AdminSiniestros
 
         Dim cert = Certificados().FirstOrDefault(Function(c) c.CertificadoId = s.CertificadoId)
 
-        Dim vigencia As String = String.Empty
-
-        If cert IsNot Nothing Then
-            vigencia = cert.FechaInicio.ToString("dd/MM/yyyy") & " - " & cert.FechaFin.ToString("dd/MM/yyyy")
-        End If
-
         Return New RenglonSiniestro With {
             .SiniestroId = s.SiniestroId,
-            .Folio = If(String.IsNullOrWhiteSpace(s.NReporte), "(sin folio)", s.NReporte),
-            .Poliza = If(cert Is Nothing, String.Empty, cert.NumeroPoliza),
-            .Certificado = If(cert Is Nothing, s.CertificadoId.ToString(), cert.ClaveCertificado),
-            .Vigencia = vigencia,
-            .Estatus = If(s.FechaCierre.HasValue, "Cerrado", "Abierto")
+            .NumeroReporte = If(String.IsNullOrWhiteSpace(s.NReporte), "(sin reporte)", s.NReporte),
+            .Cliente = If(cert Is Nothing, String.Empty, cert.NombreCliente),
+            .FechaSiniestro = s.FechaApertura,
+            .NumeroSiniestro = "SIN-" & s.SiniestroId.ToString("00000"),
+            .TipoSiniestro = s.NombreTipoSiniestro,
+            .MontoReclamo = s.MontoDeReclamo
         }
     End Function
 
@@ -198,36 +194,68 @@ Public Class AdminSiniestros
     Protected Sub ddlCliente_SelectedIndexChanged(sender As Object, e As EventArgs)
         CargarPolizasDelCliente()
         CargarCertificados()
-        LlenarDesdeCertificado()
+        MostrarSumaAsegurada()
     End Sub
 
     Protected Sub ddlPolizaMaestra_SelectedIndexChanged(sender As Object, e As EventArgs)
         CargarCertificados()
-        LlenarDesdeCertificado()
+        MostrarSumaAsegurada()
     End Sub
 
     Protected Sub ddlNumeroCertificado_SelectedIndexChanged(sender As Object, e As EventArgs)
-        LlenarDesdeCertificado()
+        MostrarSumaAsegurada()
     End Sub
 
     ''' <summary>
-    ''' La suma asegurada del siniestro arranca con la del certificado.
+    ''' Muestra la suma asegurada del certificado elegido. El campo es de solo
+    ''' lectura: el dato es del certificado, no se captura aquí.
     ''' </summary>
-    Private Sub LlenarDesdeCertificado()
+    Private Sub MostrarSumaAsegurada()
 
-        Dim id As Integer
+        Dim cert = CertificadoElegido()
 
-        If Not Integer.TryParse(ddlNumeroCertificado.SelectedValue, id) Then
+        If cert Is Nothing Then
             txtSumaAsegurada.Text = String.Empty
             Exit Sub
         End If
 
-        Dim cert = Certificados().FirstOrDefault(Function(c) c.CertificadoId = id)
-
-        If cert Is Nothing Then Exit Sub
-
-        txtSumaAsegurada.Text = cert.SumaAsegurada.ToString("F2")
+        txtSumaAsegurada.Text = Importe(cert.SumaAsegurada)
     End Sub
+
+    ''' <summary>
+    ''' Suma asegurada que se guarda: se lee del certificado y no del TextBox.
+    ''' Un TextBox con ReadOnly no manda su valor en el post, así que leerlo de
+    ''' ahí sería frágil; además el dato es del certificado por definición.
+    ''' </summary>
+    Private Function SumaDelCertificado() As Decimal?
+
+        Dim cert = CertificadoElegido()
+
+        If cert Is Nothing Then Return Nothing
+
+        Return cert.SumaAsegurada
+    End Function
+
+    ''' <summary>Certificado seleccionado en la cascada, o Nothing.</summary>
+    Private Function CertificadoElegido() As Certificado
+
+        Dim id As Integer
+
+        If Not Integer.TryParse(ddlNumeroCertificado.SelectedValue, id) Then Return Nothing
+
+        Return Certificados().FirstOrDefault(Function(c) c.CertificadoId = id)
+    End Function
+
+    ''' <summary>
+    ''' Importe con signo de pesos y dos decimales. Al guardar, MontoDe quita el
+    ''' símbolo y las comas, así que se puede mostrar con formato sin problema.
+    ''' </summary>
+    Private Function Importe(valor As Decimal?) As String
+
+        If Not valor.HasValue Then Return String.Empty
+
+        Return valor.Value.ToString("C2")
+    End Function
 
     Private Sub CargarTiposSiniestro()
 
@@ -347,9 +375,9 @@ Public Class AdminSiniestros
         txtFechaCierre.Text = If(s.FechaCierre.HasValue, s.FechaCierre.Value.ToString("yyyy-MM-dd"), String.Empty)
         txtMercancia.Text = s.Mercancia
         txtLugarSiniestro.Text = s.LugarDeSiniestro
-        txtMontoReclamo.Text = If(s.MontoDeReclamo.HasValue, s.MontoDeReclamo.Value.ToString("F2"), String.Empty)
-        txtMontoIndemnizacion.Text = If(s.MontoDeIndemnizacion.HasValue, s.MontoDeIndemnizacion.Value.ToString("F2"), String.Empty)
-        txtSumaAsegurada.Text = If(s.SumaAsegurada.HasValue, s.SumaAsegurada.Value.ToString("F2"), String.Empty)
+        txtMontoReclamo.Text = Importe(s.MontoDeReclamo)
+        txtMontoIndemnizacion.Text = Importe(s.MontoDeIndemnizacion)
+        txtSumaAsegurada.Text = Importe(s.SumaAsegurada)
 
         ' La cascada se reconstruye desde el certificado guardado hacia arriba.
         Dim cert = Certificados().FirstOrDefault(Function(c) c.CertificadoId = s.CertificadoId)
@@ -424,7 +452,7 @@ Public Class AdminSiniestros
             .TipoSiniestroId = IdSeleccionado(ddlTipoSiniestro),
             .Mercancia = txtMercancia.Text.Trim(),
             .LugarDeSiniestro = txtLugarSiniestro.Text.Trim(),
-            .SumaAsegurada = MontoDe(txtSumaAsegurada),
+            .SumaAsegurada = SumaDelCertificado(),
             .MontoDeReclamo = MontoDe(txtMontoReclamo),
             .MontoDeIndemnizacion = MontoDe(txtMontoIndemnizacion)
         }

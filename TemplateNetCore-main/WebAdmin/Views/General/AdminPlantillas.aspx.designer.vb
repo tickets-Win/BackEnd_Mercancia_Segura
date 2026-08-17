@@ -13,6 +13,15 @@ Option Explicit On
 
 Partial Public Class AdminPlantillas
 
+    '''<summary>Control pnlAviso.</summary>
+    Protected WithEvents pnlAviso As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>Control lblAviso.</summary>
+    Protected WithEvents lblAviso As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>Control hfPlantillaId.</summary>
+    Protected WithEvents hfPlantillaId As Global.System.Web.UI.WebControls.HiddenField
+
     '''<summary>
     '''Control pnlListado.
     '''</summary>
