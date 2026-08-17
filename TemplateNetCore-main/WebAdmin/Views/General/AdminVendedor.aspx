@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminVendedor.aspx.vb" Inherits="WebAdmin.AdminVendedor" %>
+<%@ Register TagPrefix="uc" TagName="EnvioCorreo" Src="~/Controles/EnvioCorreo.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="../../Content/site.css" rel="stylesheet" />
@@ -80,6 +81,9 @@
                     </div>
                 </div>
             </asp:Panel>
+    <%-- Envio de correo: control compartido con los demas modulos. --%>
+    <uc:EnvioCorreo ID="ucCorreo" runat="server" Visible="false"
+        OnCancelado="ucCorreo_Cancelado" OnEnviado="ucCorreo_Enviado" />
         </ContentTemplate>
         <Triggers>
             <%-- Agregar muestra pnlFormularioVendedor, que vive FUERA de este

@@ -67,6 +67,11 @@ Public Class AdminBeneficiarios
     End Sub
 
     Protected Sub gvBeneficiariosPreferentes_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Correo" Then
+            AbrirCorreo(Convert.ToInt32(e.CommandArgument))
+            Exit Sub
+        End If
+
         If e.CommandName = "Editar" Then
             Dim beneficiarioId As Integer = Convert.ToInt32(e.CommandArgument)
             pnlFormularioBeneficiario.Visible = True
@@ -319,4 +324,61 @@ Public Class AdminBeneficiarios
         PnlEncabezado.Visible = True
         LimpiarFormulario()
     End Sub
+
+    ''' <summary>
+    ''' Abre el control de envio de correo. Es el mismo control que usan los demas
+    ''' modulos: aqui solo se le pasan el destinatario y los datos del registro.
+    ''' </summary>
+    Private Sub AbrirCorreo(registroId As Integer)
+
+        ucCorreo.Abrir(DestinatariosDe(registroId), ValoresDe(registroId))
+
+        PnlEncabezado.Visible = False
+        PnlTabla.Visible = False
+        pnlFormularioBeneficiario.Visible = False
+    End Sub
+
+    Protected Sub ucCorreo_Cancelado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Protected Sub ucCorreo_Enviado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Private Sub VolverDelCorreo()
+        PnlEncabezado.Visible = True
+        PnlTabla.Visible = True
+        pnlFormularioBeneficiario.Visible = False
+    End Sub
+
+    ''' <summary>
+    ''' El beneficiario no guarda correo, así que el destinatario se captura a mano.
+    ''' </summary>
+    Private Function DestinatariosDe(registroId As Integer) As String
+        Return String.Empty
+    End Function
+
+    Private Function ValoresDe(registroId As Integer) As Dictionary(Of String, String)
+
+        Dim valores As New Dictionary(Of String, String)
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetBeneficiarioId(registroId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse json.StartsWith("ERROR") Then Return valores
+
+        Dim b As BeneficiarioPreferente = JsonConvert.DeserializeObject(Of BeneficiarioPreferente)(json)
+        If b Is Nothing Then Return valores
+
+        If Not String.IsNullOrWhiteSpace(b.NombreCompleto) Then
+            valores("Nombre Completo") = b.NombreCompleto
+            valores("Nombre") = b.NombreCompleto.Split(" "c)(0)
+        End If
+
+        If Not String.IsNullOrWhiteSpace(b.RFC) Then valores("RFC") = b.RFC
+
+        Return valores
+    End Function
+
 End Class

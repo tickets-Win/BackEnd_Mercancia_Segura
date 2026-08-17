@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\site.css" />
+    <Content Include="Controles\EnvioCorreo.ascx" />
     <Content Include="Global.asax" />
     <Content Include="Resources\Image\logo_MS.png" />
     <Content Include="Views\Account\login.aspx" />
@@ -107,6 +108,8 @@
     <Content Include="Views\General\AdminCotizaciones.aspx" />
     <Content Include="Views\General\AdminEndosos.aspx" />
     <Content Include="Views\General\AdminGestionPolizas.aspx" />
+    <Content Include="Views\General\AdminPlantillas.aspx" />
+    <Content Include="Views\General\AdminReportes.aspx" />
     <Content Include="Views\General\AdminSiniestros.aspx" />
     <Content Include="Views\General\AdminVendedor.aspx" />
     <Content Include="Views\General\Inicio.aspx" />
@@ -114,6 +117,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controladores\ConsumoApi.vb" />
+    <Compile Include="Controles\EnvioCorreo.ascx.designer.vb">
+      <DependentUpon>EnvioCorreo.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controles\EnvioCorreo.ascx.vb">
+      <DependentUpon>EnvioCorreo.ascx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="Default.Master.designer.vb">
       <DependentUpon>Default.Master</DependentUpon>
     </Compile>
@@ -125,16 +135,22 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\DropdownHelpers.vb" />
+    <Compile Include="Helpers\EnvioCorreo.vb" />
+    <Compile Include="Helpers\PlantillasCorreo.vb" />
+    <Compile Include="Modelos\ArchivoAdjunto.vb" />
     <Compile Include="Modelos\Aseguradora.vb" />
     <Compile Include="Modelos\BeneficiarioPreferente.vb" />
     <Compile Include="Modelos\AdministracionBien.vb" />
     <Compile Include="Modelos\Bien.vb" />
+    <Compile Include="Modelos\BienCotizacion.vb" />
+    <Compile Include="Modelos\Certificado.vb" />
     <Compile Include="Modelos\Clasificacion.vb" />
     <Compile Include="Modelos\Cliente.vb" />
     <Compile Include="Modelos\ClienteBeneficiario.vb" />
     <Compile Include="Modelos\ClienteCredito.vb" />
     <Compile Include="Modelos\ClienteVendedor.vb" />
     <Compile Include="Modelos\Cobertura.vb" />
+    <Compile Include="Modelos\CoberturaCotizacion.vb" />
     <Compile Include="Modelos\Contratante.vb" />
     <Compile Include="Modelos\Correos.vb" />
     <Compile Include="Modelos\Cotizacion.vb" />
@@ -145,6 +161,7 @@
     <Compile Include="Modelos\FormaPago.vb" />
     <Compile Include="Modelos\Moneda.vb" />
     <Compile Include="Modelos\OrigenCliente.vb" />
+    <Compile Include="Modelos\PlantillaCorreo.vb" />
     <Compile Include="Modelos\Poliza.vb" />
     <Compile Include="Modelos\PolizaCobertura.vb" />
     <Compile Include="Modelos\PolizaContenedor.vb" />
@@ -152,6 +169,7 @@
     <Compile Include="Modelos\Producto.vb" />
     <Compile Include="Modelos\rfcGenerico.vb" />
     <Compile Include="Modelos\RiesgoCubierto.vb" />
+    <Compile Include="Modelos\Siniestro.vb" />
     <Compile Include="Modelos\SubRamo.vb" />
     <Compile Include="Modelos\TamanioContenedor.vb" />
     <Compile Include="Modelos\TipoContenedor.vb" />
@@ -240,6 +258,20 @@
     </Compile>
     <Compile Include="Views\General\AdminGestionPolizas.aspx.vb">
       <DependentUpon>AdminGestionPolizas.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Views\General\AdminPlantillas.aspx.designer.vb">
+      <DependentUpon>AdminPlantillas.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\General\AdminPlantillas.aspx.vb">
+      <DependentUpon>AdminPlantillas.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Views\General\AdminReportes.aspx.designer.vb">
+      <DependentUpon>AdminReportes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\General\AdminReportes.aspx.vb">
+      <DependentUpon>AdminReportes.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Views\General\AdminSiniestros.aspx.designer.vb">

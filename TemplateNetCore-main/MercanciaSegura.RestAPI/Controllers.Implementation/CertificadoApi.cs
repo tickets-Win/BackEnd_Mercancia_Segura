@@ -18,38 +18,123 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             _context = context;
         }
 
+        /// <summary>Estatus con el que nace un certificado. 1 = Activo.</summary>
+        private const int EstatusActivo = 1;
+
+        /// <summary>Prefijo de la clave del certificado.</summary>
+        private const string PrefijoClave = "CERT-";
+
+        /// <summary>
+        /// Clave que se le pone al certificado al crearlo: CERT- más el
+        /// consecutivo a cinco dígitos (CERT-00003). Cambiar el formato es
+        /// cambiar solo este método.
+        /// </summary>
+        private static string ArmarClave(int certificadoId)
+        {
+            return PrefijoClave + certificadoId.ToString("00000");
+        }
+
         private CertificadoResponse MapToResponse(Certificado c)
         {
             return new CertificadoResponse
             {
                 CertificadoId = c.CertificadoId,
                 CotizacionId = c.CotizacionId,
-                FechaCertificado = c.FechaCertificado,
+                ClaveCertificado = c.ClaveCertificado,
+                Asegurado = c.Asegurado,
+                FechaRegistro = c.FechaRegistro,
+                FechaInicio = c.FechaInicio,
+                FechaFin = c.FechaFin,
+                SumaAsegurada = c.SumaAsegurada,
+                TipoEstatusId = c.TipoEstatusId,
 
-                // 🔹 Dato enriquecido
-                NumeroCotizacion = c.Cotizacion != null
-                    ? c.Cotizacion.CotizacionId.ToString() // ⚠️ cambia por Numero si existe
+                // 🔹 Datos enriquecidos
+                NombreEstatus = c.TipoEstatus != null
+                    ? c.TipoEstatus.Tipo
+                    : null,
+
+                NombreCliente = c.Cotizacion != null && c.Cotizacion.Cliente != null
+                    ? c.Cotizacion.Cliente.NombreCompleto
+                    : c.Asegurado,
+
+                NumeroPoliza = c.Cotizacion != null && c.Cotizacion.Poliza != null
+                    ? c.Cotizacion.Poliza.NumeroPoliza
+                    : null,
+
+                FechaCotizacion = c.Cotizacion != null
+                    ? c.Cotizacion.FechaCotizacion
+                    : (DateTime?)null,
+
+                TipoCotizacion = c.Cotizacion == null
+                    ? null
+                    : c.Cotizacion.CotizacionMercancia != null
+                        ? "Mercancía"
+                        : "Contenedor",
+
+                Total = c.Cotizacion != null
+                    ? c.Cotizacion.Total
                     : null
             };
         }
 
 
-        private void MapToCertificado(Certificado certificado, CertificadoRequest body)
+        /// <summary>
+        /// Vuelca el request sobre la entidad. Lo que el cliente no manda se toma
+        /// de la cotización: al confirmarla, el certificado hereda su asegurado,
+        /// su vigencia y su suma asegurada.
+        /// </summary>
+        private void MapToCertificado(Certificado certificado, CertificadoRequest body, DOM.Modelos.Cotizacion.Cotizacion cotizacion)
         {
             if (certificado == null || body == null) return;
 
             certificado.CotizacionId = body.CotizacionId;
 
-            certificado.FechaCertificado = body.FechaCertificado == default
-                ? DateTime.Now
-                : body.FechaCertificado;
+            certificado.FechaRegistro = body.FechaRegistro ?? DateTime.Now;
+
+            certificado.ClaveCertificado = body.ClaveCertificado;
+
+            certificado.Asegurado = !string.IsNullOrWhiteSpace(body.Asegurado)
+                ? body.Asegurado
+                : cotizacion?.Cliente?.NombreCompleto;
+
+            certificado.FechaInicio = body.FechaInicio
+                ?? cotizacion?.VigenciaDel
+                ?? certificado.FechaRegistro;
+
+            certificado.FechaFin = body.FechaFin
+                ?? cotizacion?.VigenciaHasta
+                ?? certificado.FechaInicio;
+
+            // La suma asegurada solo existe en las cotizaciones de mercancía; las
+            // de contenedor no la capturan.
+            certificado.SumaAsegurada = body.SumaAsegurada
+                ?? cotizacion?.CotizacionMercancia?.SumaAsegurada
+                ?? 0m;
+
+            certificado.TipoEstatusId = body.TipoEstatusId ?? EstatusActivo;
+        }
+
+
+        /// <summary>Trae la cotización con lo que se necesita para llenar el certificado.</summary>
+        private Task<DOM.Modelos.Cotizacion.Cotizacion?> BuscarCotizacionAsync(int cotizacionId)
+        {
+            return _context.Cotizacion
+                .Include(c => c.Cliente)
+                .Include(c => c.CotizacionMercancia)
+                .FirstOrDefaultAsync(c => c.CotizacionId == cotizacionId);
         }
 
 
         private IQueryable<Certificado> QueryCertificadoCompleto()
         {
             return _context.Certificado
-                .Include(x => x.Cotizacion);
+                .Include(x => x.TipoEstatus)
+                .Include(x => x.Cotizacion)
+                    .ThenInclude(c => c.Cliente)
+                .Include(x => x.Cotizacion)
+                    .ThenInclude(c => c.Poliza)
+                .Include(x => x.Cotizacion)
+                    .ThenInclude(c => c.CotizacionMercancia);
         }
 
 
@@ -59,7 +144,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         {
             var certificados = await QueryCertificadoCompleto()
                 .AsNoTracking()
-                .OrderByDescending(c => c.FechaCertificado)
+                .OrderByDescending(c => c.FechaRegistro)
                 .ToListAsync();
 
             var response = certificados
@@ -92,13 +177,35 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             try
             {
+                var cotizacion = await BuscarCotizacionAsync(body.CotizacionId);
+
+                if (cotizacion == null)
+                    return BadRequest("La cotización no existe");
+
+                // Una cotización no puede certificarse dos veces.
+                var yaCertificada = await _context.Certificado
+                    .AnyAsync(c => c.CotizacionId == body.CotizacionId);
+
+                if (yaCertificada)
+                    return BadRequest("Esta cotización ya tiene certificado");
+
                 var certificado = new Certificado();
 
-                MapToCertificado(certificado, body);
+                MapToCertificado(certificado, body, cotizacion);
 
                 _context.Certificado.Add(certificado);
 
                 await _context.SaveChangesAsync();
+
+                // La clave se arma con el id, así que hasta aquí no se podía: el
+                // consecutivo lo asigna la base al insertar.
+                if (string.IsNullOrWhiteSpace(certificado.ClaveCertificado))
+                {
+                    certificado.ClaveCertificado = ArmarClave(certificado.CertificadoId);
+
+                    await _context.SaveChangesAsync();
+                }
+
                 await transaction.CommitAsync();
 
                 var creado = await QueryCertificadoCompleto()
@@ -130,7 +237,9 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 if (certificado == null)
                     return NotFound();
 
-                MapToCertificado(certificado, body);
+                var cotizacion = await BuscarCotizacionAsync(body.CotizacionId);
+
+                MapToCertificado(certificado, body, cotizacion);
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -156,6 +265,20 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             if (certificado == null)
                 return NotFound(new { message = "El certificado no existe" });
+
+            // Un certificado con siniestros no se puede borrar: la FK lo impediría
+            // de todos modos, pero así el mensaje es entendible.
+            var tieneSiniestros = await _context.Siniestros
+                .AnyAsync(s => s.CertificadoId == idCertificado);
+
+            if (tieneSiniestros)
+                return BadRequest(new { message = "No se puede eliminar: el certificado tiene siniestros registrados" });
+
+            var tieneEndosos = await _context.Endosos
+                .AnyAsync(e => e.CertificadoId == idCertificado);
+
+            if (tieneEndosos)
+                return BadRequest(new { message = "No se puede eliminar: el certificado tiene endosos registrados" });
 
             try
             {

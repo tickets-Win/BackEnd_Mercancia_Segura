@@ -211,6 +211,11 @@ Public Class AdminVendedor
     End Sub
 
     Protected Sub gvVendedores_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Correo" Then
+            AbrirCorreo(Convert.ToInt32(e.CommandArgument))
+            Exit Sub
+        End If
+
         If e.CommandName = "Editar" Then
             Dim vendedorId As Integer = Convert.ToInt32(e.CommandArgument)
             pnlFormularioVendedor.Visible = True
@@ -356,4 +361,70 @@ Public Class AdminVendedor
         gvVendedores.DataSource = lista
         gvVendedores.DataBind()
     End Sub
+
+    ''' <summary>
+    ''' Abre el control de envio de correo. Es el mismo control que usan los demas
+    ''' modulos: aqui solo se le pasan el destinatario y los datos del registro.
+    ''' </summary>
+    Private Sub AbrirCorreo(registroId As Integer)
+
+        ucCorreo.Abrir(DestinatariosDe(registroId), ValoresDe(registroId))
+
+        PnlEncabezado.Visible = False
+        PnlTabla.Visible = False
+        pnlFormularioVendedor.Visible = False
+    End Sub
+
+    Protected Sub ucCorreo_Cancelado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Protected Sub ucCorreo_Enviado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Private Sub VolverDelCorreo()
+        PnlEncabezado.Visible = True
+        PnlTabla.Visible = True
+        pnlFormularioVendedor.Visible = False
+    End Sub
+
+    Private Function DestinatariosDe(registroId As Integer) As String
+
+        Dim v = VendedorDe(registroId)
+
+        If v Is Nothing Then Return String.Empty
+
+        Return If(v.CorreoElectronico, String.Empty)
+    End Function
+
+    Private Function ValoresDe(registroId As Integer) As Dictionary(Of String, String)
+
+        Dim valores As New Dictionary(Of String, String)
+
+        Dim v = VendedorDe(registroId)
+        If v Is Nothing Then Return valores
+
+        If Not String.IsNullOrWhiteSpace(v.NombreCompleto) Then
+            valores("Nombre Completo") = v.NombreCompleto
+            valores("Nombre") = v.NombreCompleto.Split(" "c)(0)
+            valores("Vendedor") = v.NombreCompleto
+        End If
+
+        If Not String.IsNullOrWhiteSpace(v.Rfc) Then valores("RFC") = v.Rfc
+        If Not String.IsNullOrWhiteSpace(v.CorreoElectronico) Then valores("Correo") = v.CorreoElectronico
+
+        Return valores
+    End Function
+
+    Private Function VendedorDe(registroId As Integer) As Vendedor
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetVendedorId(registroId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse json.StartsWith("ERROR") Then Return Nothing
+
+        Return JsonConvert.DeserializeObject(Of Vendedor)(json)
+    End Function
+
 End Class

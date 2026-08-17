@@ -14,6 +14,23 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
     {
         private readonly ServiceDbContext _context;
 
+        private const decimal IvaPorcentaje = 0.16m;
+
+        /// <summary>
+        /// Subtotal = prima del servicio de aseguramiento + gastos de expedición.
+        /// Mismo criterio para mercancía y contenedor, y el mismo que usa el
+        /// formulario de WebAdmin para mostrar los importes en pantalla.
+        /// </summary>
+        private static void CalcularImportes(Cotizacion cotizacion)
+        {
+            var subtotal = (cotizacion.PrimaServicioDeAseguramiento ?? 0)
+                         + (cotizacion.GastosExpedicion ?? 0);
+
+            cotizacion.Subtotal = subtotal;
+            cotizacion.IVA = subtotal * IvaPorcentaje;
+            cotizacion.Total = subtotal + cotizacion.IVA;
+        }
+
         public CotizacionApiController(ServiceDbContext context)
         {
             _context = context;
@@ -63,6 +80,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                 BienCotizacion = c.BienCotizacion != null
                     ? c.BienCotizacion.Select(MapBien).ToList()
+                    : null,
+
+                CoberturaCotizacion = c.CoberturaCotizacion != null
+                    ? c.CoberturaCotizacion.Select(MapCobertura).ToList()
                     : null
             };
         }
@@ -225,6 +246,23 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             entity.Total = body.Total;
         }
 
+        private CoberturaCotizacionResponse MapCobertura(CoberturaCotizacion c)
+        {
+            return new CoberturaCotizacionResponse
+            {
+                CoberturaCotizacionId = c.CoberturaCotizacionId,
+                CotizacionId = c.CotizacionId,
+                Nombre = c.Nombre
+            };
+        }
+
+        private void MapToCobertura(CoberturaCotizacion entity, CoberturaCotizacionRequest body)
+        {
+            if (entity == null || body == null) return;
+
+            entity.Nombre = body.Nombre;
+        }
+
         private void MapToBien(BienCotizacion entity, BienCotizacionRequest body)
         {
             if (entity == null || body == null) return;
@@ -252,20 +290,21 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     .ThenInclude(c => c.TamanioContenedor)
 
                 .Include(x => x.BienCotizacion)
-                    .ThenInclude(b => b.TipoBien);
+                    .ThenInclude(b => b.TipoBien)
+
+                .Include(x => x.CoberturaCotizacion);
         }
 
         public override async Task<IActionResult> GetCotizacionAsync(string version)
         {
-            int page = 1;
-            int pageSize = 50;
-
+            // Antes esto tenia page=1 y pageSize=50 fijos, sin manera de pedir la
+            // pagina siguiente: a partir de la cotizacion 51 el listado dejaba de
+            // verlas en silencio, y con el lo hacian Reportes y el tablero de
+            // Inicio. Se devuelven todas las vigentes; quien pagina es la pantalla.
             var cotizaciones = await QueryCotizacionCompleta()
                 .AsNoTracking()
                 .Where(c => c.FechaCancelacion == null)
                 .OrderByDescending(c => c.FechaCotizacion)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
                 .ToListAsync();
 
             var response = cotizaciones
@@ -321,9 +360,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     MapToCotizacionMercancia(mercancia, body.CotizacionMercancia);
 
                     cotizacion.CotizacionMercancia = mercancia;
-
-                    // 👉 ejemplo cálculo (ajústalo a tu lógica real)
-                    cotizacion.Subtotal = mercancia.SumaAsegurada;
                 }
 
                 // 🔹 CONTENEDOR
@@ -339,15 +375,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                         cotizacion.CotizacionContenedor.Add(contenedor);
                     }
-
-                    // ejemplo cálculo (suma todos)
-                    cotizacion.Subtotal = cotizacion.CotizacionContenedor
-                        .Sum(x => x.PrimaUnitariaMXN ?? 0);
                 }
 
                 // 🔥 CÁLCULOS CENTRALIZADOS
-                cotizacion.IVA = (cotizacion.Subtotal ?? 0) * 0.16m;
-                cotizacion.Total = (cotizacion.Subtotal ?? 0) + (cotizacion.IVA ?? 0);
+                CalcularImportes(cotizacion);
 
                 if (body.BienCotizacion?.Any() == true)
                 {
@@ -360,6 +391,20 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                         MapToBien(bien, item);
 
                         cotizacion.BienCotizacion.Add(bien);
+                    }
+                }
+
+                if (body.CoberturaCotizacion?.Any() == true)
+                {
+                    cotizacion.CoberturaCotizacion = new List<CoberturaCotizacion>();
+
+                    foreach (var item in body.CoberturaCotizacion)
+                    {
+                        var cobertura = new CoberturaCotizacion();
+
+                        MapToCobertura(cobertura, item);
+
+                        cotizacion.CoberturaCotizacion.Add(cobertura);
                     }
                 }
 
@@ -401,6 +446,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                     .Include(c => c.CotizacionContenedor)
                     .Include(c => c.CotizacionMercancia)
                     .Include(c => c.BienCotizacion)
+                    .Include(c => c.CoberturaCotizacion)
                     .FirstOrDefaultAsync(c => c.CotizacionId == idCotizacion);
 
                 if (cotizacion == null)
@@ -415,9 +461,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 MapToCotizacion(cotizacion, body);
 
                 cotizacion.FechaCotizacion = fechaOriginal; // 🔒 proteger fecha
-
-                decimal subtotal = 0;
-
 
                 // 🔹 CONTENEDOR
                 if (body.CotizacionContenedor != null && body.CotizacionContenedor.Any())
@@ -448,9 +491,6 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
                         cotizacion.CotizacionContenedor.Add(contenedor);
                     }
-
-                    subtotal = cotizacion.CotizacionContenedor
-                        .Sum(x => x.PrimaUnitariaMXN ?? 0);
                 }
 
                 // 🔹 MERCANCIA
@@ -476,14 +516,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                         cotizacion.CotizacionMercancia,
                         body.CotizacionMercancia
                     );
-
-                    subtotal = cotizacion.CotizacionMercancia.SumaAsegurada ?? 0;
                 }
 
                 // 🔥 RECALCULAR SIEMPRE
-                cotizacion.Subtotal = subtotal;
-                cotizacion.IVA = subtotal * 0.16m;
-                cotizacion.Total = subtotal + cotizacion.IVA;
+                CalcularImportes(cotizacion);
 
                 if (body.BienCotizacion != null)
                 {
@@ -506,6 +542,33 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                             MapToBien(bien, item);
 
                             cotizacion.BienCotizacion.Add(bien);
+                        }
+                    }
+                }
+
+                // Igual que los bienes: null deja las que ya tenia, lista vacia las
+                // borra, y con elementos se reemplazan por completo.
+                if (body.CoberturaCotizacion != null)
+                {
+                    if (cotizacion.CoberturaCotizacion != null)
+                        _context.CoberturaCotizacion.RemoveRange(cotizacion.CoberturaCotizacion);
+
+                    cotizacion.CoberturaCotizacion = null;
+
+                    if (body.CoberturaCotizacion.Any())
+                    {
+                        cotizacion.CoberturaCotizacion = new List<CoberturaCotizacion>();
+
+                        foreach (var item in body.CoberturaCotizacion)
+                        {
+                            var cobertura = new CoberturaCotizacion
+                            {
+                                CotizacionId = cotizacion.CotizacionId
+                            };
+
+                            MapToCobertura(cobertura, item);
+
+                            cotizacion.CoberturaCotizacion.Add(cobertura);
                         }
                     }
                 }

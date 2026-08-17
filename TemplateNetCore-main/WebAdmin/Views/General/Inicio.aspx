@@ -28,7 +28,7 @@
                 <div class="card-body">
                     <i class="bi bi-person-vcard fs-1"></i>
                     <h5 class="card-title text-custom-green mb-3">Número de clientes</h5>
-                    <p class="card-text"><strong>120</strong></p>
+                    <p class="card-text"><strong><asp:Label ID="lblClientes" runat="server" Text="—"></asp:Label></strong></p>
                 </div>
             </div>
         </div>
@@ -39,7 +39,8 @@
                 <div class="card-body">
                     <i class="bi bi-file-earmark-ruled fs-1"></i>
                     <h5 class="card-title text-custom-green mb-3">Cotizaciones pendientes</h5>
-                    <p class="card-text"><strong>5</strong></p>
+                    <p class="card-text"><strong><asp:Label ID="lblCotizacionesPendientes" runat="server" Text="—"></asp:Label></strong></p>
+                    <small class="text-muted">sin confirmar</small>
                 </div>
             </div>
         </div>
@@ -49,7 +50,10 @@
                 <div class="card-body">
                     <i class="bi bi-cash-coin me-2 fs-1"></i>
                     <h5 class="card-title text-custom-green mb-3">Recibos Vencidos</h5>
-                    <p class="card-text"><strong>120</strong></p>
+                    <p class="card-text"><strong><asp:Label ID="lblRecibosVencidos" runat="server" Text="—"></asp:Label></strong></p>
+                    <asp:Panel ID="pnlRecibosPendiente" runat="server" Visible="false">
+                        <small class="text-muted">pendiente del módulo de cobranza</small>
+                    </asp:Panel>
                 </div>
             </div>
         </div>

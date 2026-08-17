@@ -19,6 +19,8 @@
         Public Property GastosExpedicion As Decimal?
         Public Property CotizacionMercancia As CotizacionMercancia
         Public Property CotizacionContenedor As List(Of CotizacionContenedor)
+        Public Property BienCotizacion As List(Of BienCotizacion)
+        Public Property CoberturaCotizacion As List(Of CoberturaCotizacion)
 
 
     End Class

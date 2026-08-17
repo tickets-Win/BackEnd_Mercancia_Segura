@@ -234,6 +234,11 @@ Public Class AdminGestionPolizas
         cargarPolizas()
     End Sub
     Protected Sub gvPolizas_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Correo" Then
+            AbrirCorreo(Convert.ToInt32(e.CommandArgument))
+            Exit Sub
+        End If
+
         If e.CommandName = "Editar" Then
             Dim polizaId As Integer = Convert.ToInt32(e.CommandArgument)
             pnlFormularioPolizas.Visible = True
@@ -1265,5 +1270,58 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
         AgregarRiesgo(txtcoberturasAdicionales3, 3, 3)
     End Sub
 
+
+
+    ''' <summary>
+    ''' Abre el control de envio de correo. Es el mismo control que usan los demas
+    ''' modulos: aqui solo se le pasan el destinatario y los datos del registro.
+    ''' </summary>
+    Private Sub AbrirCorreo(registroId As Integer)
+
+        ucCorreo.Abrir(DestinatariosDe(registroId), ValoresDe(registroId))
+
+        pnlEncabezado.Visible = False
+        PnlTabla.Visible = False
+        pnlFormularioPolizas.Visible = False
+    End Sub
+
+    Protected Sub ucCorreo_Cancelado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Protected Sub ucCorreo_Enviado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Private Sub VolverDelCorreo()
+        pnlEncabezado.Visible = True
+        PnlTabla.Visible = True
+        pnlFormularioPolizas.Visible = False
+    End Sub
+
+    ''' <summary>
+    ''' La póliza no tiene cliente ni correo asociados en el modelo, así que el
+    ''' destinatario se captura a mano.
+    ''' </summary>
+    Private Function DestinatariosDe(registroId As Integer) As String
+        Return String.Empty
+    End Function
+
+    Private Function ValoresDe(registroId As Integer) As Dictionary(Of String, String)
+
+        Dim valores As New Dictionary(Of String, String)
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetPolizaId(registroId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse json.StartsWith("ERROR") Then Return valores
+
+        Dim p As Poliza = JsonConvert.DeserializeObject(Of Poliza)(json)
+        If p Is Nothing Then Return valores
+
+        If Not String.IsNullOrWhiteSpace(p.NumeroPoliza) Then valores("Póliza") = p.NumeroPoliza
+
+        Return valores
+    End Function
 
 End Class

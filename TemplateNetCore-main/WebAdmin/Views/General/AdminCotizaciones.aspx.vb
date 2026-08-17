@@ -10,6 +10,16 @@ Public Class AdminCotizaciones
     ''' </summary>
     Private Const IVA_PORCENTAJE As Decimal = 0.16D
 
+    ''' <summary>
+    ''' Catálogos de contenedor serializados para el JavaScript que arma la tabla.
+    ''' Esa tabla se genera en el navegador, así que los combos de Tipo y Tamaño no
+    ''' son controles de servidor y hay que pasarles los datos por aquí.
+    ''' Se dejan como "[]" si el API no responde, para que el script no truene.
+    ''' </summary>
+    Protected TiposContenedorJson As String = "[]"
+    Protected TamaniosContenedorJson As String = "[]"
+
+
     Private ReadOnly Property CoberturasCotizacion As List(Of Cobertura)
         Get
             If Session("CoberturasCotizacion") Is Nothing Then
@@ -20,6 +30,18 @@ Public Class AdminCotizaciones
     End Property
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
+        ' Necesario para que suban los adjuntos del correo. ASP.NET solo pone este
+        ' atributo si ve un FileUpload al renderizar, y el panel del correo nace
+        ' oculto; cuando se muestra ya es por postback parcial y la etiqueta
+        ' <form> vive fuera del UpdatePanel, así que nunca se vuelve a dibujar.
+        Me.Form.Enctype = "multipart/form-data"
+
+        ' Se cargan también en postback: la tabla de contenedores se vuelve a
+        ' generar en el cliente después de cada actualización parcial.
+        CargarCatalogosContenedor()
+        PrepararContenedoresJson()
+
         If Not IsPostBack Then
             pnlMercancia.Visible = False
             CargarCotizaciones()
@@ -28,6 +50,8 @@ Public Class AdminCotizaciones
             CargarTipoMoneda(ddlMoneda)
             CargarClasificacion(ddlClasificacion)
             CargarTransito(ddlTransito)
+            CargarTipoTarifa(ddlTipoTarifaSecos, ddlTipoRefrigerados, ddlTipoIsotaques)
+            CargarUnidades()
 
             LimpiarBeneficiarios()
 
@@ -52,21 +76,36 @@ Public Class AdminCotizaciones
         End Get
     End Property
 
+    ''' <summary>
+    ''' Bienes de la póliza seleccionada. Se conservan completos porque al guardar
+    ''' hay que mandar TipoBienId y AdministracionBienId, que el combo no lleva.
+    ''' </summary>
+    Private Property BienesDePoliza As List(Of Bien)
+        Get
+            If Session("BienesDePoliza") Is Nothing Then
+                Session("BienesDePoliza") = New List(Of Bien)()
+            End If
+            Return CType(Session("BienesDePoliza"), List(Of Bien))
+        End Get
+        Set(value As List(Of Bien))
+            Session("BienesDePoliza") = If(value, New List(Of Bien)())
+        End Set
+    End Property
+
     Protected Sub btnbienesasegurados_Click(sender As Object, e As EventArgs)
-        Dim item As ListItem = ddlbienesasegurados.SelectedItem
-
-        If item Is Nothing OrElse item.Value = "0" Then Exit Sub
-
         Dim bienId As Integer
-        If Not Integer.TryParse(item.Value, bienId) Then Exit Sub
+        If Not Integer.TryParse(ddlbienesasegurados.SelectedValue, bienId) Then Exit Sub
+        If bienId = 0 Then Exit Sub
 
         ' No agregar dos veces el mismo.
         If BienesCotizacion.Any(Function(b) b.BienId = bienId) Then Exit Sub
 
-        BienesCotizacion.Add(New Bien With {
-            .BienId = bienId,
-            .Nombre = item.Text
-        })
+        ' Se toma el bien completo de la póliza, no solo el texto del combo.
+        Dim bien As Bien = BienesDePoliza.FirstOrDefault(Function(b) b.BienId = bienId)
+
+        If bien Is Nothing Then Exit Sub
+
+        BienesCotizacion.Add(bien)
 
         CargarGridBienes()
     End Sub
@@ -221,7 +260,10 @@ Public Class AdminCotizaciones
         txtIVA.Text = String.Empty
         txtTotalPagar.Text = String.Empty
 
-        ' Bloque de contenedor
+        ' Bloque de contenedor. El hidden se limpia aparte: Page_Load ya lo llenó
+        ' con lo que venía en el Request, así que sin esto la cotización nueva
+        ' arrancaría con los contenedores de la anterior.
+        hfContenedores.Value = "[]"
         ResetearCombo(ddlUnidades)
         txtCuotaSecos.Text = String.Empty
         ResetearCombo(ddlTipoTarifaSecos)
@@ -236,9 +278,73 @@ Public Class AdminCotizaciones
         txtTotalPagar2.Text = String.Empty
 
         ' Al final: regresa el tipo a Mercancía y recarga el combo de pólizas,
-        ' que puede haber quedado con las de contenedor.
+        ' que puede haber quedado con las de contenedor. En un alta nueva sí se
+        ' puede elegir el tipo; solo se bloquea al editar.
+        ddlTipoCotizacion.Enabled = True
         ResetearCombo(ddlTipoCotizacion)
         AplicarTipoCotizacion(ddlTipoCotizacion.SelectedValue)
+    End Sub
+
+    ''' <summary>
+    ''' Trae los catálogos de tipo y tamaño de contenedor y los deja listos como
+    ''' JSON con la forma { id, nombre } que consume el script de la tabla.
+    ''' </summary>
+    Private Sub CargarCatalogosContenedor()
+
+        Dim api As New ConsumoApi()
+
+        TiposContenedorJson = SerializarCatalogo(Of TipoContenedor)(
+            api.GetTipoContenedor(),
+            Function(t) t.TipoContenedorId,
+            Function(t) t.Nombre)
+
+        TamaniosContenedorJson = SerializarCatalogo(Of TamanioContenedor)(
+            api.GetTamanioContenedor(),
+            Function(t) t.TamanioContenedorId,
+            Function(t) t.Nombre)
+    End Sub
+
+    ''' <summary>
+    ''' Convierte la respuesta del API en un JSON de { id, nombre }. Devuelve un
+    ''' arreglo vacío si el endpoint falla, para no romper el JavaScript.
+    ''' </summary>
+    Private Function SerializarCatalogo(Of T)(json As String,
+                                              obtenerId As Func(Of T, Integer),
+                                              obtenerNombre As Func(Of T, String)) As String
+
+        Try
+            If String.IsNullOrWhiteSpace(json) OrElse
+               json = "null" OrElse
+               json.StartsWith("ERROR") Then
+
+                Return "[]"
+            End If
+
+            Dim lista As List(Of T) = JsonConvert.DeserializeObject(Of List(Of T))(json)
+            If lista Is Nothing Then Return "[]"
+
+            Dim proyectada = lista.Select(Function(x) New With {
+                .id = obtenerId(x),
+                .nombre = obtenerNombre(x)
+            })
+
+            Return JsonConvert.SerializeObject(proyectada)
+
+        Catch ex As Exception
+            Return "[]"
+        End Try
+    End Function
+
+    ''' <summary>
+    ''' Llena el combo de unidades del 1 al 20 desde el servidor. Antes lo hacía el
+    ''' JavaScript, pero ASP.NET rechaza en el postback los valores que no registró.
+    ''' </summary>
+    Private Sub CargarUnidades()
+        ddlUnidades.Items.Clear()
+
+        For i As Integer = 1 To 20
+            ddlUnidades.Items.Add(New ListItem(i.ToString(), i.ToString()))
+        Next
     End Sub
 
     Private Sub ResetearCombo(ddl As DropDownList)
@@ -287,11 +393,260 @@ Public Class AdminCotizaciones
         If Not Integer.TryParse(Convert.ToString(e.CommandArgument), cotizacionId) Then Exit Sub
 
         Select Case e.CommandName
+            Case "Aceptar"
+                AceptarCotizacion(cotizacionId)
             Case "Editar"
                 EditarCotizacion(cotizacionId)
+            Case "Correo"
+                AbrirCorreo(cotizacionId)
             Case "Eliminar"
                 CancelarCotizacion(cotizacionId)
         End Select
+    End Sub
+
+    ''' <summary>
+    ''' Abre el control de envio de correo con los datos de esa cotizacion: sus
+    ''' destinatarios y los valores con los que se resuelven los {{campos}}.
+    ''' </summary>
+    Private Sub AbrirCorreo(cotizacionId As Integer)
+
+        ucCorreo.Abrir(CorreosDelCliente(cotizacionId), ValoresDeCampos(cotizacionId))
+
+        pnlEncabezado.Visible = False
+        PnlTabla.Visible = False
+        pnlFormularioCotizaciones.Visible = False
+        pnlMercancia.Visible = False
+    End Sub
+
+    Protected Sub ucCorreo_Cancelado(sender As Object, e As EventArgs)
+        VolverAlListado()
+    End Sub
+
+    Protected Sub ucCorreo_Enviado(sender As Object, e As EventArgs)
+        Avisar("Correo enviado correctamente.", "success")
+
+        VolverAlListado()
+    End Sub
+
+
+    ''' <summary>
+    ''' Valores conocidos para los {{campos}}. Lo que no se puede resolver se deja
+    ''' fuera a propósito: el campo se queda visible en el texto y se avisa antes
+    ''' de enviar.
+    ''' </summary>
+    Private Function ValoresDeCampos(cotizacionId As Integer) As Dictionary(Of String, String)
+
+        Dim valores As New Dictionary(Of String, String) From {
+            {"FechaActual", Date.Today.ToString("dd/MM/yyyy")}
+        }
+
+        If cotizacionId <= 0 Then Return valores
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCotizacionId(cotizacionId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse json.StartsWith("ERROR") Then Return valores
+
+        Dim cot As Cotizacion = JsonConvert.DeserializeObject(Of Cotizacion)(json)
+        If cot Is Nothing Then Return valores
+
+        If Not String.IsNullOrWhiteSpace(cot.nombreCliente) Then
+            valores("Nombre Completo") = cot.nombreCliente
+            valores("Nombre") = cot.nombreCliente.Split(" "c)(0)
+        End If
+
+        If Not String.IsNullOrWhiteSpace(cot.NumeroPoliza) Then
+            valores("Póliza") = cot.NumeroPoliza
+        End If
+
+        Dim correo As String = PrimerCorreo(cot.ClienteId)
+        If Not String.IsNullOrWhiteSpace(correo) Then valores("Correo") = correo
+
+        Dim clave As String = ClaveDelCertificado(cotizacionId)
+        If Not String.IsNullOrWhiteSpace(clave) Then valores("Certificado") = clave
+
+        Return valores
+    End Function
+
+    ''' <summary>Todos los correos del cliente, separados por punto y coma.</summary>
+    Private Function CorreosDelCliente(cotizacionId As Integer) As String
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCotizacionId(cotizacionId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse json.StartsWith("ERROR") Then Return String.Empty
+
+        Dim cot As Cotizacion = JsonConvert.DeserializeObject(Of Cotizacion)(json)
+        If cot Is Nothing Then Return String.Empty
+
+        Return String.Join("; ", ListaDeCorreos(cot.ClienteId))
+    End Function
+
+    Private Function PrimerCorreo(clienteId As Integer) As String
+
+        Dim lista = ListaDeCorreos(clienteId)
+
+        If lista.Count = 0 Then Return String.Empty
+
+        Return lista(0)
+    End Function
+
+    Private Function ListaDeCorreos(clienteId As Integer) As List(Of String)
+
+        Dim correos As New List(Of String)
+
+        If clienteId <= 0 Then Return correos
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCorreosCliente(clienteId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then Return correos
+
+        Try
+            For Each item As Newtonsoft.Json.Linq.JObject In Newtonsoft.Json.Linq.JArray.Parse(json)
+
+                Dim valor = item.GetValue("correo", StringComparison.OrdinalIgnoreCase)
+
+                If valor Is Nothing Then Continue For
+
+                Dim direccion As String = valor.ToString().Trim()
+
+                If direccion.Length > 0 AndAlso Not correos.Contains(direccion) Then
+                    correos.Add(direccion)
+                End If
+            Next
+        Catch
+            ' Si el catálogo no viene como se espera, se deja vacío el destinatario.
+        End Try
+
+        Return correos
+    End Function
+
+    ''' <summary>Clave del certificado de esa cotización, si ya fue confirmada.</summary>
+    Private Function ClaveDelCertificado(cotizacionId As Integer) As String
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCertificados()
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then Return String.Empty
+
+        Dim lista As List(Of Certificado) =
+            JsonConvert.DeserializeObject(Of List(Of Certificado))(json)
+
+        If lista Is Nothing Then Return String.Empty
+
+        Dim cert = lista.FirstOrDefault(Function(c) c.CotizacionId = cotizacionId)
+
+        If cert Is Nothing Then Return String.Empty
+
+        Return cert.ClaveCertificado
+    End Function
+
+    ''' <summary>
+    ''' Ids de las cotizaciones que ya tienen certificado. Se consulta una sola vez
+    ''' por carga del listado; el certificado es lo que marca que la cotización fue
+    ''' aceptada, no hay un campo de estatus en la cotización misma.
+    ''' </summary>
+    Private CotizacionesAceptadas As HashSet(Of Integer)
+
+    Private Sub CargarCotizacionesAceptadas()
+        CotizacionesAceptadas = New HashSet(Of Integer)
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCertificados()
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then Exit Sub
+
+        Dim certificados As List(Of Certificado) =
+            JsonConvert.DeserializeObject(Of List(Of Certificado))(json)
+
+        If certificados Is Nothing Then Exit Sub
+
+        For Each c As Certificado In certificados
+            CotizacionesAceptadas.Add(c.CotizacionId)
+        Next
+    End Sub
+
+    ''' <summary>
+    ''' La palomita se pinta en verde cuando la cotización ya tiene certificado.
+    ''' El color es solo señal: quien de verdad la apaga es PuedeAceptar.
+    ''' </summary>
+    Protected Function IconoAceptar(valor As Object) As String
+        If YaAceptada(valor) Then Return "icon-btn action-icon text-success ms-aceptada"
+
+        Return "icon-btn action-icon"
+    End Function
+
+    ''' <summary>
+    ''' Una cotización se confirma una sola vez. Con Enabled en False el LinkButton
+    ''' se pinta sin href y deja de hacer postback; la clase "disabled" de Bootstrap
+    ''' no sirve aquí porque no aplica a enlaces normales.
+    ''' </summary>
+    Protected Function PuedeAceptar(valor As Object) As Boolean
+        Return Not YaAceptada(valor)
+    End Function
+
+    ''' <summary>
+    ''' El OnClientClick hay que apagarlo aparte: ASP.NET lo escribe como atributo
+    ''' onclick aunque el control esté deshabilitado, y el navegador lo ejecuta
+    ''' igual porque "disabled" no significa nada en un enlace. Sin esto salía el
+    ''' confirm en una cotización ya certificada.
+    ''' </summary>
+    Protected Function ConfirmacionAceptar(valor As Object) As String
+        If YaAceptada(valor) Then Return "return false;"
+
+        Return "return confirm('¿Aceptar esta cotización? Se generará su certificado.');"
+    End Function
+
+    Protected Function TituloAceptar(valor As Object) As String
+        If YaAceptada(valor) Then Return "Ya aceptada: tiene certificado"
+
+        Return "Aceptar cotización y generar certificado"
+    End Function
+
+    Private Function YaAceptada(valor As Object) As Boolean
+        If CotizacionesAceptadas Is Nothing Then Return False
+
+        Dim id As Integer
+        If Not Integer.TryParse(Convert.ToString(valor), id) Then Return False
+
+        Return CotizacionesAceptadas.Contains(id)
+    End Function
+
+    ''' <summary>
+    ''' Acepta la cotización generando su certificado. No hay campo "confirmada" en
+    ''' la cotización: la existencia del certificado es lo que la marca como tal.
+    ''' </summary>
+    Private Sub AceptarCotizacion(cotizacionId As Integer)
+
+        If CotizacionesAceptadas Is Nothing Then CargarCotizacionesAceptadas()
+
+        If CotizacionesAceptadas.Contains(cotizacionId) Then
+            Avisar("Esta cotización ya fue aceptada y tiene certificado.", "warning")
+            Exit Sub
+        End If
+
+        ' Solo se manda la cotización: el API copia de ella el asegurado, la
+        ' vigencia y la suma asegurada, y la deja con estatus Activo.
+        Dim peticion = New With {.cotizacionId = cotizacionId}
+
+        Dim api As New ConsumoApi()
+        Dim respuesta As String = api.PostCertificado(JsonConvert.SerializeObject(peticion))
+
+        If String.IsNullOrWhiteSpace(respuesta) OrElse respuesta.StartsWith("ERROR") Then
+            Avisar("No se pudo aceptar la cotización: " & DetalleDeError(respuesta), "danger")
+            Exit Sub
+        End If
+
+        Avisar("Cotización aceptada. Se generó su certificado.", "success")
+
+        CargarCotizaciones()
     End Sub
 
     ''' <summary>
@@ -304,8 +659,7 @@ Public Class AdminCotizaciones
         Dim respuesta As String = api.DeleteCotizacion(cotizacionId)
 
         If String.IsNullOrWhiteSpace(respuesta) OrElse respuesta.StartsWith("ERROR") Then
-            Dim detalle As String = If(String.IsNullOrWhiteSpace(respuesta), "sin respuesta del servidor", respuesta.Substring(6).Trim())
-            Avisar("No se pudo cancelar: " & detalle, "danger")
+            Avisar("No se pudo cancelar: " & DetalleDeError(respuesta), "danger")
             Exit Sub
         End If
 
@@ -359,6 +713,23 @@ Public Class AdminCotizaciones
 
     Private Sub LlenarDesdeCotizacion(c As Cotizacion)
 
+        ' El tipo no se guarda como tal: se deduce de qué detalle trae la cotización.
+        Dim esContenedor As Boolean = (c.CotizacionContenedor IsNot Nothing AndAlso
+                                       c.CotizacionContenedor.Count > 0)
+
+        Dim tipo As String = If(esContenedor, "Contenedor", "Mercancia")
+
+        ' Va primero porque AplicarTipoCotizacion reconstruye el combo de pólizas
+        ' según el tipo; si se hiciera después, borraría la póliza seleccionada.
+        ddlTipoCotizacion.SelectedValue = tipo
+        AplicarTipoCotizacion(tipo)
+
+        ' No se permite cambiar el tipo de una cotización ya guardada: dejaría
+        ' huérfano el detalle de mercancía o de contenedor que ya tiene.
+        ' Un combo deshabilitado no viaja en el postback, pero conserva su valor en
+        ' el ViewState, así que btnGuardar_Click lo sigue leyendo bien.
+        ddlTipoCotizacion.Enabled = False
+
         ' El combo usa value compuesto "polizaId|detalleId" pero la cotización solo
         ' guarda el PolizaId, así que se toma la primera opción de esa póliza.
         Dim detalleId As Integer = SeleccionarPolizaPorId(c.PolizaId)
@@ -378,11 +749,15 @@ Public Class AdminCotizaciones
         txtVigenciaDel.Text = TextoFecha(c.VigenciaDel)
         txtVigenciaHasta.Text = TextoFecha(c.VigenciaHasta)
 
-        txtPrimaYSeguramiento.Text = TextoMonto(c.PrimaServicioDeAseguramiento)
-        txtGastosExpedicion.Text = TextoMonto(c.GastosExpedicion)
-        txtSubtotal.Text = TextoMonto(c.Subtotal)
-        txtIVA.Text = TextoMonto(c.IVA)
-        txtTotalPagar.Text = TextoMonto(c.Total)
+        ' Los importes se escriben en el bloque que corresponde al tipo, que es de
+        ' donde los vuelve a leer btnGuardar_Click.
+        LlenarImportes(esContenedor, c)
+
+        ' Se repueblan bienes y contenedores ya guardados. Sin esto, al editar y
+        ' guardar el API recibiría listas vacías y borraría lo que ya tenía.
+        RepoblarBienes(c.BienCotizacion)
+        RepoblarCoberturas(c.CoberturaCotizacion)
+        RepoblarContenedores(c.CotizacionContenedor)
 
         Dim m As CotizacionMercancia = c.CotizacionMercancia
 
@@ -411,6 +786,86 @@ Public Class AdminCotizaciones
     End Sub
 
     ''' <summary>
+    ''' Carga en la tabla los bienes que la cotización ya tenía guardados. Como esos
+    ''' registros no conservan el BienId de la póliza, se usa el BienCotizacionId
+    ''' como llave del renglón, que es para lo único que sirve ese campo aquí.
+    ''' </summary>
+    Private Sub RepoblarBienes(bienes As List(Of BienCotizacion))
+
+        BienesCotizacion.Clear()
+
+        If bienes IsNot Nothing Then
+            For Each b As BienCotizacion In bienes
+                BienesCotizacion.Add(New Bien With {
+                    .BienId = b.BienCotizacionId,
+                    .TipoBienId = b.TipoBienId,
+                    .AdministracionBienId = b.AdministracionBienId,
+                    .Nombre = b.Nombre
+                })
+            Next
+        End If
+
+        CargarGridBienes()
+    End Sub
+
+    ''' <summary>
+    ''' Escribe prima, gastos, subtotal, IVA y total en el bloque del tipo elegido.
+    ''' Mercancía y Contenedor tienen sus propios campos, y btnGuardar_Click lee los
+    ''' del tipo seleccionado: escribirlos en el bloque equivocado los dejaría vacíos.
+    ''' </summary>
+    Private Sub LlenarImportes(esContenedor As Boolean, c As Cotizacion)
+
+        Dim prima As TextBox = If(esContenedor, txtPrimaYSeguramiento2, txtPrimaYSeguramiento)
+        Dim gastos As TextBox = If(esContenedor, txtGastosExpedicion2, txtGastosExpedicion)
+        Dim subtotal As TextBox = If(esContenedor, txtSubtotal2, txtSubtotal)
+        Dim iva As TextBox = If(esContenedor, txtIVA2, txtIVA)
+        Dim total As TextBox = If(esContenedor, txtTotalPagar2, txtTotalPagar)
+
+        prima.Text = TextoMonto(c.PrimaServicioDeAseguramiento)
+        gastos.Text = TextoMonto(c.GastosExpedicion)
+        subtotal.Text = TextoMonto(c.Subtotal)
+        iva.Text = TextoMonto(c.IVA)
+        total.Text = TextoMonto(c.Total)
+    End Sub
+
+    ''' <summary>
+    ''' Carga en la tabla las coberturas que la cotización ya tenía guardadas. Como
+    ''' se persisten sin su id de origen, se usa el CoberturaCotizacionId como llave
+    ''' del renglón, que es para lo único que sirve ese campo aquí.
+    ''' </summary>
+    Private Sub RepoblarCoberturas(coberturas As List(Of CoberturaCotizacion))
+
+        CoberturasCotizacion.Clear()
+
+        If coberturas IsNot Nothing Then
+            For Each c As CoberturaCotizacion In coberturas
+                CoberturasCotizacion.Add(New Cobertura With {
+                    .CoberturaId = c.CoberturaCotizacionId,
+                    .Nombre = c.Nombre
+                })
+            Next
+        End If
+
+        CargarGridCoberturas()
+    End Sub
+
+    ''' <summary>
+    ''' Deja la tabla de contenedores lista para que el JavaScript la repinte con
+    ''' los renglones guardados, y ajusta el combo de unidades a esa cantidad.
+    ''' </summary>
+    Private Sub RepoblarContenedores(contenedores As List(Of CotizacionContenedor))
+
+        If contenedores Is Nothing OrElse contenedores.Count = 0 Then
+            hfContenedores.Value ="[]"
+            Exit Sub
+        End If
+
+        SeleccionarValor(ddlUnidades, contenedores.Count)
+
+        hfContenedores.Value =SerializarContenedores(contenedores)
+    End Sub
+
+    ''' <summary>
     ''' Selecciona en el combo la primera opción cuyo value empiece con el PolizaId.
     ''' Devuelve el id de detalle (mercancía o contenedor) de esa opción.
     ''' </summary>
@@ -432,9 +887,9 @@ Public Class AdminCotizaciones
         Return 0
     End Function
 
-    Private Sub MarcarChecksMoneda(nacional As HtmlInputCheckBox, internacional As HtmlInputCheckBox, monedaId As Integer)
-        nacional.Checked = (monedaId = 1)
-        internacional.Checked = (monedaId = 2)
+    Private Sub MarcarChecksMoneda(nacional As HtmlInputCheckBox, internacional As HtmlInputCheckBox, monedaId As Integer?)
+        nacional.Checked = (monedaId.GetValueOrDefault() = 1)
+        internacional.Checked = (monedaId.GetValueOrDefault() = 2)
     End Sub
 
     Private Sub SeleccionarTexto(ddl As DropDownList, texto As String)
@@ -496,6 +951,10 @@ Public Class AdminCotizaciones
         If gvCotizaciones.PageIndex > ultimaPagina Then
             gvCotizaciones.PageIndex = ultimaPagina
         End If
+
+        ' Antes de pintar: se necesita saber cuáles ya tienen certificado para
+        ' marcar la palomita.
+        CargarCotizacionesAceptadas()
 
         gvCotizaciones.DataSource = listaCotizaciones
         gvCotizaciones.DataBind()
@@ -567,7 +1026,17 @@ Public Class AdminCotizaciones
         Dim api As New ConsumoApi()
         Dim cargarClientes As String = api.GetCargarClientes()
 
-        Dim listaClientes As List(Of Cliente) = JsonConvert.DeserializeObject(Of List(Of Cliente))(cargarClientes)
+        ' Se llama desde Page_Load: si el API falla, ConsumoApi devuelve "ERROR: ..."
+        ' y deserializarlo tumbaría la pantalla completa.
+        Dim listaClientes As New List(Of Cliente)
+
+        If Not String.IsNullOrWhiteSpace(cargarClientes) AndAlso
+           cargarClientes <> "null" AndAlso
+           Not cargarClientes.StartsWith("ERROR") Then
+
+            listaClientes = JsonConvert.DeserializeObject(Of List(Of Cliente))(cargarClientes)
+            If listaClientes Is Nothing Then listaClientes = New List(Of Cliente)
+        End If
 
         ddlCliente.Items.Clear()
 
@@ -584,8 +1053,16 @@ Public Class AdminCotizaciones
         Dim api As New ConsumoApi()
         Dim json As String = api.GetCargarPolizas()
 
-        Dim listaPolizas As List(Of Poliza) =
-            JsonConvert.DeserializeObject(Of List(Of Poliza))(json)
+        ' Igual que cargarClientes: esto corre en Page_Load y no puede reventar.
+        Dim listaPolizas As New List(Of Poliza)
+
+        If Not String.IsNullOrWhiteSpace(json) AndAlso
+           json <> "null" AndAlso
+           Not json.StartsWith("ERROR") Then
+
+            listaPolizas = JsonConvert.DeserializeObject(Of List(Of Poliza))(json)
+            If listaPolizas Is Nothing Then listaPolizas = New List(Of Poliza)
+        End If
 
         ddlNombreInternoPoliza.Items.Clear()
 
@@ -633,6 +1110,7 @@ Public Class AdminCotizaciones
     Private Sub CargarBeneficiariosDeCliente(clienteId As Integer)
 
         LimpiarBeneficiarios()
+        LimpiarCuotasContenedor()
 
         If clienteId = 0 Then Exit Sub
 
@@ -658,6 +1136,51 @@ Public Class AdminCotizaciones
         End If
 
         CargarBeneficiariosDelCliente(cliente)
+        LlenarCuotasDelCliente(cliente)
+    End Sub
+
+    ''' <summary>
+    ''' Vuelca al bloque "Cuota Aplicable Contenedor" las tarifas negociadas del
+    ''' cliente. Es el inverso de cómo AdminCliente las captura: ahí se guardan con
+    ''' TipoCuotaId 1, 2 y 3 según el bloque, y aquí se reparten con ese mismo id.
+    '''
+    ''' Estos campos no se guardan en la cotización —no existen en su contrato—, así
+    ''' que siempre reflejan lo que el cliente tiene vigente.
+    ''' </summary>
+    Private Sub LlenarCuotasDelCliente(cliente As Cliente)
+
+        LimpiarCuotasContenedor()
+
+        If cliente.Cuota Is Nothing Then Exit Sub
+
+        For Each c As Cuota In cliente.Cuota
+
+            Select Case c.TipoCuotaId
+
+                Case 1 ' Contenedores secos
+                    txtCuotaSecos.Text = TextoMonto(c.Monto)
+                    SeleccionarValor(ddlTipoTarifaSecos, c.TipoTarifaId)
+
+                Case 2 ' Contenedores refrigerados
+                    txtCuotaRefrigerados.Text = TextoMonto(c.Monto)
+                    SeleccionarValor(ddlTipoRefrigerados, c.TipoTarifaId)
+
+                Case 3 ' Isotanques
+                    txtCuota2.Text = TextoMonto(c.Monto)
+                    SeleccionarValor(ddlTipoIsotaques, c.TipoTarifaId)
+
+            End Select
+        Next
+    End Sub
+
+    Private Sub LimpiarCuotasContenedor()
+        txtCuotaSecos.Text = String.Empty
+        txtCuotaRefrigerados.Text = String.Empty
+        txtCuota2.Text = String.Empty
+
+        ResetearCombo(ddlTipoTarifaSecos)
+        ResetearCombo(ddlTipoRefrigerados)
+        ResetearCombo(ddlTipoIsotaques)
     End Sub
 
     Private Sub CargarBeneficiariosDelCliente(cliente As Cliente)
@@ -746,6 +1269,8 @@ Public Class AdminCotizaciones
 
         ' Los bienes registrados en la póliza alimentan dos combos: Subclasificación
         ' en la captura de mercancía y Bienes Asegurados en la de contenedor.
+        BienesDePoliza = poliza.Bien
+
         LlenarComboBienes(ddlSubclasificación, poliza.Bien)
         LlenarComboBienes(ddlbienesasegurados, poliza.Bien)
 
@@ -887,11 +1412,14 @@ Public Class AdminCotizaciones
 
         Dim beneficiarioId As Integer = IdSeleccionado(ddlBeneficiarioPreferente)
 
-        ' Los importes se recalculan aquí en vez de leerlos de los campos: los
-        ' calculados son de solo lectura y su texto trae formato de moneda, así que
-        ' el servidor no debe depender de que el JavaScript haya corrido.
-        Dim prima As Decimal = MontoDe(txtPrimaYSeguramiento).GetValueOrDefault()
-        Dim gastos As Decimal = MontoDe(txtGastosExpedicion).GetValueOrDefault()
+        Dim esContenedor As Boolean = (ddlTipoCotizacion.SelectedValue = "Contenedor")
+
+        ' Cada tipo de cotización captura sus importes en su propio bloque.
+        ' Se recalculan aquí en vez de leer los campos calculados: esos son de solo
+        ' lectura y su texto trae formato de moneda, así que el servidor no debe
+        ' depender de que el JavaScript haya corrido.
+        Dim prima As Decimal = MontoDe(If(esContenedor, txtPrimaYSeguramiento2, txtPrimaYSeguramiento)).GetValueOrDefault()
+        Dim gastos As Decimal = MontoDe(If(esContenedor, txtGastosExpedicion2, txtGastosExpedicion)).GetValueOrDefault()
         Dim subtotal As Decimal = prima + gastos
         Dim iva As Decimal = Decimal.Round(subtotal * IVA_PORCENTAJE, 2)
 
@@ -907,9 +1435,25 @@ Public Class AdminCotizaciones
             .GastosExpedicion = gastos,
             .Subtotal = subtotal,
             .IVA = iva,
-            .Total = subtotal + iva,
-            .CotizacionMercancia = ArmarCotizacionMercancia()
+            .Total = subtotal + iva
         }
+
+        ' El API exige mercancía o contenedor; se manda solo el que corresponde.
+        If esContenedor Then
+            Dim contenedores As List(Of CotizacionContenedor) = ArmarCotizacionContenedor()
+
+            If contenedores.Count = 0 Then
+                Avisar("Captura al menos un contenedor en la tabla.", "warning")
+                Exit Sub
+            End If
+
+            cotizacion.CotizacionContenedor = contenedores
+        Else
+            cotizacion.CotizacionMercancia = ArmarCotizacionMercancia()
+        End If
+
+        cotizacion.BienCotizacion = ArmarBienCotizacion()
+        cotizacion.CoberturaCotizacion = ArmarCoberturaCotizacion()
 
         Dim cotizacionId As Integer
         Integer.TryParse(hfCotizacionId.Value, cotizacionId)
@@ -929,8 +1473,7 @@ Public Class AdminCotizaciones
 
         If String.IsNullOrWhiteSpace(respuesta) OrElse respuesta.StartsWith("ERROR") Then
             ' El API devuelve el motivo en texto plano; se muestra tal cual.
-            Dim detalle As String = If(String.IsNullOrWhiteSpace(respuesta), "sin respuesta del servidor", respuesta.Substring(6).Trim())
-            Avisar("No se pudo guardar: " & detalle, "danger")
+            Avisar("No se pudo guardar: " & DetalleDeError(respuesta), "danger")
             Exit Sub
         End If
 
@@ -941,11 +1484,152 @@ Public Class AdminCotizaciones
         CoberturasCotizacion.Clear()
         CargarGridCoberturas()
 
+        BienesCotizacion.Clear()
+        CargarGridBienes()
+
         CargarCotizaciones()
 
         VolverAlListado()
     End Sub
 
+
+    ''' <summary>
+    ''' Lee la tabla de contenedores desde Request.Form. Esa tabla la genera el
+    ''' JavaScript con inputs HTML planos, no con controles de servidor, así que no
+    ''' hay nada que consultar con .Text: los valores solo llegan por el POST.
+    ''' </summary>
+    Private Function ArmarCotizacionContenedor() As List(Of CotizacionContenedor)
+
+        Dim lista As New List(Of CotizacionContenedor)
+
+        Dim unidades As Integer
+        Integer.TryParse(ddlUnidades.SelectedValue, unidades)
+
+        For i As Integer = 1 To unidades
+
+            Dim renglon As New CotizacionContenedor With {
+                .NumeroContenedor = ValorForm("txtNumContenedor_" & i),
+                .TipoContenedorId = EnteroForm("ddlTipoContenedor_" & i),
+                .TamanioContendorId = EnteroForm("ddlTamanoContenedor_" & i),
+                .Referencia = ValorForm("txtReferencia_" & i),
+                .LR = DecimalForm("txtLR_" & i),
+                .Cuota = DecimalForm("txtCuota_" & i),
+                .TC = DecimalForm("txtTC_" & i),
+                .PrimaUnitariaUSD = DecimalForm("txtPrimaUSD_" & i),
+                .PrimaUnitariaMXN = DecimalForm("txtPrimaMXN_" & i)
+            }
+
+            renglon.Total = renglon.PrimaUnitariaUSD
+
+            ' Los renglones que el usuario dejó en blanco no se mandan.
+            If Not String.IsNullOrWhiteSpace(renglon.NumeroContenedor) OrElse
+               renglon.TipoContenedorId.HasValue OrElse
+               renglon.TamanioContendorId.HasValue OrElse
+               renglon.LR.HasValue OrElse
+               renglon.Cuota.HasValue Then
+
+                lista.Add(renglon)
+            End If
+        Next
+
+        Return lista
+    End Function
+
+    ''' <summary>
+    ''' Deja en hfContenedores los renglones que el JavaScript debe repintar.
+    ''' En un postback normal son los que el usuario acaba de capturar, para que la
+    ''' tabla no se vacíe al regenerarse; al abrir una cotización para editar,
+    ''' LlenarDesdeCotizacion los reemplaza por los que están guardados.
+    ''' </summary>
+    Private Sub PrepararContenedoresJson()
+        If Not IsPostBack Then Exit Sub
+
+        hfContenedores.Value =SerializarContenedores(ArmarCotizacionContenedor())
+    End Sub
+
+    Private Function SerializarContenedores(lista As List(Of CotizacionContenedor)) As String
+
+        If lista Is Nothing OrElse lista.Count = 0 Then Return "[]"
+
+        Dim proyectada = lista.Select(Function(c) New With {
+            .numero = c.NumeroContenedor,
+            .tipoId = c.TipoContenedorId,
+            .tamanioId = c.TamanioContendorId,
+            .lr = c.LR,
+            .referencia = c.Referencia,
+            .cuota = c.Cuota,
+            .tc = c.TC,
+            .primaUSD = c.PrimaUnitariaUSD,
+            .primaMXN = c.PrimaUnitariaMXN
+        })
+
+        Return JsonConvert.SerializeObject(proyectada)
+    End Function
+
+    ''' <summary>
+    ''' Convierte los bienes de la tabla al formato que espera el API. No se manda
+    ''' el BienId: la cotización guarda una copia del bien, no una referencia.
+    ''' Devuelve Nothing cuando no hay ninguno, porque el PUT interpreta una lista
+    ''' vacía como "borra los que ya tenía".
+    ''' </summary>
+    Private Function ArmarBienCotizacion() As List(Of BienCotizacion)
+
+        If BienesCotizacion.Count = 0 Then Return Nothing
+
+        Return BienesCotizacion.
+            Select(Function(b) New BienCotizacion With {
+                .TipoBienId = b.TipoBienId,
+                .AdministracionBienId = b.AdministracionBienId,
+                .Nombre = b.Nombre
+            }).
+            ToList()
+    End Function
+
+    ''' <summary>
+    ''' Convierte las coberturas de la tabla al formato del API. Solo se guarda el
+    ''' nombre: el origen puede ser una Cobertura o un RiesgoCubierto según el tipo
+    ''' de póliza, así que se persiste como copia igual que los bienes.
+    ''' Devuelve Nothing cuando no hay ninguna, porque el PUT interpreta la lista
+    ''' vacía como "borra las que ya tenía".
+    ''' </summary>
+    Private Function ArmarCoberturaCotizacion() As List(Of CoberturaCotizacion)
+
+        If CoberturasCotizacion.Count = 0 Then Return Nothing
+
+        Return CoberturasCotizacion.
+            Select(Function(c) New CoberturaCotizacion With {
+                .Nombre = c.Nombre
+            }).
+            ToList()
+    End Function
+
+    Private Function ValorForm(nombre As String) As String
+        Return If(Request.Form(nombre), String.Empty).Trim()
+    End Function
+
+    Private Function EnteroForm(nombre As String) As Integer?
+        Dim texto As String = ValorForm(nombre)
+        If texto.Length = 0 Then Return Nothing
+
+        Dim valor As Integer
+        If Integer.TryParse(texto, valor) Then Return valor
+
+        Return Nothing
+    End Function
+
+    Private Function DecimalForm(nombre As String) As Decimal?
+        Dim texto As String = ValorForm(nombre)
+        If texto.Length = 0 Then Return Nothing
+
+        Dim limpio As String = Text.RegularExpressions.Regex.Replace(texto, "[^0-9.\-]", "")
+
+        Dim valor As Decimal
+        If Decimal.TryParse(limpio, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, valor) Then
+            Return valor
+        End If
+
+        Return Nothing
+    End Function
 
     Private Function ArmarCotizacionMercancia() As CotizacionMercancia
 
@@ -973,10 +1657,27 @@ Public Class AdminCotizaciones
         }
     End Function
 
-    Private Function MonedaDeCheck(nacional As HtmlInputCheckBox, internacional As HtmlInputCheckBox) As Integer
+    ''' <summary>
+    ''' Devuelve Nothing cuando no hay check marcado. Un 0 se guardaría como id de
+    ''' moneda inexistente; la columna acepta nulos y eso es lo que corresponde.
+    ''' </summary>
+    Private Function MonedaDeCheck(nacional As HtmlInputCheckBox, internacional As HtmlInputCheckBox) As Integer?
         If nacional IsNot Nothing AndAlso nacional.Checked Then Return 1
         If internacional IsNot Nothing AndAlso internacional.Checked Then Return 2
-        Return 0
+        Return Nothing
+    End Function
+
+    ''' <summary>
+    ''' Saca el motivo de un "ERROR: ..." de ConsumoApi sin dar por hecho el largo
+    ''' del prefijo. Si no trae dos puntos, regresa el texto completo.
+    ''' </summary>
+    Private Function DetalleDeError(respuesta As String) As String
+        If String.IsNullOrWhiteSpace(respuesta) Then Return "sin respuesta del servidor"
+
+        Dim separador As Integer = respuesta.IndexOf(":"c)
+        If separador < 0 Then Return respuesta.Trim()
+
+        Return respuesta.Substring(separador + 1).Trim()
     End Function
 
     Private Function MontoDe(txt As TextBox) As Decimal?

@@ -1,12 +1,23 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminCotizaciones.aspx.vb" Inherits="WebAdmin.AdminCotizaciones" %>
+<%@ Register TagPrefix="uc" TagName="EnvioCorreo" Src="~/Controles/EnvioCorreo.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="../../Content/site.css" rel="stylesheet" />
+
+    <style>
+        /* Palomita de una cotizacion ya confirmada: .icon-btn deja el cursor en
+           mano y aqui ya no hay nada que clickear. */
+        .ms-aceptada {
+            cursor: default;
+            opacity: .65;
+        }
+
+    </style>
 </asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">  
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:UpdatePanel ID="UpListado" runat="server" UpdateMode="Always">
         <ContentTemplate>
     <asp:Panel ID="pnlEncabezado" runat="server">
@@ -50,6 +61,13 @@
 
                         <asp:TemplateField HeaderText="Acciones">
                             <ItemTemplate>
+                                <asp:LinkButton ID="lnkAceptar" runat="server" CommandName="Aceptar" CommandArgument='<%# Eval("CotizacionId") %>'
+                                    CssClass='<%# IconoAceptar(Eval("CotizacionId")) %>' ToolTip='<%# TituloAceptar(Eval("CotizacionId")) %>'
+                                    Enabled='<%# PuedeAceptar(Eval("CotizacionId")) %>'
+                                    OnClientClick='<%# ConfirmacionAceptar(Eval("CotizacionId")) %>'>
+                                <i class="bi bi-check-lg"></i>
+                                </asp:LinkButton>
+
                                 <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("CotizacionId") %>'
                                     CssClass="icon-btn action-icon" ToolTip="Editar">
                                 <i class="bi bi-pencil"></i>
@@ -83,6 +101,12 @@
     <asp:Panel ID="pnlFormularioCotizaciones" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <asp:HiddenField ID="hfCotizacionId" runat="server" Value="" />
+
+            <%-- Renglones de la tabla de contenedores, en JSON. Va DENTRO del
+                 UpdatePanel a proposito: el bloque <script> esta fuera y no se
+                 vuelve a ejecutar en un postback parcial, asi que un <%= %> ahi
+                 se quedaria con el valor de la carga inicial. --%>
+            <asp:HiddenField ID="hfContenedores" runat="server" Value="[]" />
             <h2>
                 <asp:Label ID="lblMensaje" runat="server"></asp:Label></h2>
 
@@ -404,9 +428,11 @@ Eliminar
                         <div class="row mb-2">
                             <div class="col col-md-4">
                                 <label class="form-label" for="ddlUnidades">Unidades (Contenedores)</label>
+                                <%-- Se llena desde el servidor (1 a 20). Antes el JavaScript
+                                     agregaba las opciones 3-20, valores que ASP.NET nunca
+                                     registro y que al postear disparaban el error
+                                     "Invalid postback or callback argument". --%>
                                 <asp:DropDownList ID="ddlUnidades" runat="server" CssClass="form-select">
-                                    <asp:ListItem>1</asp:ListItem>
-                                    <asp:ListItem>2</asp:ListItem>
                                 </asp:DropDownList>
                             </div>
                         </div>
@@ -455,14 +481,15 @@ Eliminar
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
                                             <label class="form-label" for="txtCuotaSecos">Cuota (%)</label>
-                                            <asp:TextBox ID="txtCuotaSecos" runat="server" CssClass="form-control"
-                                                placeholder="Cuota (%)"></asp:TextBox>
+                                            <%-- Solo lectura: son las tarifas negociadas del cliente. Se
+                                                 llenan al elegirlo y no se guardan en la cotizacion; lo que
+                                                 se aplica y persiste es la cuota de cada renglon. --%>
+                                            <asp:TextBox ID="txtCuotaSecos" runat="server" CssClass="form-control bg-light"
+                                                ReadOnly="True" placeholder="Cuota (%)"></asp:TextBox>
                                         </div>
                                         <div class="col col-md-6">
                                             <label class="form-label" for="ddlTipoTarifaSecos">Tipo Tarifa</label>
-                                            <asp:DropDownList ID="ddlTipoTarifaSecos" runat="server" CssClass="form-select">
-                                                <asp:ListItem>ejemplo</asp:ListItem>
-                                                <asp:ListItem>ejemplo1</asp:ListItem>
+                                            <asp:DropDownList ID="ddlTipoTarifaSecos" runat="server" CssClass="form-select" Enabled="False">
                                             </asp:DropDownList>
                                         </div>
                                     </div>
@@ -470,14 +497,12 @@ Eliminar
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
                                             <label class="form-label" for="txtCuotaRefrigerados">Cuota (%)</label>
-                                            <asp:TextBox ID="txtCuotaRefrigerados" runat="server" CssClass="form-control"
-                                                placeholder="Cuota (%)"></asp:TextBox>
+                                            <asp:TextBox ID="txtCuotaRefrigerados" runat="server" CssClass="form-control bg-light"
+                                                ReadOnly="True" placeholder="Cuota (%)"></asp:TextBox>
                                         </div>
                                         <div class="col col-md-6">
                                             <label class="form-label" for="ddlTipoRefrigerados">Tipo Tarifa</label>
-                                            <asp:DropDownList ID="ddlTipoRefrigerados" runat="server" CssClass="form-select">
-                                                <asp:ListItem>ejemplo</asp:ListItem>
-                                                <asp:ListItem>ejemplo 1</asp:ListItem>
+                                            <asp:DropDownList ID="ddlTipoRefrigerados" runat="server" CssClass="form-select" Enabled="False">
                                             </asp:DropDownList>
                                         </div>
                                     </div>
@@ -485,14 +510,12 @@ Eliminar
                                     <div class="row mb-3">
                                         <div class="col col-md-6">
                                             <label class="form-label" for="txtCuota2">Cuota (%)</label>
-                                            <asp:TextBox ID="txtCuota2" runat="server" CssClass="form-control"
-                                                placeholder="Cuota (%)"></asp:TextBox>
+                                            <asp:TextBox ID="txtCuota2" runat="server" CssClass="form-control bg-light"
+                                                ReadOnly="True" placeholder="Cuota (%)"></asp:TextBox>
                                         </div>
                                         <div class="col col-md-6">
                                             <label class="form-label" for="ddlTipoIsotaques">Tipo Tarifa</label>
-                                            <asp:DropDownList ID="ddlTipoIsotaques" runat="server" CssClass="form-select">
-                                                <asp:ListItem>ejemplo</asp:ListItem>
-                                                <asp:ListItem>ejemplo1</asp:ListItem>
+                                            <asp:DropDownList ID="ddlTipoIsotaques" runat="server" CssClass="form-select" Enabled="False">
                                             </asp:DropDownList>
                                         </div>
                                     </div>
@@ -537,12 +560,19 @@ Eliminar
             </div>
         </div>
     </asp:Panel>
+
+    <%-- Envio de correo: control compartido con clientes, vendedores,
+         beneficiarios y polizas. Va dentro de este UpdatePanel para poder
+         mostrarse y ocultarse sin recargar la pagina. --%>
+    <uc:EnvioCorreo ID="ucCorreo" runat="server" Visible="false"
+        OnCancelado="ucCorreo_Cancelado" OnEnviado="ucCorreo_Enviado" />
         </ContentTemplate>
-        <Triggers>          
+        <Triggers>
             <asp:PostBackTrigger ControlID="btnGuardar" />
             <asp:PostBackTrigger ControlID="btnCancelar" />
         </Triggers>
-    </asp:UpdatePanel>    
+    </asp:UpdatePanel>
+
     <input type="hidden" id="hdnSeccionesAbiertas" value="" />
 
     <div id="alertPlaceholder" class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;"></div>
@@ -608,23 +638,27 @@ Eliminar
         }
     </script>
     <script type="text/javascript">
-        const tiposContenedor = [
-            'DC',
-            'VENTILATED',
-            'OT',
-            'OT HC',
-            'HC',
-            'FR',
-            'FR HC',
-            'PLATAFORMA',
-            'HARD TOP',
-            'REEFER',
-            'REEFER HC',
-            'REEFER HC (Control Atmosf.)',
-            'ISOTANQUE'
-        ];
+        // Catalogos reales del API, inyectados desde el code-behind como { id, nombre }.
+        // Antes eran arreglos de texto fijo y por eso no se podian guardar: la
+        // cotizacion necesita el id, no el nombre.
+        const tiposContenedor = <%= TiposContenedorJson %>;
+        const tamanosContenedor = <%= TamaniosContenedorJson %>;
 
-        const tamanosContenedor = ["20'", "40'", "45'"];
+        // Renglones que el servidor manda repintar: lo capturado antes del postback,
+        // o lo guardado cuando se abre una cotizacion para editar. Se lee del campo
+        // oculto en el momento de usarlo, no al cargar el script, porque este
+        // bloque no se re-ejecuta en los postbacks parciales.
+        function msContenedoresDelServidor() {
+            const campo = document.getElementById('<%= hfContenedores.ClientID %>');
+            if (!campo || !campo.value) { return []; }
+
+            try {
+                const datos = JSON.parse(campo.value);
+                return Array.isArray(datos) ? datos : [];
+            } catch (e) {
+                return [];
+            }
+        }
 
         function generateContainerRows() {
             const unidades = parseInt(document.getElementById('<%= ddlUnidades.ClientID %>').value) || 1;
@@ -634,60 +668,63 @@ Eliminar
             for (let i = 1; i <= unidades; i++) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
+                <%-- El atributo name es indispensable: el navegador solo envia los
+                     campos que lo tienen. Como estos no son controles de servidor,
+                     el code-behind los lee de Request.Form usando ese nombre. --%>
                 <td>
                     <input type="text" class="form-control form-control-sm"
-                           id="txtNumContenedor_${i}"
+                           id="txtNumContenedor_${i}" name="txtNumContenedor_${i}"
                            placeholder="Número"
                            maxlength="11" />
                 </td>
                 <td>
-                    <select class="form-select form-select-sm" id="ddlTipoContenedor_${i}">
+                    <select class="form-select form-select-sm" id="ddlTipoContenedor_${i}" name="ddlTipoContenedor_${i}">
                         <option value="">Seleccionar...</option>
-                        ${tiposContenedor.map(t => `<option value="${t}">${t}</option>`).join('')}
+                        ${tiposContenedor.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('')}
                     </select>
                 </td>
                 <td>
-                    <select class="form-select form-select-sm" id="ddlTamanoContenedor_${i}">
+                    <select class="form-select form-select-sm" id="ddlTamanoContenedor_${i}" name="ddlTamanoContenedor_${i}">
                         <option value="">Seleccionar...</option>
-                        ${tamanosContenedor.map(t => `<option value="${t}">${t}</option>`).join('')}
+                        ${tamanosContenedor.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('')}
                     </select>
                 </td>
                 <td>
                     <input type="number" class="form-control form-control-sm text-end"
-                           id="txtLR_${i}"
+                           id="txtLR_${i}" name="txtLR_${i}"
                            placeholder="0.00"
                            step="0.01"
                            onchange="calcularPrima(${i})" />
                 </td>
                 <td>
                     <input type="text" class="form-control form-control-sm"
-                           id="txtReferencia_${i}"
+                           id="txtReferencia_${i}" name="txtReferencia_${i}"
                            placeholder="Referencia"
                            maxlength="30" />
                 </td>
                 <td>
                     <input type="number" class="form-control form-control-sm text-end"
-                           id="txtCuota_${i}"
+                           id="txtCuota_${i}" name="txtCuota_${i}"
                            placeholder="0"
                            step="0.01"
                            onchange="calcularPrima(${i})" />
                 </td>
                 <td>
                     <input type="number" class="form-control form-control-sm text-end bg-light"
-                           id="txtPrimaUSD_${i}"
+                           id="txtPrimaUSD_${i}" name="txtPrimaUSD_${i}"
                            placeholder="0.00"
                            readonly />
                 </td>
                 <td class="col-tc d-none">
                     <input type="number" class="form-control form-control-sm text-end"
-                           id="txtTC_${i}"
+                           id="txtTC_${i}" name="txtTC_${i}"
                            placeholder="0.00"
                            step="0.01"
                            onchange="calcularPrimaMXN(${i})" />
                 </td>
                 <td class="col-prima-mn d-none">
                     <input type="number" class="form-control form-control-sm text-end bg-light"
-                           id="txtPrimaMXN_${i}"
+                           id="txtPrimaMXN_${i}" name="txtPrimaMXN_${i}"
                            placeholder="0.00"
                            readonly />
                 </td>
@@ -695,7 +732,41 @@ Eliminar
                 tbody.appendChild(row);
             }
 
+            // Los renglones nacen vacios, asi que hay que volver a poner lo que el
+            // servidor mando: lo capturado antes del postback, o lo guardado si se
+            // esta editando una cotizacion.
+            msLlenarContenedoresGuardados();
+
+            // Las celdas de T.C. y Prima MXN nacen con d-none fijo, asi que hay que
+            // volver a aplicar el estado segun la moneda.
+            msSincronizarColumnasMXN();
+
             calcularTotales();
+        }
+
+        function msPonerValor(id, valor) {
+            const el = document.getElementById(id);
+            if (!el) { return; }
+            el.value = (valor === null || valor === undefined) ? '' : valor;
+        }
+
+        function msLlenarContenedoresGuardados() {
+            const guardados = msContenedoresDelServidor();
+            if (guardados.length === 0) { return; }
+
+            guardados.forEach(function (c, indice) {
+                const i = indice + 1;
+
+                msPonerValor('txtNumContenedor_' + i, c.numero);
+                msPonerValor('ddlTipoContenedor_' + i, c.tipoId);
+                msPonerValor('ddlTamanoContenedor_' + i, c.tamanioId);
+                msPonerValor('txtLR_' + i, c.lr);
+                msPonerValor('txtReferencia_' + i, c.referencia);
+                msPonerValor('txtCuota_' + i, c.cuota);
+                msPonerValor('txtTC_' + i, c.tc);
+                msPonerValor('txtPrimaUSD_' + i, c.primaUSD);
+                msPonerValor('txtPrimaMXN_' + i, c.primaMXN);
+            });
         }
 
         function calcularPrima(rowIndex) {
@@ -935,23 +1006,23 @@ Eliminar
                 ddlUnidades.dataset.msWired = '1';
                 ddlUnidades.addEventListener('change', generateContainerRows);
 
-                for (let i = 3; i <= 20; i++) {
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.text = i;
-                    ddlUnidades.add(option);
-                }
-
                 generateContainerRows();
             }
 
             const ddlMoneda = document.getElementById('<%= ddlMoneda.ClientID %>');
-            if (ddlMoneda && !ddlMoneda.dataset.msWired) {
-                ddlMoneda.dataset.msWired = '1';
-                ddlMoneda.addEventListener('change', function () {
-                    toggleMXNColumns(this.value === '1');
-                    msRecalcularTodo();
-                });
+            if (ddlMoneda) {
+                if (!ddlMoneda.dataset.msWired) {
+                    ddlMoneda.dataset.msWired = '1';
+                    ddlMoneda.addEventListener('change', function () {
+                        msSincronizarColumnasMXN();
+                        msRecalcularTodo();
+                    });
+                }
+
+                // Fuera del guard a proposito: si la moneda ya viene en Nacional
+                // (al abrir el formulario, o porque la poliza la fijo) no hay
+                // evento change y las columnas se quedarian ocultas.
+                msSincronizarColumnasMXN();
             }
 
             MS_BLOQUES.forEach(function (ids) { msEngancharPrima(ids); });
@@ -967,6 +1038,13 @@ Eliminar
         }
 
         document.addEventListener('DOMContentLoaded', msEngancharEventos);
+
+        // 1 = Nacional en el catalogo de moneda. Las columnas de T.C. y Prima MXN
+        // solo aplican cuando se cotiza en pesos.
+        function msSincronizarColumnasMXN() {
+            const ddlMoneda = document.getElementById('<%= ddlMoneda.ClientID %>');
+            toggleMXNColumns(ddlMoneda != null && ddlMoneda.value === '1');
+        }
 
         function toggleMXNColumns(showMXN) {
             const elements = document.querySelectorAll('.col-tc, .col-prima-mn');

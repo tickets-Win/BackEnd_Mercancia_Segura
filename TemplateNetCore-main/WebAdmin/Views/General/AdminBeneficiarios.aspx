@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminBeneficiarios.aspx.vb" Inherits="WebAdmin.AdminBeneficiarios" %>
+<%@ Register TagPrefix="uc" TagName="EnvioCorreo" Src="~/Controles/EnvioCorreo.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -66,6 +67,9 @@
             </div>
         </div>
     </asp:Panel>
+    <%-- Envio de correo: control compartido con los demas modulos. --%>
+    <uc:EnvioCorreo ID="ucCorreo" runat="server" Visible="false"
+        OnCancelado="ucCorreo_Cancelado" OnEnviado="ucCorreo_Enviado" />
         </ContentTemplate>
         <Triggers>
             <%-- Agregar muestra pnlFormularioBeneficiario, que vive FUERA de este

@@ -876,4 +876,9 @@ Partial Public Class AdminCliente
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnImprimir As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control ucCorreo.
+    '''</summary>
+    Protected WithEvents ucCorreo As Global.WebAdmin.EnvioCorreoControl
 End Class

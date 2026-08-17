@@ -104,6 +104,15 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents hfCotizacionId As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
+    '''Control hfContenedores.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfContenedores As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
     '''Control lblMensaje.
     '''</summary>
     '''<remarks>
@@ -669,4 +678,29 @@ Partial Public Class AdminCotizaciones
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtTotalPagar2 As Global.System.Web.UI.WebControls.TextBox
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    '''<summary>
+    '''Control ucCorreo.
+    '''</summary>
+    Protected WithEvents ucCorreo As Global.WebAdmin.EnvioCorreoControl
 End Class

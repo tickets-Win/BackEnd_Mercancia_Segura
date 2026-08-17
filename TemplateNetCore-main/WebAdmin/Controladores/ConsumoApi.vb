@@ -131,9 +131,274 @@ Public Class ConsumoApi
             Return "ERROR: " & ex.Message
         End Try
     End Function
+
+    ''' <summary>
+    ''' Genera el certificado de una cotización aceptada. El API solo necesita el
+    ''' id de la cotización y la fecha.
+    ''' </summary>
+    Public Function PostCertificado(body As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim content As New StringContent(body, Encoding.UTF8, "application/json")
+
+                Dim response As HttpResponseMessage =
+                    client.PostAsync(ConfigurationManager.AppSettings("Certificado"), content).Result
+
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
 #End Region
 
 #Region "GET"
+    ''' <summary>
+    ''' Lista todos los certificados. Se usa para saber qué cotizaciones ya fueron
+    ''' aceptadas: si existe un certificado con ese CotizacionId, ya se aceptó.
+    ''' </summary>
+    Public Function GetCertificados() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim response As HttpResponseMessage =
+                    client.GetAsync(ConfigurationManager.AppSettings("CargarCertificados")).Result
+
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    ''' <summary>
+    ''' Correos dados de alta para un cliente. Alimentan el "Para" del envío.
+    ''' </summary>
+    Public Function GetCorreosCliente(clienteId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = ConfigurationManager.AppSettings("Cliente") & "/" & clienteId & "/correos"
+
+                Dim response As HttpResponseMessage = client.GetAsync(url).Result
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    Public Function GetTipoSiniestro() As String
+        Return TraerCatalogo("TipoSiniestro")
+    End Function
+
+    Public Function GetSiniestroId(siniestroId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = ConfigurationManager.AppSettings("ConsultarSiniestroId") & "/" & siniestroId
+
+                Dim response As HttpResponseMessage = client.GetAsync(url).Result
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    Public Function PostSiniestro(body As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim content As New StringContent(body, Encoding.UTF8, "application/json")
+
+                Dim response As HttpResponseMessage =
+                    client.PostAsync(ConfigurationManager.AppSettings("Siniestro"), content).Result
+
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    Public Function PutEditarSiniestro(siniestroId As Integer, body As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim content As New StringContent(body, Encoding.UTF8, "application/json")
+                Dim url As String = ConfigurationManager.AppSettings("EditarSiniestro") & "/" & siniestroId
+
+                Dim response As HttpResponseMessage = client.PutAsync(url, content).Result
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    Public Function DeleteSiniestro(siniestroId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = ConfigurationManager.AppSettings("EliminarSiniestro") & "/" & siniestroId
+
+                Dim response As HttpResponseMessage = client.DeleteAsync(url).Result
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    ''' <summary>
+    ''' Lectura simple de un catálogo por nombre de llave del Web.config.
+    ''' </summary>
+    Private Function TraerCatalogo(llave As String) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim response As HttpResponseMessage =
+                    client.GetAsync(ConfigurationManager.AppSettings(llave)).Result
+
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    Public Function GetSiniestros() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim response As HttpResponseMessage =
+                    client.GetAsync(ConfigurationManager.AppSettings("CargarSiniestros")).Result
+
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    Public Function GetCertificadoId(certificadoId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = ConfigurationManager.AppSettings("ConsultarCertificadoId") & "/" & certificadoId
+
+                Dim response As HttpResponseMessage = client.GetAsync(url).Result
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
+    Public Function DeleteCertificado(certificadoId As Integer) As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+                Dim url As String = ConfigurationManager.AppSettings("EliminarCertificado") & "/" & certificadoId
+
+                Dim response As HttpResponseMessage = client.DeleteAsync(url).Result
+                Dim cuerpo As String = response.Content.ReadAsStringAsync().Result
+
+                If Not response.IsSuccessStatusCode Then
+                    Return "ERROR: " & CInt(response.StatusCode) & " " & cuerpo
+                End If
+
+                Return cuerpo
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+
     Public Function GetTipoPersona() As String
         Try
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
@@ -572,6 +837,36 @@ Public Class ConsumoApi
 
                 Dim response As HttpResponseMessage =
                         client.GetAsync(ConfigurationManager.AppSettings("Clasificacion")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetTipoContenedor() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("TipoContenedor")).Result
+                Return response.Content.ReadAsStringAsync().Result
+            End Using
+
+        Catch ex As Exception
+            Return "ERROR: " & ex.Message
+        End Try
+    End Function
+    Public Function GetTamanioContenedor() As String
+        Try
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+            Using client As New HttpClient()
+
+                Dim response As HttpResponseMessage =
+                        client.GetAsync(ConfigurationManager.AppSettings("TamanioContenedor")).Result
                 Return response.Content.ReadAsStringAsync().Result
             End Using
 

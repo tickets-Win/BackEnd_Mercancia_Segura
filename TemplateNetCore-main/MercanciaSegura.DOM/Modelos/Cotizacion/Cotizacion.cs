@@ -63,5 +63,6 @@ namespace MercanciaSegura.DOM.Modelos.Cotizacion
         public CotizacionMercancia? CotizacionMercancia { get; set; }
         public List<CotizacionContenedor>? CotizacionContenedor { get; set; }
         public List<BienCotizacion>? BienCotizacion { get; set; }
+        public List<CoberturaCotizacion>? CoberturaCotizacion { get; set; }
     }
 }

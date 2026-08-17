@@ -15,9 +15,9 @@
         Public Property Observaciones As String
         Public Property MedidasDeSeguridadAdicionales As String
         Public Property Deducibles As String
-        Public Property MonedaCuotaAplicableId As Integer
+        Public Property MonedaCuotaAplicableId As Integer?
         Public Property CuotaAplicable As Decimal?
-        Public Property MonedaCuotaMinimaId As Integer
+        Public Property MonedaCuotaMinimaId As Integer?
         Public Property CuotaMinima As Decimal?
         Public Property TipoCambioCotizar As Decimal?
         Public Property MonedaCotizarId As Integer

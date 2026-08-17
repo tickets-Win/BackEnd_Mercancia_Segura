@@ -91,6 +91,7 @@ public class ServiceDbContext : DbContext
     public DbSet<TamanioContenedor> TamanioContenedor { get; set; }
     public DbSet<Transito> Transito { get; set; }
     public DbSet<BienCotizacion> BienCotizacion { get; set; }
+    public DbSet<CoberturaCotizacion> CoberturaCotizacion { get; set; }
 
 
 }

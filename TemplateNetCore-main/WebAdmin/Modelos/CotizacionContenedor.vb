@@ -2,10 +2,11 @@
     Public Class CotizacionContenedor
         Public Property CotizacionContenedorId As Integer
         Public Property CotizacionId As Integer
-        Public Property TamanioContendorId As String
+        ' Tipo y Tamaño son ids del catálogo, no texto (así los espera el API).
+        Public Property TamanioContendorId As Integer?
         Public Property NumeroContenedor As String
         Public Property Cuota As Decimal?
-        Public Property TipoContenedorId As Integer
+        Public Property TipoContenedorId As Integer?
         Public Property LR As Decimal?
         Public Property Referencia As String
         Public Property TC As Decimal?

@@ -128,6 +128,11 @@ Public Class AdminCliente
             Globalization.CompareOptions.IgnoreCase Or Globalization.CompareOptions.IgnoreNonSpace) >= 0
     End Function
     Protected Sub gvClientes_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Correo" Then
+            AbrirCorreo(Convert.ToInt32(e.CommandArgument))
+            Exit Sub
+        End If
+
         If e.CommandName = "Editar" Then
             Dim clienteId As Integer = Convert.ToInt32(e.CommandArgument)
             pnlFormularioCliente.Visible = True
@@ -975,4 +980,104 @@ True)
         txtDiasRevision.Enabled = estaHabilitado
         txtSaldo.Enabled = estaHabilitado
     End Sub
+
+    ''' <summary>
+    ''' Abre el control de envio de correo. Es el mismo control que usan los demas
+    ''' modulos: aqui solo se le pasan el destinatario y los datos del registro.
+    ''' </summary>
+    Private Sub AbrirCorreo(registroId As Integer)
+
+        ucCorreo.Abrir(DestinatariosDe(registroId), ValoresDe(registroId))
+
+        PnlEncabezado.Visible = False
+        PnlTabla.Visible = False
+        pnlTabs.Visible = False
+    End Sub
+
+    Protected Sub ucCorreo_Cancelado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Protected Sub ucCorreo_Enviado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Private Sub VolverDelCorreo()
+        PnlEncabezado.Visible = True
+        PnlTabla.Visible = True
+        pnlTabs.Visible = False
+    End Sub
+
+    ''' <summary>
+    ''' El cliente puede tener varios correos dados de alta; se mandan todos,
+    ''' separados por punto y coma.
+    ''' </summary>
+    Private Function DestinatariosDe(registroId As Integer) As String
+
+        Dim correos As New List(Of String)
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCorreosCliente(registroId)
+
+        If Not String.IsNullOrWhiteSpace(json) AndAlso
+           json <> "null" AndAlso
+           Not json.StartsWith("ERROR") Then
+
+            Try
+                For Each item As JObject In JArray.Parse(json)
+
+                    Dim valor = item.GetValue("correo", StringComparison.OrdinalIgnoreCase)
+                    If valor Is Nothing Then Continue For
+
+                    Dim direccion As String = valor.ToString().Trim()
+
+                    If direccion.Length > 0 AndAlso Not correos.Contains(direccion) Then
+                        correos.Add(direccion)
+                    End If
+                Next
+            Catch
+                ' Si no viene como se espera, se deja que se capture a mano.
+            End Try
+        End If
+
+        ' De respaldo, el correo del propio registro.
+        If correos.Count = 0 Then
+            Dim c = ClienteDe(registroId)
+
+            If c IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(c.CorreoElectronico) Then
+                correos.Add(c.CorreoElectronico)
+            End If
+        End If
+
+        Return String.Join("; ", correos)
+    End Function
+
+    Private Function ValoresDe(registroId As Integer) As Dictionary(Of String, String)
+
+        Dim valores As New Dictionary(Of String, String)
+
+        Dim c = ClienteDe(registroId)
+        If c Is Nothing Then Return valores
+
+        If Not String.IsNullOrWhiteSpace(c.NombreCompleto) Then
+            valores("Nombre Completo") = c.NombreCompleto
+            valores("Nombre") = c.NombreCompleto.Split(" "c)(0)
+        End If
+
+        If Not String.IsNullOrWhiteSpace(c.Rfc) Then valores("RFC") = c.Rfc
+        If Not String.IsNullOrWhiteSpace(c.CorreoElectronico) Then valores("Correo") = c.CorreoElectronico
+
+        Return valores
+    End Function
+
+    Private Function ClienteDe(registroId As Integer) As Cliente
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetClienteId(registroId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse json.StartsWith("ERROR") Then Return Nothing
+
+        Return JsonConvert.DeserializeObject(Of Cliente)(json)
+    End Function
+
 End Class
