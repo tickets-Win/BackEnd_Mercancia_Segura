@@ -18,7 +18,9 @@ Public Class AdminCliente
             DropdownHelpers.CargarTipoSector(ddlSector)
             DropdownHelpers.CargarRFCGenerico(ddlRFCGenerico)
             DropdownHelpers.CargarTipoCorreo(ddlTipoCorreo)
-            Dim tipoPersonaId As Integer = If(ddlTipoPersona.SelectedValue IsNot Nothing, Convert.ToInt32(ddlTipoPersona.SelectedValue), 1)
+            DropdownHelpers.CargarTipoMoneda(ddlMonedaInternacional)
+            DropdownHelpers.CargarTipoMoneda(ddlMonedaNacional)
+            Dim tipoPersonaId As Integer = If(ddlTipoPersona.SelectedValue IsNot Nothing, Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0), 1)
             DropdownHelpers.CargarRegimenFiscal(ddlRegimenFiscal, tipoPersonaId)
             DropdownHelpers.CargarTipoTarifa(ddlTipoTarifaSecos, ddlTipoRefrigerados, ddlTipoIsotaques)
             cargarClientes()
@@ -31,7 +33,7 @@ Public Class AdminCliente
     End Sub
 
     Protected Sub btnAgregarCliente_Click(sender As Object, e As EventArgs)
-        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
+        Dim tipoPersonaId As Integer = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0)
 
         pnlFormularioCliente.Visible = True
         PnlTabla.Visible = False
@@ -48,7 +50,7 @@ Public Class AdminCliente
     End Sub
 
     Protected Sub ddlTipoPersona_SelectedIndexChanged(sender As Object, e As EventArgs)
-        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
+        Dim tipoPersonaId As Integer = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0)
         If ddlTipoPersona.SelectedValue = "1" Then
             pnlDatosFiscales.Visible = True
             pnlRazonSocial.Visible = False
@@ -64,18 +66,75 @@ Public Class AdminCliente
         DropdownHelpers.CargarRegimenFiscal(ddlRegimenFiscal, tipoPersonaId)
     End Sub
 
+    ''' <summary>
+    ''' Carga el listado aplicando el buscador y el filtro de estatus. El filtro
+    ''' vive aquí para que la paginación no lo pierda al cambiar de página.
+    ''' </summary>
     Protected Sub cargarClientes()
         Dim api As New ConsumoApi()
         Dim cargarClientes As String = api.GetCargarClientes()
 
-        Dim listaClientes As List(Of Cliente) = JsonConvert.DeserializeObject(Of List(Of Cliente))(cargarClientes)
+        Dim listaClientes As New List(Of Cliente)
+
+        If Not String.IsNullOrWhiteSpace(cargarClientes) AndAlso
+           cargarClientes <> "null" AndAlso
+           Not cargarClientes.StartsWith("ERROR") Then
+
+            listaClientes = JsonConvert.DeserializeObject(Of List(Of Cliente))(cargarClientes)
+            If listaClientes Is Nothing Then listaClientes = New List(Of Cliente)
+        End If
+
+        Dim busqueda As String = txtBuscarCliente.Text.Trim()
+
+        Dim estatusSeleccionado As Integer
+        Integer.TryParse(ddlTipoEstatusCliente.SelectedValue, estatusSeleccionado)
+
+        If busqueda.Length > 0 Then
+            listaClientes = listaClientes.
+                Where(Function(c) Contiene(c.NombreCompleto, busqueda) OrElse
+                                  Contiene(c.Rfc, busqueda) OrElse
+                                  Contiene(c.Clave, busqueda)).
+                ToList()
+        End If
+
+        If estatusSeleccionado <> 0 Then
+            listaClientes = listaClientes.
+                Where(Function(c) c.EstatusId = estatusSeleccionado).
+                ToList()
+        End If
+
+        Dim ultimaPagina As Integer = 0
+
+        If listaClientes.Count > 0 Then
+            ultimaPagina = CInt(Math.Ceiling(listaClientes.Count / CDbl(gvClientes.PageSize))) - 1
+        End If
+
+        If gvClientes.PageIndex > ultimaPagina Then
+            gvClientes.PageIndex = ultimaPagina
+        End If
 
         gvClientes.DataSource = listaClientes
         gvClientes.DataBind()
     End Sub
+
+    ''' <summary>
+    ''' Búsqueda parcial que ignora mayúsculas y acentos, y tolera nulos.
+    ''' </summary>
+    Private Function Contiene(valor As String, busqueda As String) As Boolean
+        If String.IsNullOrEmpty(valor) Then Return False
+
+        Return Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(
+            valor, busqueda,
+            Globalization.CompareOptions.IgnoreCase Or Globalization.CompareOptions.IgnoreNonSpace) >= 0
+    End Function
     Protected Sub gvClientes_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Correo" Then
+            AbrirCorreo(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
+            Exit Sub
+        End If
+
         If e.CommandName = "Editar" Then
-            Dim clienteId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim clienteId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             pnlFormularioCliente.Visible = True
             PnlTabla.Visible = False
             PnlEncabezado.Visible = False
@@ -85,7 +144,7 @@ Public Class AdminCliente
         End If
         If e.CommandName = "Eliminar" Then
             Dim api As New ConsumoApi()
-            Dim clienteId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim clienteId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
 
             Dim eliminado As String = api.DeleteClientes(clienteId)
 
@@ -118,7 +177,7 @@ Public Class AdminCliente
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
         Dim api As New ConsumoApi()
 
-        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
+        Dim tipoPersonaId As Integer = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0)
 
         Dim nombreCompleto As String
         If tipoPersonaId = 1 Then
@@ -144,26 +203,34 @@ Public Class AdminCliente
         Dim rfcGenericoId As Integer? = Nothing
 
         If Not String.IsNullOrWhiteSpace(ddlRFCGenerico.SelectedValue) AndAlso ddlRFCGenerico.SelectedValue <> "0" Then
-            rfcGenericoId = Convert.ToInt32(ddlRFCGenerico.SelectedValue)
+            rfcGenericoId = Convertir.EnteroO(ddlRFCGenerico.SelectedValue, 0)
+        End If
+
+        Dim telefono As String = txtTelefono.Text.Trim()
+
+        telefono = telefono.Replace("(", "").Replace(")", "").Replace(" ", "").Replace("-", "")
+
+        If telefono.Length > 13 Then
+            telefono = telefono.Substring(0, 13)
         End If
 
         Dim cliente As New Cliente With {
         .TipoPersonaId = tipoPersonaId,
         .Clave = txtClave.Text,
-        .EstatusId = Convert.ToInt32(ddlEstatus.SelectedValue),
+        .EstatusId = Convertir.EnteroO(ddlEstatus.SelectedValue, 0),
         .ApellidoPaterno = txtApellidoP.Text,
         .ApellidoMaterno = txtApellidoM.Text,
         .Nombres = txtNombre.Text,
         .NombreCompleto = nombreCompleto,
-        .RegimenFiscalId = ddlRegimenFiscal.SelectedValue,
+        .RegimenFiscalId = Convertir.Entero(ddlRegimenFiscal.SelectedValue),
         .Rfc = txtRFC.Text,
         .RfcGenericoId = rfcGenericoId,
         .FechaRegistro = Date.Now,
-        .TipoSeguroId = ddlSeguroContrata.SelectedValue,
-        .TipoCuentaId = ddlTipoCuenta.SelectedValue,
-        .OrigenClienteId = ddlOrigenCliente.SelectedValue,
-        .TipoSectorId = ddlSector.SelectedValue,
-        .Telefono = txtTelefono.Text,
+        .TipoSeguroId = Convertir.Entero(ddlSeguroContrata.SelectedValue),
+        .TipoCuentaId = Convertir.Entero(ddlTipoCuenta.SelectedValue),
+        .OrigenClienteId = Convertir.Entero(ddlOrigenCliente.SelectedValue),
+        .TipoSectorId = Convertir.Entero(ddlSector.SelectedValue),
+        .Telefono = telefono,
         .CorreoElectronico = txtCorreo.Text,
         .Nacionalidad = txtNacionalidad.Text,
         .Genero = ddlGenero.SelectedValue,
@@ -176,13 +243,15 @@ Public Class AdminCliente
         .NumeroInt = txtNumeroInterior.Text,
         .NumeroExt = txtNumeroExterior.Text,
         .Poblacion = txtPoblacion.Text,
-        .CuotaAplicableInternacional = If(String.IsNullOrWhiteSpace(txtCuotaInternacional.Text), Nothing, Convert.ToDecimal(txtCuotaInternacional.Text)),
-        .CuotaAplicableNacional = If(String.IsNullOrWhiteSpace(txtCuotaNacional.Text), Nothing, Convert.ToDecimal(txtCuotaNacional.Text)),
-        .CuotaMinimaInternacional = If(String.IsNullOrWhiteSpace(txtMinimoInternacional.Text), Nothing, Convert.ToDecimal(txtMinimoInternacional.Text)),
-        .CuotaMinimaNacional = If(String.IsNullOrWhiteSpace(txtMinimoNacional.Text), Nothing, Convert.ToDecimal(txtMinimoNacional.Text)),
+        .CuotaAplicableInternacional = Convertir.Numero(txtCuotaInternacional.Text),
+        .CuotaAplicableNacional = Convertir.Numero(txtCuotaNacional.Text),
+        .CuotaMinimaInternacional = Convertir.Numero(txtMinimoInternacional.Text),
+        .CuotaMinimaNacional = Convertir.Numero(txtMinimoNacional.Text),
         .Correos = sessionCliente.Correos,
         .ClienteBeneficiario = sessionCliente.ClienteBeneficiario,
-        .ClienteVendedor = sessionCliente.ClienteVendedor
+        .ClienteVendedor = sessionCliente.ClienteVendedor,
+        .CuotaMinimaInternacionalMonedaId = Convertir.Entero(ddlMonedaInternacional.SelectedValue),
+        .CuotaMinimaNacionalMonedaId = Convertir.Entero(ddlMonedaNacional.SelectedValue)
         }
 
 
@@ -190,38 +259,38 @@ Public Class AdminCliente
 
         If Not String.IsNullOrWhiteSpace(txtCuotaSecos.Text) Then
             listaCuotas.Add(New Cuota With {
-            .Monto = Convert.ToDecimal(txtCuotaSecos.Text),
+            .Monto = Convertir.NumeroO(txtCuotaSecos.Text, 0),
             .TipoCuotaId = 1,
-            .TipoTarifaId = Convert.ToInt32(ddlTipoTarifaSecos.SelectedValue)
+            .TipoTarifaId = Convertir.EnteroO(ddlTipoTarifaSecos.SelectedValue, 0)
             })
         End If
 
         If Not String.IsNullOrWhiteSpace(txtCuotaRefrigerados.Text) Then
             listaCuotas.Add(New Cuota With {
-            .Monto = Convert.ToDecimal(txtCuotaRefrigerados.Text),
+            .Monto = Convertir.NumeroO(txtCuotaRefrigerados.Text, 0),
             .TipoCuotaId = 2,
-            .TipoTarifaId = Convert.ToInt32(ddlTipoRefrigerados.SelectedValue)
+            .TipoTarifaId = Convertir.EnteroO(ddlTipoRefrigerados.SelectedValue, 0)
             })
         End If
 
         If Not String.IsNullOrWhiteSpace(txtCuotaIsotanques.Text) Then
             listaCuotas.Add(New Cuota With {
-            .Monto = Convert.ToDecimal(txtCuotaIsotanques.Text),
+            .Monto = Convertir.NumeroO(txtCuotaIsotanques.Text, 0),
             .TipoCuotaId = 3,
-            .TipoTarifaId = Convert.ToInt32(ddlTipoIsotaques.SelectedValue)
+            .TipoTarifaId = Convertir.EnteroO(ddlTipoIsotaques.SelectedValue, 0)
             })
         End If
 
         cliente.Cuota = listaCuotas
 
         cliente.ClienteCredito = New ClienteCredito With {
-        .DiasDeCredito = If(String.IsNullOrWhiteSpace(txtDiasCredito.Text), Nothing, Convert.ToInt32(txtDiasCredito.Text)),
+        .DiasDeCredito = Convertir.Entero(txtDiasCredito.Text),
         .MetodoDePago = txtMetodoPago.Text,
         .NumeroCuenta = txtNumeroCuenta.Text,
-        .LimiteDeCredito = If(String.IsNullOrWhiteSpace(txtLimiteCredito.Text), Nothing, Convert.ToDecimal(txtLimiteCredito.Text)),
+        .LimiteDeCredito = Convertir.Numero(txtLimiteCredito.Text),
         .DiasDePago = txtDiasPago.Text,
         .DiasDeRevision = txtDiasRevision.Text,
-        .Saldo = If(String.IsNullOrWhiteSpace(txtSaldo.Text), Nothing, Convert.ToDecimal(txtSaldo.Text))
+        .Saldo = Convertir.Numero(txtSaldo.Text)
     }
 
 
@@ -234,7 +303,7 @@ Public Class AdminCliente
         Dim mensajeToast As String = ""
 
         If Not String.IsNullOrEmpty(hfClienteId.Value) Then
-            Dim clienteId As Integer = Convert.ToInt32(hfClienteId.Value)
+            Dim clienteId As Integer = Convertir.EnteroO(hfClienteId.Value, 0)
             respuesta = api.PutEditarCliente(clienteId, json)
             If respuesta.Contains("error") Then
                 mensajeToast = "No se edito el cliente"
@@ -279,7 +348,7 @@ Public Class AdminCliente
         If e.CommandName = "Eliminar" Then
             Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
             If cliente IsNot Nothing AndAlso cliente.ClienteVendedor IsNot Nothing Then
-                Dim vendedorId As Integer = Convert.ToInt32(e.CommandArgument)
+                Dim vendedorId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
                 cliente.ClienteVendedor.RemoveAll(Function(v) v.VendedorId = vendedorId)
                 Session("Cliente") = cliente
                 CargarGridVendedores()
@@ -331,10 +400,16 @@ Public Class AdminCliente
         If String.IsNullOrEmpty(value) Then Exit Sub
 
         Dim parts() As String = value.Split("|"c)
-        Dim vendedorId As Integer = Convert.ToInt32(parts(0))
-        Dim comision As Decimal = Convert.ToDecimal(parts(1))
 
-        Dim tipoVendedorId As Integer = Convert.ToInt32(ddlTipoVendedor.SelectedValue)
+        ' El hidden lo arma el cliente: si viene mal formado se sale, no se truena.
+        If parts.Length < 2 Then Exit Sub
+
+        Dim vendedorId As Integer = Convertir.EnteroO(parts(0), 0)
+        Dim comision As Decimal = Convertir.NumeroO(parts(1), 0)
+
+        If vendedorId = 0 Then Exit Sub
+
+        Dim tipoVendedorId As Integer = Convertir.EnteroO(ddlTipoVendedor.SelectedValue, 0)
         Dim nombreVendedor As String = ddlNombreVendedor.SelectedItem?.Text
 
         Dim api As New ConsumoApi()
@@ -441,7 +516,7 @@ if (myModalEl) {{
         If e.CommandName = "Eliminar" Then
             Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
             If cliente IsNot Nothing AndAlso cliente.ClienteBeneficiario IsNot Nothing Then
-                Dim beneficiarioId As Integer = Convert.ToInt32(e.CommandArgument)
+                Dim beneficiarioId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
                 cliente.ClienteBeneficiario.RemoveAll(Function(b) b.ClienteBeneficiarioId = beneficiarioId)
                 Session("Cliente") = cliente
                 CargarGridBeneficiarios()
@@ -474,7 +549,7 @@ if (myModalEl) {{
 
         Dim correo As New Correos With {
         .CorreoId = nuevoId,
-        .TipoCorreoId = Convert.ToInt32(ddlTipoCorreo.SelectedValue),
+        .TipoCorreoId = Convertir.EnteroO(ddlTipoCorreo.SelectedValue, 0),
         .TipoCorreo = ddlTipoCorreo.SelectedItem.Text,
         .Correo = txtCorreoAdicional.Text
         }
@@ -542,6 +617,8 @@ if (myModalEl) {{
         ddlTipoTarifaSecos.SelectedIndex = 0
         ddlTipoRefrigerados.SelectedIndex = 0
         ddlTipoIsotaques.SelectedIndex = 0
+        ddlMonedaNacional.SelectedIndex = 0
+        ddlMonedaInternacional.SelectedIndex = 0
 
         hfClienteId.Value = ""
         hfTipoPersona.Value = ""
@@ -557,6 +634,24 @@ if (myModalEl) {{
         gvCorreosAdicionales.DataBind()
     End Sub
 
+    Private Function FormatearTelefonoJS(tel As String) As String
+        If String.IsNullOrWhiteSpace(tel) Then Return ""
+
+        Dim numeros As String = New String(tel.Where(AddressOf Char.IsDigit).ToArray())
+
+        Select Case numeros.Length
+            Case <= 2
+                Return "(" & numeros
+            Case <= 4
+                Return "(" & numeros.Substring(0, 2) & ") " & numeros.Substring(2)
+            Case <= 6
+                Return "(" & numeros.Substring(0, 2) & ") " & numeros.Substring(2, 2) & " " & numeros.Substring(4)
+            Case <= 8
+                Return "(" & numeros.Substring(0, 2) & ") " & numeros.Substring(2, 2) & " " & numeros.Substring(4, 2) & " " & numeros.Substring(6)
+            Case Else
+                Return "(" & numeros.Substring(0, 2) & ") " & numeros.Substring(2, 2) & " " & numeros.Substring(4, 2) & " " & numeros.Substring(6, 2) & " " & numeros.Substring(8, Math.Min(4, numeros.Length - 8))
+        End Select
+    End Function
     Protected Sub EditarCliente(clienteId As Integer)
         Dim api As New ConsumoApi
         Dim jsonCliente As String = api.GetClienteId(clienteId)
@@ -573,7 +668,7 @@ if (myModalEl) {{
         txtNombreCompleto.Text = If(cliente.TipoPersonaId = 1, cliente.NombreCompleto, "")
         txtRazonSocial.Text = If(cliente.TipoPersonaId = 2, cliente.NombreCompleto, "")
         txtRFC.Text = cliente.Rfc
-        txtTelefono.Text = cliente.Telefono
+        txtTelefono.Text = FormatearTelefonoJS(cliente.Telefono)
         txtCorreo.Text = cliente.CorreoElectronico
         txtNacionalidad.Text = cliente.Nacionalidad
         txtColonia.Text = cliente.Colonia
@@ -590,8 +685,22 @@ if (myModalEl) {{
         txtMinimoNacional.Text = If(cliente.CuotaMinimaNacional IsNot Nothing, cliente.CuotaMinimaNacional.ToString(), "")
 
         ddlTipoPersona.Enabled = False
-        ddlEstatus.Enabled = true
+        ddlEstatus.Enabled = True
 
+
+        If cliente.CuotaMinimaNacionalMonedaId IsNot Nothing AndAlso
+       ddlMonedaNacional.Items.FindByValue(cliente.CuotaMinimaNacionalMonedaId.ToString()) IsNot Nothing Then
+            ddlMonedaNacional.SelectedValue = cliente.CuotaMinimaNacionalMonedaId.ToString()
+        Else
+            ddlRFCGenerico.SelectedIndex = 0
+        End If
+
+        If cliente.CuotaMinimaInternacionalMonedaId IsNot Nothing AndAlso
+       ddlMonedaInternacional.Items.FindByValue(cliente.CuotaMinimaInternacionalMonedaId.ToString()) IsNot Nothing Then
+            ddlMonedaInternacional.SelectedValue = cliente.CuotaMinimaInternacionalMonedaId.ToString()
+        Else
+            ddlRFCGenerico.SelectedIndex = 0
+        End If
 
         If cliente.RfcGenericoId IsNot Nothing AndAlso
        ddlRFCGenerico.Items.FindByValue(cliente.RfcGenericoId.ToString()) IsNot Nothing Then
@@ -708,6 +817,8 @@ if (myModalEl) {{
         pnlGestionarCredito.Visible = True
         pnlEstadoCuenta.Visible = True
         lblMensaje.Text = "Editar Cliente"
+
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "formatear", "aplicarFormatoInicial();", True)
     End Sub
 
     Protected Sub btnCancelar_Click(sender As Object, e As EventArgs)
@@ -723,7 +834,7 @@ if (myModalEl) {{
         If e.CommandName = "Eliminar" Then
             Dim cliente As Cliente = CType(Session("Cliente"), Cliente)
             If cliente IsNot Nothing AndAlso cliente.Correos IsNot Nothing Then
-                Dim correoId As Integer = Convert.ToInt32(e.CommandArgument)
+                Dim correoId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
                 cliente.Correos.RemoveAll(Function(v) v.CorreoId = correoId)
                 Session("Cliente") = cliente
                 CargarGridCorreos()
@@ -736,24 +847,35 @@ if (myModalEl) {{
     End Sub
 
     Protected Sub filtrarClientes()
-        Dim api As New ConsumoApi()
-        Dim json As String = api.GetCargarClientes()
-        Dim lista As List(Of Cliente) = JsonConvert.DeserializeObject(Of List(Of Cliente))(json)
+        ' Una búsqueda nueva siempre arranca en la primera página.
+        gvClientes.PageIndex = 0
 
-        Dim texto As String = txtBuscarCliente.Text.Trim().ToLower()
-        Dim estatusSeleccionado As Integer = Convert.ToInt32(ddlTipoEstatusCliente.SelectedValue)
+        cargarClientes()
+    End Sub
 
+    Protected Sub gvClientes_RowDataBound(sender As Object, e As GridViewRowEventArgs)
+        If e.Row.RowType <> DataControlRowType.DataRow Then Exit Sub
 
-        Dim filtrados = lista.Where(Function(v)
-                                        Dim coincideTexto As Boolean = String.IsNullOrEmpty(texto) OrElse
-                                       (If(v.NombreCompleto, "").ToLower().Contains(texto)) OrElse
-                                       (If(v.Rfc, "").ToLower().Contains(texto))
-                                        Dim coincideEstatus As Boolean = estatusSeleccionado = 0 OrElse v.EstatusId = estatusSeleccionado
-                                        Return coincideTexto AndAlso coincideEstatus
-                                    End Function).ToList()
+        RegistrarPostbackCompleto(e.Row)
+    End Sub
 
-        gvClientes.DataSource = filtrados
-        gvClientes.DataBind()
+    ''' <summary>
+    ''' Los botones de la tabla muestran pnlFormularioCliente, que vive fuera del
+    ''' UpdatePanel del listado. Con un postback parcial esos cambios de visibilidad
+    ''' no llegan al navegador y la pantalla queda en blanco, así que se fuerzan a
+    ''' postback completo. Al estar dentro de una plantilla del GridView no se
+    ''' pueden declarar como PostBackTrigger por ID.
+    ''' </summary>
+    Private Sub RegistrarPostbackCompleto(contenedor As Control)
+        Dim sm As ScriptManager = ScriptManager.GetCurrent(Page)
+
+        If sm Is Nothing Then Exit Sub
+
+        For Each ctl As Control In contenedor.Controls
+            If TypeOf ctl Is IButtonControl Then sm.RegisterPostBackControl(ctl)
+
+            If ctl.HasControls() Then RegistrarPostbackCompleto(ctl)
+        Next
     End Sub
 
     Protected Sub ddlTipoEstatusCliente_SelectedIndexChanged(sender As Object, e As EventArgs)
@@ -820,7 +942,7 @@ True)
 
         Dim nuevoId As Integer = cliente.ClienteBeneficiario.Count + 1
 
-        Dim beneficiarioId As Integer = Convert.ToInt32(ddlBeneficiario.SelectedValue)
+        Dim beneficiarioId As Integer = Convertir.EnteroO(ddlBeneficiario.SelectedValue, 0)
         Dim nombre As String = ddlBeneficiario.SelectedItem.Text
 
         Dim api As New ConsumoApi()
@@ -864,4 +986,104 @@ True)
         txtDiasRevision.Enabled = estaHabilitado
         txtSaldo.Enabled = estaHabilitado
     End Sub
+
+    ''' <summary>
+    ''' Abre el control de envio de correo. Es el mismo control que usan los demas
+    ''' modulos: aqui solo se le pasan el destinatario y los datos del registro.
+    ''' </summary>
+    Private Sub AbrirCorreo(registroId As Integer)
+
+        ucCorreo.Abrir(DestinatariosDe(registroId), ValoresDe(registroId))
+
+        PnlEncabezado.Visible = False
+        PnlTabla.Visible = False
+        pnlTabs.Visible = False
+    End Sub
+
+    Protected Sub ucCorreo_Cancelado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Protected Sub ucCorreo_Enviado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Private Sub VolverDelCorreo()
+        PnlEncabezado.Visible = True
+        PnlTabla.Visible = True
+        pnlTabs.Visible = False
+    End Sub
+
+    ''' <summary>
+    ''' El cliente puede tener varios correos dados de alta; se mandan todos,
+    ''' separados por punto y coma.
+    ''' </summary>
+    Private Function DestinatariosDe(registroId As Integer) As String
+
+        Dim correos As New List(Of String)
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCorreosCliente(registroId)
+
+        If Not String.IsNullOrWhiteSpace(json) AndAlso
+           json <> "null" AndAlso
+           Not json.StartsWith("ERROR") Then
+
+            Try
+                For Each item As JObject In JArray.Parse(json)
+
+                    Dim valor = item.GetValue("correo", StringComparison.OrdinalIgnoreCase)
+                    If valor Is Nothing Then Continue For
+
+                    Dim direccion As String = valor.ToString().Trim()
+
+                    If direccion.Length > 0 AndAlso Not correos.Contains(direccion) Then
+                        correos.Add(direccion)
+                    End If
+                Next
+            Catch
+                ' Si no viene como se espera, se deja que se capture a mano.
+            End Try
+        End If
+
+        ' De respaldo, el correo del propio registro.
+        If correos.Count = 0 Then
+            Dim c = ClienteDe(registroId)
+
+            If c IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(c.CorreoElectronico) Then
+                correos.Add(c.CorreoElectronico)
+            End If
+        End If
+
+        Return String.Join("; ", correos)
+    End Function
+
+    Private Function ValoresDe(registroId As Integer) As Dictionary(Of String, String)
+
+        Dim valores As New Dictionary(Of String, String)
+
+        Dim c = ClienteDe(registroId)
+        If c Is Nothing Then Return valores
+
+        If Not String.IsNullOrWhiteSpace(c.NombreCompleto) Then
+            valores("Nombre Completo") = c.NombreCompleto
+            valores("Nombre") = c.NombreCompleto.Split(" "c)(0)
+        End If
+
+        If Not String.IsNullOrWhiteSpace(c.Rfc) Then valores("RFC") = c.Rfc
+        If Not String.IsNullOrWhiteSpace(c.CorreoElectronico) Then valores("Correo") = c.CorreoElectronico
+
+        Return valores
+    End Function
+
+    Private Function ClienteDe(registroId As Integer) As Cliente
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetClienteId(registroId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse json.StartsWith("ERROR") Then Return Nothing
+
+        Return JsonConvert.DeserializeObject(Of Cliente)(json)
+    End Function
+
 End Class

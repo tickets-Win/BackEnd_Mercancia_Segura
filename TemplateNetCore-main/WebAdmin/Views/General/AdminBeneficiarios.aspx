@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminBeneficiarios.aspx.vb" Inherits="WebAdmin.AdminBeneficiarios" %>
+<%@ Register TagPrefix="uc" TagName="EnvioCorreo" Src="~/Controles/EnvioCorreo.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -6,6 +7,11 @@
     <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <%-- Encabezado y tabla juntos en una region AJAX: el buscador filtra conforme
+         se escribe y solo se repinta el listado. Van juntos porque su Visible
+         cambia en bloque al abrir el formulario. --%>
+    <asp:UpdatePanel ID="UpListado" runat="server" UpdateMode="Always">
+        <ContentTemplate>
     <asp:Panel ID="PnlEncabezado" runat="server">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Beneficiario</h2>
@@ -28,7 +34,8 @@
                     DataKeyNames="BeneficiarioPreferenteId"
                     AllowPaging="True"
                     PageSize="10"
-                    OnPageIndexChanging="gvBeneficiariosPreferentes_PageIndexChanging">
+                    OnPageIndexChanging="gvBeneficiariosPreferentes_PageIndexChanging"
+                    OnRowDataBound="gvBeneficiariosPreferentes_RowDataBound">
                     <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
                     <Columns>
                         <asp:BoundField DataField="Clave" HeaderText="Clave" />
@@ -60,6 +67,18 @@
             </div>
         </div>
     </asp:Panel>
+    <%-- Envio de correo: control compartido con los demas modulos. --%>
+    <uc:EnvioCorreo ID="ucCorreo" runat="server" Visible="false"
+        OnCancelado="ucCorreo_Cancelado" OnEnviado="ucCorreo_Enviado" />
+        </ContentTemplate>
+        <Triggers>
+            <%-- Agregar muestra pnlFormularioBeneficiario, que vive FUERA de este
+                 UpdatePanel: con postback parcial ese cambio no llegaria al
+                 navegador y la pantalla quedaria en blanco. Los botones de la
+                 tabla se registran en RowDataBound por lo mismo. --%>
+            <asp:PostBackTrigger ControlID="btnAgregarBeneficiarios" />
+        </Triggers>
+    </asp:UpdatePanel>
     <asp:Panel ID="pnlFormularioBeneficiario" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <asp:HiddenField ID="hfBeneficiarioId" runat="server" />
@@ -153,6 +172,12 @@
                 <label class="form-label">Municipio</label>
                 <asp:TextBox ID="txtMunicipio" runat="server" CssClass="form-control "></asp:TextBox>
             </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Colonia</label>
+                <asp:TextBox ID="txtColonia" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>
+
             <div class="col-md-4">
                 <label class="form-label">Calle</label>
                 <asp:TextBox ID="txtCalle" runat="server" CssClass="form-control "></asp:TextBox>
@@ -166,12 +191,6 @@
             <div class="col-md-4">
                 <label class="form-label">Número Int.</label>
                 <asp:TextBox ID="txtNumeroInt" runat="server" CssClass="form-control "></asp:TextBox>
-            </div>
-
-
-            <div class="col-md-4">
-                <label class="form-label">Colonia</label>
-                <asp:TextBox ID="txtColonia" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
 
             <div class="col-md-4">
@@ -341,6 +360,11 @@
 
              });
 
+         });
+
+         // Buscador incremental. El helper vive en Default.Master.
+         document.addEventListener('DOMContentLoaded', function () {
+             msBuscadorIncremental('<%= txtBuscarBeneficiarios.ClientID %>', '<%= txtBuscarBeneficiarios.UniqueID %>', 400);
          });
      </script>
 </asp:Content>

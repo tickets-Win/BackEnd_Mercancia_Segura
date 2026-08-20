@@ -45,6 +45,21 @@ namespace MercanciaSegura.DOM.Modelos
         [MaxLength(200)]
         public string? BeneficiarioPreferente { get; set; }
 
+        // El endoso deja constancia de lo que cambia; el certificado no se
+        // toca y conserva lo que se emitio. Por eso la vigencia y la suma viven
+        // aqui y no se escriben de vuelta.
+        [Column("Vigencia_Del")]
+        public DateTime? VigenciaDel { get; set; }
+
+        [Column("Vigencia_Hasta")]
+        public DateTime? VigenciaHasta { get; set; }
+
+        [Column("Suma_Asegurada", TypeName = "decimal(18,2)")]
+        public decimal? SumaAsegurada { get; set; }
+
+        [Column("Prima_Servicio_De_Aseguramiento", TypeName = "decimal(18,2)")]
+        public decimal? PrimaServicioDeAseguramiento { get; set; }
+
         [Column("Moneda_ID")]
         public int? MonedaId { get; set; }
 

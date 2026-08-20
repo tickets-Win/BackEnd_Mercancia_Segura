@@ -14,6 +14,15 @@ Option Explicit On
 Partial Public Class AdminCliente
 
     '''<summary>
+    '''Control UpListado.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpListado As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control PnlEncabezado.
     '''</summary>
     '''<remarks>
@@ -419,15 +428,6 @@ Partial Public Class AdminCliente
     Protected WithEvents txtCP As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtNumeroInterior.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtNumeroInterior As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
     '''Control txtNumeroExterior.
     '''</summary>
     '''<remarks>
@@ -435,6 +435,15 @@ Partial Public Class AdminCliente
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtNumeroExterior As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtNumeroInterior.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtNumeroInterior As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtPoblacion.
@@ -527,6 +536,15 @@ Partial Public Class AdminCliente
     Protected WithEvents txtMinimoNacional As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control ddlMonedaNacional.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlMonedaNacional As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
     '''Control txtMinimoInternacional.
     '''</summary>
     '''<remarks>
@@ -534,6 +552,15 @@ Partial Public Class AdminCliente
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtMinimoInternacional As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control ddlMonedaInternacional.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlMonedaInternacional As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''Control upCorreos.
@@ -849,4 +876,9 @@ Partial Public Class AdminCliente
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents btnImprimir As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''Control ucCorreo.
+    '''</summary>
+    Protected WithEvents ucCorreo As Global.WebAdmin.EnvioCorreoControl
 End Class

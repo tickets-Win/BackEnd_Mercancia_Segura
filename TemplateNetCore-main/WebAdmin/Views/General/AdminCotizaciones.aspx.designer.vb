@@ -14,6 +14,15 @@ Option Explicit On
 Partial Public Class AdminCotizaciones
 
     '''<summary>
+    '''Control UpListado.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpListado As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control pnlEncabezado.
     '''</summary>
     '''<remarks>
@@ -59,6 +68,24 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents PnlTabla As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
+    '''Control gvCotizaciones.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents gvCotizaciones As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control UpFormularioCotizacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpFormularioCotizacion As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control pnlFormularioCotizaciones.
     '''</summary>
     '''<remarks>
@@ -66,6 +93,24 @@ Partial Public Class AdminCotizaciones
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents pnlFormularioCotizaciones As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control hfCotizacionId.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfCotizacionId As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
+    '''Control hfContenedores.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents hfContenedores As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
     '''Control lblMensaje.
@@ -104,6 +149,24 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents ddlTipoCotizacion As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
+    '''Control ddlNombreInternoPoliza.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlNombreInternoPoliza As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control ddlMoneda.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlMoneda As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
     '''Control txtFechaCotizacion.
     '''</summary>
     '''<remarks>
@@ -120,15 +183,6 @@ Partial Public Class AdminCotizaciones
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents ddlCliente As Global.System.Web.UI.WebControls.DropDownList
-
-    '''<summary>
-    '''Control ddlNombreInternoPoliza.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents ddlNombreInternoPoliza As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''Control ddlBeneficiarioPreferente.
@@ -158,13 +212,13 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents txtVigenciaHasta As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtMoneda.
+    '''Control pnlSumaAsegurada.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtMoneda As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents pnlSumaAsegurada As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
     '''Control txtSumaAsegurada.
@@ -174,51 +228,6 @@ Partial Public Class AdminCotizaciones
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtSumaAsegurada As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control pnlContenedor.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents pnlContenedor As Global.System.Web.UI.WebControls.Panel
-
-    '''<summary>
-    '''Control txtTamanoTipoContenedor.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtTamanoTipoContenedor As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtContenedores.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtContenedores As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtOpcionCuota.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtOpcionCuota As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtTarifa.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtTarifa As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control pnlMercanciaFormulario.
@@ -356,6 +365,15 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents btnAgregarCobertura As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
+    '''Control GvCoberturasCotizacion.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents GvCoberturasCotizacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
     '''Control pnlBienesAsegurados.
     '''</summary>
     '''<remarks>
@@ -383,13 +401,22 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents btnbienesasegurados As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''Control pnlCuotaAplicableMercancia.
+    '''Control GvBienesCotizacion.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents pnlCuotaAplicableMercancia As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents GvBienesCotizacion As Global.System.Web.UI.WebControls.GridView
+
+    '''<summary>
+    '''Control pnlMedidasSeguridad.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents pnlMedidasSeguridad As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
     '''Control txtMedidasSeguridad.
@@ -408,6 +435,25 @@ Partial Public Class AdminCotizaciones
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtDeducibles As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtCondicionesEspeciales.
+    '''</summary>
+    Protected WithEvents txtCondicionesEspeciales As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtExclusiones.
+    '''</summary>
+    Protected WithEvents txtExclusiones As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control pnlCuotaAplicableMercancia.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents pnlCuotaAplicableMercancia As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
     '''Control chkCuotaAplicableN.
@@ -518,24 +564,6 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents txtIVA As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtTotalSeguroMercancia.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtTotalSeguroMercancia As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtTotalSeguroContenedor.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtTotalSeguroContenedor As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
     '''Control txtTotalPagar.
     '''</summary>
     '''<remarks>
@@ -552,6 +580,15 @@ Partial Public Class AdminCotizaciones
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents pnlCuotaAplicableContenedor As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''Control ddlUnidades.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents ddlUnidades As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''Control txtCuotaSecos.
@@ -608,38 +645,72 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents ddlTipoIsotaques As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''Control txtTotalTarifa.
+    '''Control txtPrimaYSeguramiento2.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtTotalTarifa As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtPrimaYSeguramiento2 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtGastosExpedicionContenedor.
+    '''Control txtGastosExpedicion2.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtGastosExpedicionContenedor As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtGastosExpedicion2 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtIvaContenedor.
+    '''Control txtSubtotal2.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtIvaContenedor As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtSubtotal2 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtTotalContenedor.
+    '''Control txtIVA2.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents txtTotalContenedor As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtIVA2 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtTotalPagar2.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtTotalPagar2 As Global.System.Web.UI.WebControls.TextBox
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    '''<summary>
+    '''Control ucCorreo.
+    '''</summary>
+    Protected WithEvents ucCorreo As Global.WebAdmin.EnvioCorreoControl
 End Class

@@ -82,6 +82,8 @@ public class ServiceDbContext : DbContext
     public DbSet<CotizacionContenedor> CotizacionContenedor { get; set; }
     public DbSet<Certificado> Certificado { get; set; }
     public DbSet<Siniestros> Siniestros { get; set; }
+    public DbSet<CategoriaPlantilla> CategoriaPlantilla { get; set; }
+    public DbSet<PlantillaCorreo> PlantillaCorreo { get; set; }
     public DbSet<Endosos> Endosos { get; set; }
     public DbSet<TipoEndoso> TipoEndoso { get; set; }
     public DbSet<TipoEvento> TipoEvento { get; set; }
@@ -91,6 +93,7 @@ public class ServiceDbContext : DbContext
     public DbSet<TamanioContenedor> TamanioContenedor { get; set; }
     public DbSet<Transito> Transito { get; set; }
     public DbSet<BienCotizacion> BienCotizacion { get; set; }
+    public DbSet<CoberturaCotizacion> CoberturaCotizacion { get; set; }
 
 
 }

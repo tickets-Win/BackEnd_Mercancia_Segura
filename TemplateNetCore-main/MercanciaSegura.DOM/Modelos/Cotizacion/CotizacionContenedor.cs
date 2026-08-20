@@ -22,8 +22,11 @@ namespace MercanciaSegura.DOM.Modelos.Cotizacion
         [ForeignKey(nameof(TamanioContendorId))]
         public TamanioContenedor? TamanioContenedor { get; set; }
 
+        // Los numeros de contenedor son alfanumericos (ISO 6346: 4 letras + 7 digitos,
+        // por ejemplo MSCU1234567), por eso es texto y no entero.
         [Column("Numero_contenedor")]
-        public int? NumeroContenedor { get; set; }
+        [MaxLength(20)]
+        public string? NumeroContenedor { get; set; }
 
         [Column("Cuota", TypeName = "decimal(18,2)")]
         public decimal? Cuota { get; set; }

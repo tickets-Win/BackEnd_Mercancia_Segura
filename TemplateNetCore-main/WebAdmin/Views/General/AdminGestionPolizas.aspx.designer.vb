@@ -14,6 +14,15 @@ Option Explicit On
 Partial Public Class AdminGestionPolizas
 
     '''<summary>
+    '''Control UpListado.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents UpListado As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
     '''Control pnlEncabezado.
     '''</summary>
     '''<remarks>
@@ -185,13 +194,13 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtVigenciaHasta As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control ddlEstatus.
+    '''Control ddlEstatusPoliza.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents ddlEstatus As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents ddlEstatusPoliza As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''Control ddlFormaPago.
@@ -543,6 +552,21 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtDeducibles1 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtEspeciales1.
+    '''</summary>
+    Protected WithEvents txtEspeciales1 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtExclusionesParticulares1.
+    '''</summary>
+    Protected WithEvents txtExclusionesParticulares1 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtMedidasSeguridad1.
+    '''</summary>
+    Protected WithEvents txtMedidasSeguridad1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtCompras1.
@@ -959,6 +983,21 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtDeducibles2 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control txtEspeciales2.
+    '''</summary>
+    Protected WithEvents txtEspeciales2 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtExclusionesParticulares2.
+    '''</summary>
+    Protected WithEvents txtExclusionesParticulares2 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtMedidasSeguridad2.
+    '''</summary>
+    Protected WithEvents txtMedidasSeguridad2 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control txtCompras2.
     '''</summary>
     '''<remarks>
@@ -1373,6 +1412,21 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtDeducibles3 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control txtEspeciales3.
+    '''</summary>
+    Protected WithEvents txtEspeciales3 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtExclusionesParticulares3.
+    '''</summary>
+    Protected WithEvents txtExclusionesParticulares3 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtMedidasSeguridad3.
+    '''</summary>
+    Protected WithEvents txtMedidasSeguridad3 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control txtCompras3.
     '''</summary>
     '''<remarks>
@@ -1607,6 +1661,87 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents GvCoberturasContenedor As Global.System.Web.UI.WebControls.GridView
 
     '''<summary>
+    '''Control txtPorContenedor.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtPorContenedor As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtFerrocarril.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtFerrocarril As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtTerrestreMontosPoliza.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtTerrestreMontosPoliza As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtCuotaAplicable.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtCuotaAplicable As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtManiobrasRescateContenedor.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtManiobrasRescateContenedor As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtDañoMaterial.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtDañoMaterial As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtRobo.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtRobo As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtPerdidaTotal.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtPerdidaTotal As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtPerdidaParcial.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents txtPerdidaParcial As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control txtPrimaNetaC.
     '''</summary>
     '''<remarks>
@@ -1652,83 +1787,7 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtTotalC As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''Control txtDañoMaterial.
+    '''Control ucCorreo.
     '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtDañoMaterial As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtRobo.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtRobo As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtPerdidaTotal.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtPerdidaTotal As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtPerdidaParcial.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtPerdidaParcial As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtPorContenedor.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtPorContenedor As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtFerrocarril.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtFerrocarril As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtTerrestreMontosPoliza.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtTerrestreMontosPoliza As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtCuotaAplicable.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtCuotaAplicable As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtManiobrasRescateContenedor.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtManiobrasRescateContenedor As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ucCorreo As Global.WebAdmin.EnvioCorreoControl
 End Class

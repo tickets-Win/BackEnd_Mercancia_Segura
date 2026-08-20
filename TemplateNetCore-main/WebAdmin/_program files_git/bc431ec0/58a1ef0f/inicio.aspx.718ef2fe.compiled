@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/C:/Program Files/Git/Views/General/Inicio.aspx" hash="fffffffcb3b9a8ea" filehash="df3c627dee22b81e" flags="110000" assembly="App_Web_kdnsneil" type="ASP.views_general_inicio_aspx">
+    <filedeps>
+        <filedep name="/C:/Program Files/Git/Default.Master" />
+        <filedep name="/C:/Program Files/Git/Views/General/Inicio.aspx" />
+    </filedeps>
+</preserve>

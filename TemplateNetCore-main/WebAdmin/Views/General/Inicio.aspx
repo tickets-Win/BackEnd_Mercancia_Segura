@@ -28,7 +28,7 @@
                 <div class="card-body">
                     <i class="bi bi-person-vcard fs-1"></i>
                     <h5 class="card-title text-custom-green mb-3">Número de clientes</h5>
-                    <p class="card-text"><strong>120</strong></p>
+                    <p class="card-text"><strong><asp:Label ID="lblClientes" runat="server" Text="—"></asp:Label></strong></p>
                 </div>
             </div>
         </div>
@@ -39,7 +39,8 @@
                 <div class="card-body">
                     <i class="bi bi-file-earmark-ruled fs-1"></i>
                     <h5 class="card-title text-custom-green mb-3">Cotizaciones pendientes</h5>
-                    <p class="card-text"><strong>5</strong></p>
+                    <p class="card-text"><strong><asp:Label ID="lblCotizacionesPendientes" runat="server" Text="—"></asp:Label></strong></p>
+                    <small class="text-muted">sin confirmar</small>
                 </div>
             </div>
         </div>
@@ -49,24 +50,35 @@
                 <div class="card-body">
                     <i class="bi bi-cash-coin me-2 fs-1"></i>
                     <h5 class="card-title text-custom-green mb-3">Recibos Vencidos</h5>
-                    <p class="card-text"><strong>120</strong></p>
+                    <p class="card-text"><strong><asp:Label ID="lblRecibosVencidos" runat="server" Text="—"></asp:Label></strong></p>
+                    <asp:Panel ID="pnlRecibosPendiente" runat="server" Visible="false">
+                        <small class="text-muted">pendiente del módulo de cobranza</small>
+                    </asp:Panel>
                 </div>
             </div>
         </div>
         <div class="container-fluid" style="max-width: 400px; margin-left: 0; padding: 20px;">
             <h4 class="mb-3" style="color: #000; font-weight: bold;">Tipo de cambio</h4>
 
+            <asp:Panel ID="pnlAvisoCambio" runat="server" Visible="false">
+                <asp:Label ID="lblAvisoCambio" runat="server"></asp:Label>
+            </asp:Panel>
+
             <div class="mb-3 d-flex align-items-center">
                 <label for="usd" class="form-label me-2" style="width: 90px;">USD D.O.F:</label>
-                <input type="text" id="usd" class="form-control" placeholder="$ 0.00">
+                <asp:TextBox ID="txtUsdDof" runat="server" ClientIDMode="Static"
+                    CssClass="form-control" placeholder="$ 0.00"></asp:TextBox>
             </div>
 
             <div class="mb-3 d-flex align-items-center">
                 <label for="ventanilla" class="form-label me-2" style="width: 90px;">USD Bancario:</label>
-                <input type="text" id="ventanilla" class="form-control" placeholder="$ 0.00">
+                <asp:TextBox ID="txtUsdBancario" runat="server" ClientIDMode="Static"
+                    CssClass="form-control" placeholder="$ 0.00"></asp:TextBox>
             </div>
 
-            <button type="button" class="btn" style="background-color: #93C248; color: white; font-weight: bold;">Actualizar</button>
+            <asp:Button ID="btnActualizarCambio" runat="server" Text="Actualizar"
+                CssClass="btn" BackColor="#93C248" ForeColor="White" Font-Bold="true"
+                OnClick="btnActualizarCambio_Click" />
         </div>
     </div>
 </asp:Content>

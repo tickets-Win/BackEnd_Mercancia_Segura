@@ -7,10 +7,10 @@ Public Class AdminBeneficiarios
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If Not IsPostBack Then
-            pnlDatosFisica.Visible = True
             DropdownHelpers.CargarTipoPersona(ddlTipoPersona)
             DropdownHelpers.CargarRFCGenerico(ddlRFCGenerico)
             CargarBeneficiarios()
+            pnlDatosFisica.Visible = True
         End If
     End Sub
 
@@ -21,24 +21,39 @@ Public Class AdminBeneficiarios
     End Sub
 
     Protected Sub txtBuscarBeneficiarios_TextChanged(sender As Object, e As EventArgs)
-        Dim api As New ConsumoApi()
-        Dim json As String = api.GetCargarBeneficiarios()
+        ' Una búsqueda nueva siempre arranca en la primera página.
+        gvBeneficiariosPreferentes.PageIndex = 0
 
-        Dim lista As List(Of BeneficiarioPreferente) =
-        JsonConvert.DeserializeObject(Of List(Of BeneficiarioPreferente))(json)
+        CargarBeneficiarios()
+    End Sub
 
-        Dim texto As String = txtBuscarBeneficiarios.Text.Trim().ToLower()
+    Protected Sub gvBeneficiariosPreferentes_RowDataBound(sender As Object, e As GridViewRowEventArgs)
+        If e.Row.RowType <> DataControlRowType.DataRow Then Exit Sub
 
-        Dim filtrados = lista.Where(Function(v) _
-            v.NombreCompleto.ToLower().Contains(texto) OrElse
-            v.Rfc.ToLower().Contains(texto)).ToList()
+        RegistrarPostbackCompleto(e.Row)
+    End Sub
 
-        gvBeneficiariosPreferentes.DataSource = filtrados
-        gvBeneficiariosPreferentes.DataBind()
+    ''' <summary>
+    ''' Los botones de la tabla muestran pnlFormularioBeneficiario, que vive fuera
+    ''' del UpdatePanel del listado. Con un postback parcial esos cambios de
+    ''' visibilidad no llegan al navegador y la pantalla queda en blanco, así que se
+    ''' fuerzan a postback completo. Al estar dentro de una plantilla del GridView
+    ''' no se pueden declarar como PostBackTrigger por ID.
+    ''' </summary>
+    Private Sub RegistrarPostbackCompleto(contenedor As Control)
+        Dim sm As ScriptManager = ScriptManager.GetCurrent(Page)
+
+        If sm Is Nothing Then Exit Sub
+
+        For Each ctl As Control In contenedor.Controls
+            If TypeOf ctl Is IButtonControl Then sm.RegisterPostBackControl(ctl)
+
+            If ctl.HasControls() Then RegistrarPostbackCompleto(ctl)
+        Next
     End Sub
 
     Protected Sub ddlTipoPersona_SelectedIndexChanged(sender As Object, e As EventArgs)
-        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
+        Dim tipoPersonaId As Integer = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0)
         If ddlTipoPersona.SelectedValue = "1" Then
             pnlNombreCompleto.Visible = True
             pnlRazonSocial.Visible = False
@@ -52,8 +67,13 @@ Public Class AdminBeneficiarios
     End Sub
 
     Protected Sub gvBeneficiariosPreferentes_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Correo" Then
+            AbrirCorreo(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
+            Exit Sub
+        End If
+
         If e.CommandName = "Editar" Then
-            Dim beneficiarioId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim beneficiarioId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             pnlFormularioBeneficiario.Visible = True
             PnlTabla.Visible = False
             PnlEncabezado.Visible = False
@@ -64,7 +84,7 @@ Public Class AdminBeneficiarios
 
         If e.CommandName = "Eliminar" Then
             Dim api As New ConsumoApi()
-            Dim beneficiarioId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim beneficiarioId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
 
             Dim eliminado As String = api.DeleteBeneficiario(beneficiarioId)
 
@@ -98,16 +118,56 @@ Public Class AdminBeneficiarios
         Dim api As New ConsumoApi
         Dim cargarBeneficiarios As String = api.GetCargarBeneficiarios()
 
-        Dim listaBeneficiarios As List(Of BeneficiarioPreferente) = JsonConvert.DeserializeObject(Of List(Of BeneficiarioPreferente))(cargarBeneficiarios)
+        Dim listaBeneficiarios As New List(Of BeneficiarioPreferente)
+
+        If Not String.IsNullOrWhiteSpace(cargarBeneficiarios) AndAlso
+           cargarBeneficiarios <> "null" AndAlso
+           Not cargarBeneficiarios.StartsWith("ERROR") Then
+
+            listaBeneficiarios = JsonConvert.DeserializeObject(Of List(Of BeneficiarioPreferente))(cargarBeneficiarios)
+            If listaBeneficiarios Is Nothing Then listaBeneficiarios = New List(Of BeneficiarioPreferente)
+        End If
+
+        ' El filtro vive aquí y no en el TextChanged, para que la paginación no
+        ' pierda la búsqueda al cambiar de página.
+        Dim busqueda As String = txtBuscarBeneficiarios.Text.Trim()
+
+        If busqueda.Length > 0 Then
+            listaBeneficiarios = listaBeneficiarios.
+                Where(Function(b) Contiene(b.NombreCompleto, busqueda) OrElse
+                                  Contiene(b.Rfc, busqueda)).
+                ToList()
+        End If
+
+        Dim ultimaPagina As Integer = 0
+
+        If listaBeneficiarios.Count > 0 Then
+            ultimaPagina = CInt(Math.Ceiling(listaBeneficiarios.Count / CDbl(gvBeneficiariosPreferentes.PageSize))) - 1
+        End If
+
+        If gvBeneficiariosPreferentes.PageIndex > ultimaPagina Then
+            gvBeneficiariosPreferentes.PageIndex = ultimaPagina
+        End If
 
         gvBeneficiariosPreferentes.DataSource = listaBeneficiarios
         gvBeneficiariosPreferentes.DataBind()
     End Sub
 
+    ''' <summary>
+    ''' Búsqueda parcial que ignora mayúsculas y acentos, y tolera nulos.
+    ''' </summary>
+    Private Function Contiene(valor As String, busqueda As String) As Boolean
+        If String.IsNullOrEmpty(valor) Then Return False
+
+        Return Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(
+            valor, busqueda,
+            Globalization.CompareOptions.IgnoreCase Or Globalization.CompareOptions.IgnoreNonSpace) >= 0
+    End Function
+
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
         Dim api As New ConsumoApi()
 
-        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
+        Dim tipoPersonaId As Integer = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0)
 
         Dim nombreCompleto As String
         If tipoPersonaId = 1 Then
@@ -119,7 +179,7 @@ Public Class AdminBeneficiarios
         Dim rfcGenericoId As Integer? = Nothing
 
         If Not String.IsNullOrWhiteSpace(ddlRFCGenerico.SelectedValue) AndAlso ddlRFCGenerico.SelectedValue <> "0" Then
-            rfcGenericoId = Convert.ToInt32(ddlRFCGenerico.SelectedValue)
+            rfcGenericoId = Convertir.EnteroO(ddlRFCGenerico.SelectedValue, 0)
         End If
 
         Dim beneficiarios As New BeneficiarioPreferente With {
@@ -152,7 +212,7 @@ Public Class AdminBeneficiarios
         Dim mensajeToast As String = ""
 
         If Not String.IsNullOrEmpty(hfBeneficiarioId.Value) Then
-            Dim beneficiarioId As Integer = Convert.ToInt32(hfBeneficiarioId.Value)
+            Dim beneficiarioId As Integer = Convertir.EnteroO(hfBeneficiarioId.Value, 0)
             respuesta = api.PutEditarBeneficiario(beneficiarioId, json)
             mensajeToast = "Beneficiario editado correctamente"
         Else
@@ -190,6 +250,7 @@ Public Class AdminBeneficiarios
         hfBeneficiarioId.Value = beneficiario.BeneficiarioPreferenteId.ToString()
 
         ddlTipoPersona.SelectedValue = beneficiario.TipoPersonaId.ToString()
+        MostrarTipoPersona(beneficiario.TipoPersonaId)
         txtClave.Text = beneficiario.Clave
         txtNacionalidad.Text = beneficiario.Nacionalidad
         txtApellidoP.Text = beneficiario.ApellidoPaterno
@@ -198,7 +259,11 @@ Public Class AdminBeneficiarios
         txtRazonSocial.Text = If(beneficiario.TipoPersonaId = 2, beneficiario.NombreCompleto, "")
         txtNombreCompleto.Text = If(beneficiario.TipoPersonaId = 1, beneficiario.NombreCompleto, "")
         txtRFC.Text = beneficiario.RFC
-        ddlRFCGenerico.SelectedValue = beneficiario.RfcGenericoId
+        If beneficiario.RfcGenericoId.HasValue Then
+            ddlRFCGenerico.SelectedValue = beneficiario.RfcGenericoId.Value.ToString()
+        Else
+            ddlRFCGenerico.SelectedIndex = 0
+        End If
         ddlPais.SelectedValue = beneficiario.Pais
         txtEstado.Text = beneficiario.Estado
         txtMunicipio.Text = beneficiario.Municipio
@@ -214,6 +279,19 @@ Public Class AdminBeneficiarios
         PnlEncabezado.Visible = False
     End Sub
 
+    Private Sub MostrarTipoPersona(tipoPersonaId As Integer)
+
+        If tipoPersonaId = 1 Then
+            pnlNombreCompleto.Visible = True
+            pnlRazonSocial.Visible = False
+            pnlDatosFisica.Visible = True
+        Else
+            pnlNombreCompleto.Visible = False
+            pnlRazonSocial.Visible = True
+            pnlDatosFisica.Visible = False
+        End If
+
+    End Sub
     Private Sub LimpiarFormulario()
 
         hfBeneficiarioId.Value = ""
@@ -246,4 +324,61 @@ Public Class AdminBeneficiarios
         PnlEncabezado.Visible = True
         LimpiarFormulario()
     End Sub
+
+    ''' <summary>
+    ''' Abre el control de envio de correo. Es el mismo control que usan los demas
+    ''' modulos: aqui solo se le pasan el destinatario y los datos del registro.
+    ''' </summary>
+    Private Sub AbrirCorreo(registroId As Integer)
+
+        ucCorreo.Abrir(DestinatariosDe(registroId), ValoresDe(registroId))
+
+        PnlEncabezado.Visible = False
+        PnlTabla.Visible = False
+        pnlFormularioBeneficiario.Visible = False
+    End Sub
+
+    Protected Sub ucCorreo_Cancelado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Protected Sub ucCorreo_Enviado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Private Sub VolverDelCorreo()
+        PnlEncabezado.Visible = True
+        PnlTabla.Visible = True
+        pnlFormularioBeneficiario.Visible = False
+    End Sub
+
+    ''' <summary>
+    ''' El beneficiario no guarda correo, así que el destinatario se captura a mano.
+    ''' </summary>
+    Private Function DestinatariosDe(registroId As Integer) As String
+        Return String.Empty
+    End Function
+
+    Private Function ValoresDe(registroId As Integer) As Dictionary(Of String, String)
+
+        Dim valores As New Dictionary(Of String, String)
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetBeneficiarioId(registroId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse json.StartsWith("ERROR") Then Return valores
+
+        Dim b As BeneficiarioPreferente = JsonConvert.DeserializeObject(Of BeneficiarioPreferente)(json)
+        If b Is Nothing Then Return valores
+
+        If Not String.IsNullOrWhiteSpace(b.NombreCompleto) Then
+            valores("Nombre Completo") = b.NombreCompleto
+            valores("Nombre") = b.NombreCompleto.Split(" "c)(0)
+        End If
+
+        If Not String.IsNullOrWhiteSpace(b.RFC) Then valores("RFC") = b.RFC
+
+        Return valores
+    End Function
+
 End Class

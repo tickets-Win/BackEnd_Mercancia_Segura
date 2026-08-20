@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminGestionPolizas.aspx.vb" Inherits="WebAdmin.AdminGestionPolizas" %>
+<%@ Register TagPrefix="uc" TagName="EnvioCorreo" Src="~/Controles/EnvioCorreo.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -7,74 +8,96 @@
     <link href="../../Content/site.css" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <asp:Panel ID="pnlEncabezado" runat="server">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Gestión de Pólizas</h2>
-            <asp:Button ID="btnAgregarPoliza" runat="server" CssClass="btn btn-primary btn-add"
-                Text="Agregar Póliza" OnClick="btnAgregarPoliza_Click" />
-        </div>
-        <div class="mb-4">
-            <asp:TextBox ID="txtBuscarPolizas" runat="server" CssClass="form-control"
-                placeholder="🔍 Buscar pólizas..."></asp:TextBox>
-        </div>
-        <div class="d-flex justify-content-left mb-4">
-            <label for="ddlTipoPolizas" class="form-label visually-hidden">Filtrar</label>
-            <asp:DropDownList ID="ddlTipoPolizas" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto">
-                <asp:ListItem Text="-- Todos --" Value="0" />
-                <asp:ListItem Text="Hoy" Value="1" />
-                <asp:ListItem Text="Mes actual" Value="2" />
-                <asp:ListItem Text="Mes anterior" Value="3" />
-                <asp:ListItem Text="Canceladas" Value="4" />
-            </asp:DropDownList>
-        </div>
-    </asp:Panel>
+    <%-- Encabezado y tabla juntos en una region AJAX: el buscador filtra conforme
+         se escribe y solo se repinta el listado. Van juntos porque su Visible
+         cambia en bloque al abrir el formulario. --%>
+    <asp:UpdatePanel ID="UpListado" runat="server" UpdateMode="Always">
+        <ContentTemplate>
+            <asp:Panel ID="pnlEncabezado" runat="server">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Gestión de Pólizas</h2>
+                    <asp:Button ID="btnAgregarPoliza" runat="server" CssClass="btn btn-primary btn-add"
+                        Text="Agregar Póliza" OnClick="btnAgregarPoliza_Click" />
+                </div>
+                <div class="mb-4">
+                    <asp:TextBox ID="txtBuscarPolizas" runat="server" CssClass="form-control"
+                        placeholder="🔍 Buscar por póliza..."
+                        AutoPostBack="True" OnTextChanged="txtBuscarPolizas_TextChanged"></asp:TextBox>
+                </div>
+                <div class="d-flex justify-content-left mb-4">
+                    <label for="ddlTipoPolizas" class="form-label visually-hidden">Filtrar</label>
+                    <asp:DropDownList ID="ddlTipoPolizas" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto"
+                        AutoPostBack="True" OnSelectedIndexChanged="ddlTipoPolizas_SelectedIndexChanged">
+                        <asp:ListItem Text="-- Todos --" Value="0" />
+                        <asp:ListItem Text="Hoy" Value="1" />
+                        <asp:ListItem Text="Mes actual" Value="2" />
+                        <asp:ListItem Text="Mes anterior" Value="3" />
+                    </asp:DropDownList>
+                </div>
+            </asp:Panel>
 
-    <asp:Panel ID="PnlTabla" runat="server">
-        <div class="card card-shadow p-4 mb-4">
-            <div style="overflow-x: auto; width: 100%;">
-                <asp:GridView ID="gvPolizas" runat="server" Style="min-width: 1200px; white-space: nowrap;"
-                    CssClass="table table-hover align-middle"
-                    AutoGenerateColumns="False"
-                    OnRowCommand="gvPolizas_RowCommand"
-                    HeaderStyle-CssClass="table-light"
-                    DataKeyNames="PolizaId"
-                    AllowPaging="True"
-                    PageSize="10"
-                    OnPageIndexChanging="gvPolizas_PageIndexChanging">
-                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
-                    <Columns>
-                        <asp:BoundField DataField="nombreAseguradora" HeaderText="Aseguradora" />
-                        <asp:BoundField DataField="NumeroPoliza" HeaderText="N° Póliza" />
-                        <asp:BoundField DataField="nombreContratante" HeaderText="Contratante" />
-                        <asp:BoundField DataField="VigenciaDel" HeaderText="Vigencia del" DataFormatString="{0:dd/MM/yyyy}" />
-                        <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia hasta" DataFormatString="{0:dd/MM/yyyy}" />
-                        <asp:BoundField DataField="nombreEstatusPoliza" HeaderText="Estatus" />
-                        <asp:BoundField DataField="nombreMoneda" HeaderText="Moneda" />
+            <asp:Panel ID="PnlTabla" runat="server">
+                <div class="card card-shadow p-4 mb-4">
+                    <div style="overflow-x: auto; width: 100%;">
+                        <asp:GridView ID="gvPolizas" runat="server" Style="min-width: 1200px; white-space: nowrap;"
+                            CssClass="table table-hover align-middle"
+                            AutoGenerateColumns="False"
+                            OnRowCommand="gvPolizas_RowCommand"
+                            HeaderStyle-CssClass="table-light"
+                            DataKeyNames="PolizaId"
+                            AllowPaging="True"
+                            PageSize="10"
+                            OnPageIndexChanging="gvPolizas_PageIndexChanging"
+                            OnRowDataBound="gvPolizas_RowDataBound">
+                            <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                            <Columns>
+                                <asp:BoundField DataField="nombreAseguradora" HeaderText="Aseguradora" />
+                                <asp:BoundField DataField="NumeroPoliza" HeaderText="N° Póliza" />
+                                <asp:BoundField DataField="nombreContratante" HeaderText="Contratante" />
+                                <asp:BoundField DataField="VigenciaDel" HeaderText="Vigencia del" DataFormatString="{0:dd/MM/yyyy}" />
+                                <asp:BoundField DataField="VigenciaHasta" HeaderText="Vigencia hasta" DataFormatString="{0:dd/MM/yyyy}" />
+                                <asp:BoundField DataField="nombreEstatusPoliza" HeaderText="Estatus" />
+                                <asp:BoundField DataField="nombreMoneda" HeaderText="Moneda" />
 
-                        <asp:TemplateField HeaderText="Acciones">
-                            <ItemTemplate>
-                                <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("PolizaId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Editar">
+                                <asp:TemplateField HeaderText="Acciones">
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("PolizaId") %>'
+                                            CssClass="icon-btn action-icon" ToolTip="Editar">
           <i class="bi bi-pencil"></i>
-                                </asp:LinkButton>
+                                        </asp:LinkButton>
 
-                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("PolizaId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Eliminar"
-                                    OnClientClick="return confirm('¿Seguro que deseas eliminar esta póliza?');">
+                                        <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("PolizaId") %>'
+                                            CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                            OnClientClick="return confirm('¿Seguro que deseas eliminar esta póliza?');">
           <i class="bi bi-trash"></i>
-                                </asp:LinkButton>
+                                        </asp:LinkButton>
 
-                                <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("PolizaId") %>'
-                                    CssClass="icon-btn" ToolTip="Enviar correo">
+                                        <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("PolizaId") %>'
+                                            CssClass="icon-btn" ToolTip="Enviar correo">
           <i class="bi bi-envelope"></i>
-                                </asp:LinkButton>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
-            </div>
-        </div>
-    </asp:Panel>
+                                        </asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                            <EmptyDataTemplate>
+                                <div class="text-muted py-3">No se encontraron pólizas con ese criterio.</div>
+                            </EmptyDataTemplate>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+    <%-- Envio de correo: control compartido con los demas modulos. --%>
+    <uc:EnvioCorreo ID="ucCorreo" runat="server" Visible="false"
+        OnCancelado="ucCorreo_Cancelado" OnEnviado="ucCorreo_Enviado" />
+        </ContentTemplate>
+        <Triggers>
+            <%-- Agregar muestra pnlFormularioPolizas, que vive FUERA de este
+                 UpdatePanel: con postback parcial ese cambio no llegaria al
+                 navegador y la pantalla quedaria en blanco. Los botones de la
+                 tabla se registran en gvPolizas_RowDataBound por lo mismo. --%>
+            <asp:PostBackTrigger ControlID="btnAgregarPoliza" />
+        </Triggers>
+    </asp:UpdatePanel>
     <asp:Panel ID="pnlFormularioPolizas" runat="server" CssClass="card p-4 mt-4" Visible="false">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <asp:HiddenField ID="hfPolizaId" runat="server" />
@@ -124,9 +147,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Estatus</label>
-                <asp:DropDownList ID="ddlEstatus" runat="server" CssClass="form-select">
-                    <asp:ListItem Text="Activo" Value="1"></asp:ListItem>
-                    <asp:ListItem Text="Suspendido" Value="2"></asp:ListItem>
+                <asp:DropDownList ID="ddlEstatusPoliza" runat="server" CssClass="form-select">
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -140,7 +161,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">Clave Agente</label>
-                <asp:TextBox ID="txtClaveAgente" runat="server" CssClass="form-control claveAgente-10"></asp:TextBox>
+                <asp:TextBox ID="txtClaveAgente" runat="server" CssClass="form-control"></asp:TextBox>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Folio Póliza</label>
@@ -195,7 +216,7 @@
                                     <div class="row mt-3 gx-0">
                                         <div class="col-md-12 px-2">
                                             <label class="form-label">Nombre interno Póliza</label>
-                                            <asp:TextBox ID="txtNombreInternoPoliza1" runat="server" CssClass="form-control w-100 required"></asp:TextBox>
+                                            <asp:TextBox ID="txtNombreInternoPoliza1" runat="server" CssClass="form-control w-100"></asp:TextBox>
                                         </div>
                                     </div>
 
@@ -317,7 +338,7 @@
                                                                 <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
                                                                 <Columns>
-                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Excluido" />
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bienes Sujetos a Consulta" />
 
                                                                     <asp:TemplateField HeaderText="Acciones">
                                                                         <ItemTemplate>
@@ -341,11 +362,11 @@
 
                                     <div class="col-md-4">
                                         <label class="form-label">Terrestre y/o Aéreo</label>
-                                        <asp:TextBox ID="txtTerrestreAereo1" data-format="money-only" runat="server" CssClass="form-control required"></asp:TextBox>
+                                        <asp:TextBox ID="txtTerrestreAereo1" data-format="money-only" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Marítimo</label>
-                                        <asp:TextBox ID="txtMaritimo1" data-format="money-only" runat="server" CssClass="form-control required"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaritimo1" data-format="money-only" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Paquetería y/o Mensajería</label>
@@ -425,7 +446,7 @@
                                                                 <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
                                                                 <Columns>
-                                                                    <asp:BoundField DataField="Nombre" HeaderText="Viaje Completo" />
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Continuación del Viaje" />
 
                                                                     <asp:TemplateField HeaderText="Acciones">
                                                                         <ItemTemplate>
@@ -471,7 +492,7 @@ Eliminar
                                                                 <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
                                                                 <Columns>
-                                                                    <asp:BoundField DataField="Nombre" HeaderText="Viaje Completo" />
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Coberturas Adicionales" />
 
                                                                     <asp:TemplateField HeaderText="Acciones">
                                                                         <ItemTemplate>
@@ -492,28 +513,40 @@ Eliminar
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Deducibles</label>
-                                        <asp:TextBox ID="txtDeducibles1" runat="server" CssClass="form-control  required" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                        <asp:TextBox ID="txtDeducibles1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Especiales</label>
+                                        <asp:TextBox ID="txtEspeciales1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Exclusiones Particulares</label>
+                                        <asp:TextBox ID="txtExclusionesParticulares1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Medidas de Seguridad</label>
+                                        <asp:TextBox ID="txtMedidasSeguridad1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                                     </div>
                                     <h5 class="border-bottom pb-2">Bases de Indemnización</h5>
                                     <div class="col-6">
                                         <label class="form-label">Compras</label>
-                                        <asp:TextBox ID="txtCompras1" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtCompras1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Ventas</label>
-                                        <asp:TextBox ID="txtVentas1" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtVentas1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Maquila</label>
-                                        <asp:TextBox ID="txtMaquila1" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaquila1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Bienes Usados</label>
-                                        <asp:TextBox ID="txtBienesUsados1" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtBienesUsados1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Embarques entre Filiales</label>
-                                        <asp:TextBox ID="txtEmbarquesEntreFiliales1" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtEmbarquesEntreFiliales1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Otros</label>
@@ -521,7 +554,7 @@ Eliminar
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Cuota General de la Póliza</label>
-                                        <asp:TextBox ID="txtCuotaGeneralPoliza1" data-format="money-only" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtCuotaGeneralPoliza1" data-format="percent" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col-md-6">
@@ -530,12 +563,12 @@ Eliminar
                                                 <div class="row mb-3">
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">Medicamentos</h6>
-                                                        <asp:TextBox ID="txtMedicamentos1" data-format="percent" runat="server"  CssClass="form-control"
+                                                        <asp:TextBox ID="txtMedicamentos1" data-format="percent" runat="server" CssClass="form-control"
                                                             placeholder="%"></asp:TextBox>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <h6 class="titulo-cuota">Cobre, Aluminio y Acero</h6>
-                                                        <asp:TextBox ID="txtCobreAluminioAcero1"  data-format="percent" runat="server" CssClass="form-control"
+                                                        <asp:TextBox ID="txtCobreAluminioAcero1" data-format="percent" runat="server" CssClass="form-control"
                                                             placeholder="%"></asp:TextBox>
                                                     </div>
                                                 </div>
@@ -565,12 +598,12 @@ Eliminar
                                                 <div class="row mb-3">
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">Prima Neta</h6>
-                                                        <asp:TextBox ID="txtPrimaNetaMercancia1" data-format="money-only" runat="server" CssClass="form-control required"
+                                                        <asp:TextBox ID="txtPrimaNetaMercancia1" data-format="money-only" runat="server" CssClass="form-control"
                                                             placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <h6 class="titulo-cuota">Derecho de Póliza</h6>
-                                                        <asp:TextBox ID="txtDerechoPolizaMercancia1" data-format="money-only" runat="server" CssClass="form-control required"
+                                                        <asp:TextBox ID="txtDerechoPolizaMercancia1" data-format="money-only" runat="server" CssClass="form-control"
                                                             placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                 </div>
@@ -582,13 +615,13 @@ Eliminar
                                                     </div>
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">IVA</h6>
-                                                        <asp:TextBox ID="txtIVAMercancia1" data-format="money-only" runat="server" CssClass="form-control required"
+                                                        <asp:TextBox ID="txtIVAMercancia1" data-format="money-only" runat="server" CssClass="form-control campo-calculado"
                                                             placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                 </div>
                                                 <div class="col col-md-12">
                                                     <h6 class="titulo-cuota">Prima Total</h6>
-                                                    <asp:TextBox ID="txtPrimaTotalMercancia1" data-format="money-only" runat="server" CssClass="form-control required"
+                                                    <asp:TextBox ID="txtPrimaTotalMercancia1" data-format="money-only" runat="server" CssClass="form-control campo-calculado"
                                                         placeholder="$0.00"></asp:TextBox>
                                                 </div>
                                             </div>
@@ -601,7 +634,7 @@ Eliminar
                                     <div class="row mt-3 gx-0">
                                         <div class="col-md-12 px-2">
                                             <label class="form-label">Nombre interno Póliza</label>
-                                            <asp:TextBox ID="txtNombreInternoPoliza2" runat="server" CssClass="form-control w-100 required"></asp:TextBox>
+                                            <asp:TextBox ID="txtNombreInternoPoliza2" runat="server" CssClass="form-control w-100"></asp:TextBox>
                                         </div>
                                     </div>
 
@@ -723,7 +756,7 @@ Eliminar
                                                                 <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
                                                                 <Columns>
-                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Excluido" />
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bienes Sujetos a Consulta" />
 
                                                                     <asp:TemplateField HeaderText="Acciones">
                                                                         <ItemTemplate>
@@ -747,11 +780,11 @@ Eliminar
 
                                     <div class="col-md-4">
                                         <label class="form-label">Terrestre y/o Aéreo</label>
-                                        <asp:TextBox ID="txtTerrestreAereo2" data-format="money-only" runat="server" CssClass="form-control required"></asp:TextBox>
+                                        <asp:TextBox ID="txtTerrestreAereo2" data-format="money-only" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Marítimo</label>
-                                        <asp:TextBox ID="txtMaritimo2" data-format="money-only" runat="server" CssClass="form-control required"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaritimo2" data-format="money-only" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Paquetería y/o Mensajería</label>
@@ -854,7 +887,7 @@ Eliminar
                                                                 <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
                                                                 <Columns>
-                                                                    <asp:BoundField DataField="Nombre" HeaderText="Viaje Completo" />
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Continuación de Viaje" />
 
                                                                     <asp:TemplateField HeaderText="Acciones">
                                                                         <ItemTemplate>
@@ -912,7 +945,7 @@ Eliminar
                                                                 OnPageIndexChanging="GvCoberturasAdicionales2_PageIndexChanging">
                                                                 <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
                                                                 <Columns>
-                                                                    <asp:BoundField DataField="Nombre" HeaderText="Viaje Completo" />
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Coberturas Adicionales" />
 
                                                                     <asp:TemplateField HeaderText="Acciones">
                                                                         <ItemTemplate>
@@ -935,29 +968,41 @@ Eliminar
 
                                     <div class="col-12">
                                         <label class="form-label">Deducibles</label>
-                                        <asp:TextBox ID="txtDeducibles2" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                        <asp:TextBox ID="txtDeducibles2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Especiales</label>
+                                        <asp:TextBox ID="txtEspeciales2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Exclusiones Particulares</label>
+                                        <asp:TextBox ID="txtExclusionesParticulares2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Medidas de Seguridad</label>
+                                        <asp:TextBox ID="txtMedidasSeguridad2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                                     </div>
 
                                     <h5 class="border-bottom pb-2">Bases de Indemnización</h5>
                                     <div class="col-6">
                                         <label class="form-label">Compras</label>
-                                        <asp:TextBox ID="txtCompras2" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtCompras2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Ventas</label>
-                                        <asp:TextBox ID="txtVentas2" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtVentas2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Maquila</label>
-                                        <asp:TextBox ID="txtMaquila2" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaquila2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Bienes Usados</label>
-                                        <asp:TextBox ID="txtBienesUsados2" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtBienesUsados2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Embarques entre Filiales</label>
-                                        <asp:TextBox ID="txtEmbarquesEntreFiliales2" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtEmbarquesEntreFiliales2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Otros</label>
@@ -965,7 +1010,7 @@ Eliminar
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Cuota General de la Póliza</label>
-                                        <asp:TextBox ID="txtCuotaGeneralPoliza2" data-format="money-only" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtCuotaGeneralPoliza2" data-format="percent" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
 
                                     <div class="row mt-3">
@@ -1007,11 +1052,11 @@ Eliminar
                                                 <div class="row mb-3">
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">Prima Neta</h6>
-                                                        <asp:TextBox ID="txtPrimaNetaMercancia2" data-format="money-only" runat="server" CssClass="form-control required" placeholder="$0.00"></asp:TextBox>
+                                                        <asp:TextBox ID="txtPrimaNetaMercancia2" data-format="money-only" runat="server" CssClass="form-control" placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <h6 class="titulo-cuota">Derecho de Póliza</h6>
-                                                        <asp:TextBox ID="txtDerechoPolizaMercancia2" data-format="money-only" runat="server" CssClass="form-control required" placeholder="$0.00"></asp:TextBox>
+                                                        <asp:TextBox ID="txtDerechoPolizaMercancia2" data-format="money-only" runat="server" CssClass="form-control" placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
@@ -1021,12 +1066,12 @@ Eliminar
                                                     </div>
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">IVA</h6>
-                                                        <asp:TextBox ID="txtIVAMercancia2" data-format="money-only" runat="server" CssClass="form-control required" placeholder="$0.00"></asp:TextBox>
+                                                        <asp:TextBox ID="txtIVAMercancia2" data-format="money-only" runat="server" CssClass="form-control campo-calculado" placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                 </div>
                                                 <div class="col col-md-12">
                                                     <h6 class="titulo-cuota">Prima Total</h6>
-                                                    <asp:TextBox ID="txtPrimaTotalMercancia2" data-format="money-only" runat="server" CssClass="form-control required" placeholder="$0.00"></asp:TextBox>
+                                                    <asp:TextBox ID="txtPrimaTotalMercancia2" data-format="money-only" runat="server" CssClass="form-control campo-calculado" placeholder="$0.00"></asp:TextBox>
                                                 </div>
                                             </div>
                                         </div>
@@ -1038,7 +1083,7 @@ Eliminar
                                     <div class="row mt-3 gx-0">
                                         <div class="col-md-12 px-2">
                                             <label class="form-label">Nombre interno Póliza</label>
-                                            <asp:TextBox ID="txtNombreInternoPoliza3" runat="server" CssClass="form-control w-100 required"></asp:TextBox>
+                                            <asp:TextBox ID="txtNombreInternoPoliza3" runat="server" CssClass="form-control w-100 "></asp:TextBox>
                                         </div>
                                     </div>
                                     <div class="row mt-3 gx-0">
@@ -1159,7 +1204,7 @@ Eliminar
                                                                 <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
                                                                 <Columns>
-                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bien Excluido" />
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Bienes Sujetos a Consulta" />
 
                                                                     <asp:TemplateField HeaderText="Acciones">
                                                                         <ItemTemplate>
@@ -1183,15 +1228,15 @@ Eliminar
 
                                     <div class="col-md-4">
                                         <label class="form-label">Terrestre y/o Aéreo</label>
-                                        <asp:TextBox ID="txtTerrestreAereo3" data-format="money-only" runat="server" CssClass="form-control required"></asp:TextBox>
+                                        <asp:TextBox ID="txtTerrestreAereo3" data-format="money-only" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Marítimo</label>
-                                        <asp:TextBox ID="txtMaritimo3" data-format="money-only" runat="server" CssClass="form-control required"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaritimo3" data-format="money-only" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Paquetería y/o Mensajería</label>
-                                        <asp:TextBox ID="txtPaqueteria3" data-format="money-only" runat="server" CssClass="form-control required"></asp:TextBox>
+                                        <asp:TextBox ID="txtPaqueteria3" data-format="money-only" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
 
                                     <h5 class="border-bottom pb-2">Riesgos Cubiertos</h5>
@@ -1291,7 +1336,7 @@ Eliminar
                                                                 <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
                                                                 <Columns>
-                                                                    <asp:BoundField DataField="Nombre" HeaderText="Viaje Completo" />
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Continuación del Viaje" />
 
                                                                     <asp:TemplateField HeaderText="Acciones">
                                                                         <ItemTemplate>
@@ -1349,7 +1394,7 @@ Eliminar
                                                                 OnPageIndexChanging="GvCoberturasAdicionales3_PageIndexChanging">
                                                                 <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
                                                                 <Columns>
-                                                                    <asp:BoundField DataField="Nombre" HeaderText="Viaje Completo" />
+                                                                    <asp:BoundField DataField="Nombre" HeaderText="Coberturas Adicionales" />
 
                                                                     <asp:TemplateField HeaderText="Acciones">
                                                                         <ItemTemplate>
@@ -1371,29 +1416,41 @@ Eliminar
 
                                     <div class="col-12">
                                         <label class="form-label">Deducibles</label>
-                                        <asp:TextBox ID="txtDeducibles3" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                        <asp:TextBox ID="txtDeducibles3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Especiales</label>
+                                        <asp:TextBox ID="txtEspeciales3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Exclusiones Particulares</label>
+                                        <asp:TextBox ID="txtExclusionesParticulares3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Medidas de Seguridad</label>
+                                        <asp:TextBox ID="txtMedidasSeguridad3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                                     </div>
 
                                     <h5 class="border-bottom pb-2">Bases de Indemnización</h5>
                                     <div class="col-6">
                                         <label class="form-label">Compras</label>
-                                        <asp:TextBox ID="txtCompras3" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtCompras3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Ventas</label>
-                                        <asp:TextBox ID="txtVentas3" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtVentas3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Maquila</label>
-                                        <asp:TextBox ID="txtMaquila3" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtMaquila3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Bienes Usados</label>
-                                        <asp:TextBox ID="txtBienesUsados3" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtBienesUsados3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Embarques entre Filiales</label>
-                                        <asp:TextBox ID="txtEmbarquesEntreFiliales3" runat="server" CssClass="form-control required" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                        <asp:TextBox ID="txtEmbarquesEntreFiliales3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Otros</label>
@@ -1401,7 +1458,7 @@ Eliminar
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Cuota General de la Póliza</label>
-                                        <asp:TextBox ID="txtCuotaGeneralPoliza3" data-format="money-only" runat="server" CssClass="form-control"></asp:TextBox>
+                                        <asp:TextBox ID="txtCuotaGeneralPoliza3" data-format="percent" runat="server" CssClass="form-control"></asp:TextBox>
                                     </div>
 
                                     <div class="row mt-3">
@@ -1443,11 +1500,11 @@ Eliminar
                                                 <div class="row mb-3">
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">Prima Neta</h6>
-                                                        <asp:TextBox ID="txtPrimaNetaMercancia3" data-format="money-only" runat="server" CssClass="form-control required" placeholder="$0.00"></asp:TextBox>
+                                                        <asp:TextBox ID="txtPrimaNetaMercancia3" data-format="money-only" runat="server" CssClass="form-control" placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <h6 class="titulo-cuota">Derecho de Póliza</h6>
-                                                        <asp:TextBox ID="txtDerechoPolizaMercancia3" data-format="money-only" runat="server" CssClass="form-control required" placeholder="$0.00"></asp:TextBox>
+                                                        <asp:TextBox ID="txtDerechoPolizaMercancia3" data-format="money-only" runat="server" CssClass="form-control" placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
@@ -1457,12 +1514,12 @@ Eliminar
                                                     </div>
                                                     <div class="col col-md-6">
                                                         <h6 class="titulo-cuota">IVA</h6>
-                                                        <asp:TextBox ID="txtIVAMercancia3"  data-format="money-only" runat="server" CssClass="form-control required" placeholder="$0.00"></asp:TextBox>
+                                                        <asp:TextBox ID="txtIVAMercancia3" data-format="money-only" runat="server" CssClass="form-control campo-calculado" placeholder="$0.00"></asp:TextBox>
                                                     </div>
                                                 </div>
                                                 <div class="col col-md-12">
                                                     <h6 class="titulo-cuota">Prima Total</h6>
-                                                    <asp:TextBox ID="txtPrimaTotalMercancia3" data-format="money-only" runat="server" CssClass="form-control required" placeholder="$0.00"></asp:TextBox>
+                                                    <asp:TextBox ID="txtPrimaTotalMercancia3" data-format="money-only" runat="server" CssClass="form-control campo-calculado" placeholder="$0.00"></asp:TextBox>
                                                 </div>
                                             </div>
                                         </div>
@@ -1564,7 +1621,7 @@ Eliminar
                                                     <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
 
                                                     <Columns>
-                                                        <asp:BoundField DataField="Nombre" HeaderText="Bien Asegurado" />
+                                                        <asp:BoundField DataField="Nombre" HeaderText="Coberturas" />
 
                                                         <asp:TemplateField HeaderText="Acciones">
                                                             <ItemTemplate>
@@ -1584,13 +1641,83 @@ Eliminar
                             </div>
                         </div>
                         <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="card p-3 shadow-sm">
+                                    <h6>Valor Máximo Asegurado</h6>
+                                    <h6>Por contenedor</h6>
+                                    <div class="row mb-3">
+                                        <div class="col col-md-6">
+                                            <asp:TextBox ID="txtPorContenedor" data-format="money-only" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                    <h6>Por medio de transporte</h6>
+                                    <div class="row mb-3">
+                                        <div class="col col-md-6">
+                                            <h6>Ferrocarril</h6>
+                                            <asp:TextBox ID="txtFerrocarril" data-format="money-only" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Terrestre</h6>
+                                            <asp:TextBox ID="txtTerrestreMontosPoliza" data-format="money-only" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col col-md-6">
+                                            <h6>Cuota Aplicable</h6>
+                                            <asp:TextBox ID="txtCuotaAplicable" data-format="money-only" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col col-md-6">
+                                            <h6>Maniobras de rescate por contenedor</h6>
+                                            <asp:TextBox ID="txtManiobrasRescateContenedor" runat="server" CssClass="form-control" data-format="money-only"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card p-3 shadow-sm">
+                                    <h6>Deducibles</h6>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <h6>Daño Material</h6>
+                                            <asp:TextBox ID="txtDañoMaterial" data-format="money-only" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Robo</h6>
+                                            <asp:TextBox ID="txtRobo" data-format="money-only" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col col-md-6">
+                                            <h6>Pérdida Total</h6>
+                                            <asp:TextBox ID="txtPerdidaTotal" data-format="money-only" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                        <div class="col col-md-6">
+                                            <h6>Pérdida Parcial</h6>
+                                            <asp:TextBox ID="txtPerdidaParcial" data-format="money-only" runat="server" CssClass="form-control"
+                                                placeholder="$0.00"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
                             <div class="col col-md-6">
                                 <div class="card p-3 shadow-sm">
                                     <h6>Montos Póliza</h6>
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <h6>Prima Neta</h6>
-                                            <asp:TextBox ID="txtPrimaNetaC" data-format="money-only" runat="server" CssClass="form-control mb-3 required"
+                                            <asp:TextBox ID="txtPrimaNetaC" data-format="money-only" runat="server" CssClass="form-control mb-3"
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                         <div class="col-md-6">
@@ -1602,89 +1729,19 @@ Eliminar
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <h6>Derecho de póliza</h6>
-                                            <asp:TextBox ID="txtDerechoPolizaC" data-format="money-only" runat="server" CssClass="form-control mb-3 required"
+                                            <asp:TextBox ID="txtDerechoPolizaC" data-format="money-only" runat="server" CssClass="form-control mb-3"
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                         <div class="col-md-6">
                                             <h6>IVA</h6>
-                                            <asp:TextBox ID="txtIVAC" data-format="money-only" runat="server" CssClass="form-control mb-3 required"
+                                            <asp:TextBox ID="txtIVAC" data-format="money-only" runat="server" CssClass="form-control mb-3 campo-calculado"
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-md-12">
                                             <h6>Total</h6>
-                                            <asp:TextBox ID="txtTotalC" data-format="money-only" runat="server" CssClass="form-control mb-3 required"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card p-3 shadow-sm">
-                                    <h6>Deducibles</h6>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <h6>Daño Material</h6>
-                                            <asp:TextBox ID="txtDañoMaterial" data-format="money-only" runat="server" CssClass="form-controlrequired"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h6>Robo</h6>
-                                            <asp:TextBox ID="txtRobo" data-format="money-only" runat="server" CssClass="form-control required"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <h6>Pérdida Total</h6>
-                                            <asp:TextBox ID="txtPerdidaTotal" data-format="money-only" runat="server" CssClass="form-control required"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                        <div class="col col-md-6">
-                                            <h6>Pérdida Parcial</h6>
-                                            <asp:TextBox ID="txtPerdidaParcial" data-format="money-only" runat="server" CssClass="form-control required"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <div class="card p-3 shadow-sm">
-                                    <h6>Valor Máximo Asegurado</h6>
-                                    <h6>Por contenedor</h6>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <asp:TextBox ID="txtPorContenedor" data-format="money-only" runat="server" CssClass="form-control required"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                    </div>
-                                    <h6>Por medio de transporte</h6>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <h6>Ferrocarril</h6>
-                                            <asp:TextBox ID="txtFerrocarril" data-format="money-only" runat="server" CssClass="form-control required"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h6>Terrestre</h6>
-                                            <asp:TextBox ID="txtTerrestreMontosPoliza" data-format="money-only" runat="server" CssClass="form-control required"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <h6>Cuota Aplicable</h6>
-                                            <asp:TextBox ID="txtCuotaAplicable" data-format="money-only" runat="server" CssClass="form-control required"
-                                                placeholder="$0.00"></asp:TextBox>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col col-md-6">
-                                            <h6>Maniobras de rescate por contenedor</h6>
-                                            <asp:TextBox ID="txtManiobrasRescateContenedor" runat="server" CssClass="form-control required" data-format="money-only"
+                                            <asp:TextBox ID="txtTotalC" data-format="money-only" runat="server" CssClass="form-control mb-3 campo-calculado"
                                                 placeholder="$0.00"></asp:TextBox>
                                         </div>
                                     </div>
@@ -1697,7 +1754,7 @@ Eliminar
         </asp:Panel>
     </asp:Panel>
     <script>
-
+        // -------------------- COLAPSABLES --------------------
         function toggleCollapse(id) {
             const div = document.getElementById(id);
             const icon = document.getElementById('icon-' + id);
@@ -1707,24 +1764,20 @@ Eliminar
                 div.style.display = 'block';
                 icon.classList.remove('bi-chevron-down');
                 icon.classList.add('bi-chevron-up');
-
                 localStorage.setItem('openCollapse', id);
             } else {
                 div.style.display = 'none';
                 icon.classList.remove('bi-chevron-up');
                 icon.classList.add('bi-chevron-down');
-
                 localStorage.removeItem('openCollapse');
             }
         }
 
         function restoreCollapse() {
-
             const collapsibles = document.querySelectorAll('.collapse-content');
             const openId = localStorage.getItem('openCollapse');
 
             collapsibles.forEach(div => {
-
                 const icon = document.getElementById('icon-' + div.id);
                 if (!icon) return;
 
@@ -1737,200 +1790,383 @@ Eliminar
                     icon.classList.remove('bi-chevron-up');
                     icon.classList.add('bi-chevron-down');
                 }
-
             });
         }
 
         window.addEventListener('load', restoreCollapse);
+        if (typeof Sys !== "undefined") Sys.Application.add_load(restoreCollapse);
 
-        if (typeof Sys !== "undefined") {
-            Sys.Application.add_load(restoreCollapse);
+        // -------------------- VALIDACIÓN --------------------
+        function validarCampos() {
+            limpiarValidacion();
+            let valido = true;
+
+            document.querySelectorAll('.required').forEach(function (campo) {
+                if (campo.disabled) return;
+                if (campo.tagName === "SELECT") {
+                    if (campo.value === "0" || campo.value === "") {
+                        marcarError(campo, "Este campo es obligatorio");
+                        valido = false;
+                    }
+                } else {
+                    if (!campo.value || !campo.value.toString().trim()) {
+                        marcarError(campo, "Este campo es obligatorio");
+                        valido = false;
+                    }
+                }
+            });
+
+            document.querySelectorAll('.Folio-15').forEach(function (campo) {
+                if (campo.value) {
+                    let regex = /^[a-zA-Z0-9]{1,15}$/;
+                    if (!regex.test(campo.value)) {
+                        marcarError(campo, "La clave debe tener letras o números");
+                        valido = false;
+                    }
+                }
+            });
+
+            if (!validarPanel("panel-datos", "<%= txtNombreInternoPoliza1.ClientID %>")) valido = false;
+            if (!validarPanel("panel-credito", "<%= txtNombreInternoPoliza2.ClientID %>")) valido = false;
+            if (!validarPanel("panel-estado", "<%= txtNombreInternoPoliza3.ClientID %>")) valido = false;
+
+
+            if (!valido) showToast('Corrige los campos marcados', 'danger');
+            return valido;
         }
 
-    </script>
-   <script>
+        function marcarError(campo, mensaje) {
+            campo.classList.add('is-invalid');
+            let feedback = document.createElement("div");
+            feedback.className = "invalid-feedback";
+            feedback.innerText = mensaje;
+            if (!campo.nextElementSibling || !campo.nextElementSibling.classList.contains("invalid-feedback")) {
+                campo.parentNode.appendChild(feedback);
+            }
+        }
 
-       function validarCampos() {
+        function limpiarValidacion() {
+            document.querySelectorAll('.is-invalid').forEach(campo => campo.classList.remove('is-invalid'));
+            document.querySelectorAll('.invalid-feedback').forEach(msg => msg.remove());
+        }
 
-           limpiarValidacion();
-           let valido = true;
-
-           document.querySelectorAll('.required').forEach(function (campo) {
-
-               if (campo.disabled) return;
-
-               if (campo.tagName === "SELECT") {
-
-                   if (campo.value === "0" || campo.value === "") {
-                       marcarError(campo, "Este campo es obligatorio");
-                       valido = false;
-                   }
-
-               } else {
-
-                   if (!campo.value || !campo.value.toString().trim()) {
-                       marcarError(campo, "Este campo es obligatorio");
-                       valido = false;
-                   }
-
-               }
-
-           });
-
-           document.querySelectorAll('.Folio-15').forEach(function (campo) {
-
-               if (campo.value) {
-
-                   let regex = /^[a-zA-Z0-9]{1,15}$/;
-
-                   if (!regex.test(campo.value)) {
-                       marcarError(campo, "La clave debe tener letras o números");
-                       valido = false;
-                   }
-
-               }
-
-           });
-
-           document.querySelectorAll('.claveAgente-10').forEach(function (campo) {
-
-               if (campo.value) {
-
-                   let regex = /^[a-zA-Z0-9]{1,10}$/;
-
-                   if (!regex.test(campo.value)) {
-                       marcarError(campo, "La clave debe tener letras o números");
-                       valido = false;
-                   }
-
-               }
-
-           });
-
-           if (!valido) {
-               showToast('Corrige los campos marcados', 'danger');
-           }
-
-           return valido;
-       }
-
-       function marcarError(campo, mensaje) {
-
-           campo.classList.add('is-invalid');
-
-           let feedback = document.createElement("div");
-           feedback.className = "invalid-feedback";
-           feedback.innerText = mensaje;
-
-           if (!campo.nextElementSibling || !campo.nextElementSibling.classList.contains("invalid-feedback")) {
-               campo.parentNode.appendChild(feedback);
-           }
-
-       }
-
-       function limpiarValidacion() {
-
-           document.querySelectorAll('.is-invalid').forEach(function (campo) {
-               campo.classList.remove('is-invalid');
-           });
-
-           document.querySelectorAll('.invalid-feedback').forEach(function (msg) {
-               msg.remove();
-           });
-
-       }    
-   </script>
-    <script>
+        // -------------------- TOAST --------------------
         function showToast(message, type) {
             const wrapper = document.createElement('div');
             wrapper.innerHTML = `
-    <div class="toast align-items-center text-bg-${type} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body">${message}</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        <div class="toast align-items-center text-bg-${type} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
         </div>
-    </div>
-`;
+    `;
             document.getElementById('alertPlaceholder').append(wrapper);
-
             setTimeout(() => {
                 wrapper.querySelector('.toast').classList.remove('show');
                 wrapper.remove();
             }, 3000);
         }
-    </script>
 
-    <div id="alertPlaceholder" class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;"></div>
-    <script>
+        // -------------------- FORMATEO --------------------
+        function formatPercent(value) {
+            if (!value) return '';
+            let num = parseFloat(value.replace(/[^0-9.-]/g, ''));
+            if (isNaN(num)) return '';
+            return num.toFixed(6) + '%';
+        }
+
+        function formatMoney(value, currency = '') {
+            if (value === null || value === undefined) return '';
+
+            let num = typeof value === 'number'
+                ? value
+                : parseFloat(value.toString().replace(/[^0-9.-]/g, ''));
+
+            if (isNaN(num)) return '';
+
+            // 🔥 detectar moneda automáticamente si no viene
+            if (!currency) {
+                let ddl = document.getElementById("<%= ddlMoneda.ClientID %>");
+                if (ddl) {
+                    let monedaTexto = ddl.options[ddl.selectedIndex].text.toLowerCase();
+                    currency = monedaTexto.includes("dolar") ? 'USD' : 'MN';
+                }
+            }
+
+            let formatted = num.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6
+            });
+
+            return '$' + formatted + (currency ? ' ' + currency : '');
+        }
+
+        // -------------------- CÁLCULOS --------------------
+        function limpiarNumero(valor) {
+            if (!valor) return 0;
+            return parseFloat(valor.replace(/[^0-9.-]/g, '')) || 0;
+        }
+
+        function calcularPrima(primaId, derechoId, otrosId, ivaId, totalId) {
+            let prima = limpiarNumero(document.getElementById(primaId).value);
+            let derecho = limpiarNumero(document.getElementById(derechoId).value);
+            let otros = limpiarNumero(document.getElementById(otrosId).value);
+
+            let subtotal = prima + derecho + otros;
+            let iva = subtotal * 0.16;
+            let primaTotal = subtotal + iva;
+
+            document.getElementById(ivaId).value = formatMoney(iva);
+            document.getElementById(totalId).value = formatMoney(primaTotal);
+        }
+
+        function calcularTodoMercancias() {
+            calcularPrima('<%= txtPrimaNetaMercancia1.ClientID %>', '<%= txtDerechoPolizaMercancia1.ClientID %>', '<%= txtOtrosMercancia1.ClientID %>', '<%= txtIVAMercancia1.ClientID %>', '<%= txtPrimaTotalMercancia1.ClientID %>');
+            calcularPrima('<%= txtPrimaNetaMercancia2.ClientID %>', '<%= txtDerechoPolizaMercancia2.ClientID %>', '<%= txtOtrosMercancia2.ClientID %>', '<%= txtIVAMercancia2.ClientID %>', '<%= txtPrimaTotalMercancia2.ClientID %>');
+            calcularPrima('<%= txtPrimaNetaMercancia3.ClientID %>', '<%= txtDerechoPolizaMercancia3.ClientID %>', '<%= txtOtrosMercancia3.ClientID %>', '<%= txtIVAMercancia3.ClientID %>', '<%= txtPrimaTotalMercancia3.ClientID %>');
+        }
+
+        function calcularPolizaC() {
+            calcularPrima('<%= txtPrimaNetaC.ClientID %>', '<%= txtDerechoPolizaC.ClientID %>', '<%= txtOtrosMontosPolizaC.ClientID %>', '<%= txtIVAC.ClientID %>', '<%= txtTotalC.ClientID %>');
+        }
+
+        // -------------------- BLOQUEO CAMPOS CALCULADOS --------------------
         document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".campo-calculado").forEach(campo => {
+                campo.addEventListener("keydown", e => e.preventDefault());
+                campo.addEventListener("paste", e => e.preventDefault());
+                campo.addEventListener("drop", e => e.preventDefault());
+                campo.setAttribute("tabindex", "-1");
+            });
 
-            document.querySelectorAll("input").forEach(function (input) {
+            const inputs = document.querySelectorAll('input[data-format]');
+            inputs.forEach(input => {
+                if (input.value) {
+                    let format = input.getAttribute('data-format');
+                    if (format === 'percent') input.value = formatPercent(input.value);
+                    if (format === 'money-mn') input.value = formatMoney(input.value, 'MN');
+                    if (format === 'money-usd') input.value = formatMoney(input.value, 'USD');
+                    if (format === 'money-only') input.value = formatMoney(input.value, '');
+                }
+                input.addEventListener('blur', function () {
+                    let val = input.value.trim();
+                    let format = input.getAttribute('data-format');
+                    if (format === 'percent') input.value = formatPercent(val);
+                    if (format === 'money-mn') input.value = formatMoney(val, 'MN');
+                    if (format === 'money-usd') input.value = formatMoney(val, 'USD');
+                    if (format === 'money-only') input.value = formatMoney(val, '');
+                });
+                input.addEventListener('focus', function () {
+                    input.value = input.value.replace(/[^0-9.-]/g, '');
+                });
+                if (input.form) input.form.addEventListener('submit', function () {
+                    input.value = input.value.replace(/[^0-9.-]/g, '');
+                });
+            });
 
+            const camposMercancias = ['<%= txtPrimaNetaMercancia1.ClientID %>', '<%= txtOtrosMercancia1.ClientID %>',
+        '<%= txtPrimaNetaMercancia2.ClientID %>', '<%= txtOtrosMercancia2.ClientID %>',
+        '<%= txtPrimaNetaMercancia3.ClientID %>', '<%= txtOtrosMercancia3.ClientID %>'];
+            camposMercancias.forEach(id => {
+                const campo = document.getElementById(id);
+                if (campo) {
+                    campo.addEventListener("input", calcularTodoMercancias);
+                    campo.addEventListener("blur", calcularTodoMercancias);
+                }
+            });
+
+            const camposPolizaC = ['<%= txtPrimaNetaC.ClientID %>', '<%= txtOtrosMontosPolizaC.ClientID %>', '<%= txtDerechoPolizaC.ClientID %>'];
+            camposPolizaC.forEach(id => {
+                const campo = document.getElementById(id);
+                if (campo) {
+                    campo.addEventListener("input", calcularPolizaC);
+                    campo.addEventListener("blur", calcularPolizaC);
+                }
+            });
+
+            calcularTodoMercancias();
+            calcularPolizaC();
+
+            document.querySelectorAll("input").forEach(input => {
                 input.addEventListener("keydown", function (e) {
-
                     if (e.key === "Enter") {
                         e.preventDefault();
                         return false;
                     }
-
                 });
-
             });
-
         });
     </script>
-        <script>
-            function formatPercent(value) {
-                if (!value) return '';
-                let num = parseFloat(value.replace(/[^0-9.-]/g, ''));
-                if (isNaN(num)) return '';
-                return num.toFixed(2) + '%';
+
+    <div id="alertPlaceholder" class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const ddlMoneda = document.getElementById("<%= ddlMoneda.ClientID %>");
+            if (ddlMoneda) {
+                ddlMoneda.addEventListener("change", aplicarFormatoMoneda);
+
+                aplicarFormatoMoneda();
             }
-
-            function formatMoney(value, currency) {
-                if (!value) return '';
-                let num = parseFloat(value.replace(/[^0-9.-]/g, ''));
-                if (isNaN(num)) return '';
-                return '$' + num.toFixed(2) + ' ' + currency.toUpperCase();
+        });
+    </script>
+    <script>
+        function activarTab(panelId) {
+            let tabBtn = document.querySelector(`[data-bs-target="#${panelId}"]`);
+            if (tabBtn) {
+                let tab = new bootstrap.Tab(tabBtn);
+                tab.show();
             }
+            function validarPanel(panelId, campoPrincipalId) {
+                let panel = document.getElementById(panelId);
+                let campoPrincipal = document.getElementById(campoPrincipalId);
 
-            document.addEventListener('DOMContentLoaded', function () {
+                let campos = panel.querySelectorAll("input, select, textarea");
+                let hayDatos = false;
+                let primerError = null;
 
-                const inputs = document.querySelectorAll('input[data-format]');
+                campos.forEach(function (campo) {
+                    let valor = (campo.value || "").toString().trim();
 
-                inputs.forEach(input => {
-
-                    input.addEventListener('blur', function () {
-
-                        let format = input.getAttribute('data-format');
-                        let val = input.value.trim();
-
-                        if (format === 'percent') {
-                            input.value = formatPercent(val);
-                        }
-
-                        if (format === 'money-mn') {
-                            input.value = formatMoney(val, 'MN');
-                        }
-
-                        if (format === 'money-usd') {
-                            input.value = formatMoney(val, 'USD');
-                        }
-
-                    });
-
-                    input.addEventListener('focus', function () {
-                        input.value = input.value.replace(/[^0-9.-]/g, '');
-                    });
-
-                    if (input.form) {
-                        input.form.addEventListener('submit', function () {
-                            input.value = input.value.replace(/[^0-9.-]/g, '');
-                        });
+                    if (
+                        valor !== "" &&
+                        valor !== "%" &&
+                        valor !== "$0.00" &&
+                        valor !== "0" &&
+                        valor !== "0.00"
+                    ) {
+                        hayDatos = true;
                     }
 
+                    if (campo.type === "checkbox" && campo.checked) {
+                        hayDatos = true;
+                    }
                 });
 
+                if (!hayDatos) return true;
+
+                let valido = true;
+
+                if (!campoPrincipal.value || campoPrincipal.value.toString().trim() === "") {
+                    marcarError(campoPrincipal, "Debes llenar Nombre Interno de Póliza");
+
+                    primerError = campoPrincipal;
+                    valido = false;
+                }
+
+                if (primerError) {
+                    activarTab(panelId);
+
+                    setTimeout(() => {
+                        primerError.scrollIntoView({ behavior: "smooth", block: "center" });
+                        primerError.focus();
+                    }, 300);
+                }
+
+                return valido;
+            };
+        }
+    </script>
+    <script>
+        function aplicarFormatoMoneda() {
+            let ddl = document.getElementById("<%= ddlMoneda.ClientID %>");
+            if (!ddl) return;
+
+            let monedaTexto = ddl.options[ddl.selectedIndex].text.toLowerCase();
+
+            let tipoFormato = "money-mn";
+
+            if (monedaTexto.includes("dolar")) {
+                tipoFormato = "money-usd";
+            }
+
+            document.querySelectorAll('input[data-format^="money"]').forEach(input => {
+
+                input.setAttribute('data-format', tipoFormato);
+
+                let val = input.value.replace(/[^0-9.-]/g, '');
+                if (val) {
+                    if (tipoFormato === "money-mn") {
+                        input.value = formatMoney(val, 'MN');
+                    } else {
+                        input.value = formatMoney(val, 'USD');
+                    }
+                }
             });
-        </script>
+            calcularTodoMercancias();
+            calcularPolizaC();
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const checkboxes = [
+                "<%= chkEQAplica.ClientID %>",
+                "<%= chkEQAplica2.ClientID %>",
+                "<%= chkEQAplica3.ClientID %>"
+            ];
+
+            function pintarCasilla(chk) {
+
+                const card = chk.closest('.card');
+                if (!card) return;
+
+                const inputs = card.querySelectorAll('input.form-control');
+
+                inputs.forEach(input => {
+                    input.disabled = chk.checked;
+                    input.classList.toggle('campo-calculado', chk.checked);
+                    if (chk.checked) input.value = '';
+                });
+            }
+
+            checkboxes.forEach(id => {
+
+                const chk = document.getElementById(id);
+                if (!chk) return;
+
+                chk.addEventListener("change", function () { pintarCasilla(chk); });
+                pintarCasilla(chk); // estado inicial
+            });
+
+            // Las cuotas de mercancias especiales solo aplican para GMX. Al
+            // elegir otra aseguradora se marca "No aplica" solo, aunque se
+            // puede desmarcar a mano si algun caso lo amerita.
+            const ddlAseg = document.getElementById("<%= ddlAseguradora.ClientID %>");
+
+            if (ddlAseg) {
+
+                function esGmx() {
+
+                    const op = ddlAseg.options[ddlAseg.selectedIndex];
+                    if (!op) return false;
+
+                    const nombre = (op.text || '').toLowerCase();
+
+                    return nombre.indexOf('gmx') >= 0 || nombre.indexOf('grupo mexicano') >= 0;
+                }
+
+                ddlAseg.addEventListener("change", function () {
+
+                    const aplica = esGmx();
+
+                    checkboxes.forEach(id => {
+                        const chk = document.getElementById(id);
+                        if (!chk) return;
+
+                        chk.checked = !aplica;
+                        pintarCasilla(chk);
+                    });
+                });
+            }
+
+        });
+
+        // Buscador incremental. El helper vive en Default.Master.
+        document.addEventListener('DOMContentLoaded', function () {
+            msBuscadorIncremental('<%= txtBuscarPolizas.ClientID %>', '<%= txtBuscarPolizas.UniqueID %>', 400);
+        });
+    </script>
 </asp:Content>

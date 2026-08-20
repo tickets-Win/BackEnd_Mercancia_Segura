@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" EnableEventValidation="false" MasterPageFile="~/Default.Master" CodeBehind="AdminCliente.aspx.vb" Inherits="WebAdmin.AdminCliente" %>
+<%@ Register TagPrefix="uc" TagName="EnvioCorreo" Src="~/Controles/EnvioCorreo.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -11,71 +12,92 @@
     </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <asp:Panel ID="PnlEncabezado" runat="server">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Cliente</h2>
-            <asp:Button ID="btnAgregarCliente" runat="server" CssClass="btn btn-primary btn-add"
-                Text="Agregar Cliente" OnClick="btnAgregarCliente_Click" />
-        </div>
-        <div class="mb-4">
-            <asp:TextBox ID="txtBuscarCliente" runat="server" CssClass="form-control"
-                placeholder="🔍 Buscar clientes..." AutoPostBack="true" OnTextChanged="txtBuscarCliente_TextChanged"></asp:TextBox>
-        </div>
-        <div class="d-flex justify-content-left mb-4">
-            <label for="ddlTipoEstatusCliente" class="form-label visually-hidden">Filtrar</label>
-            <asp:DropDownList ID="ddlTipoEstatusCliente" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoEstatusCliente_SelectedIndexChanged">
-                <asp:ListItem Text="-- Todos --" Value="0" />
-                <asp:ListItem Text="Activo" Value="1" />
-                <asp:ListItem Text="Suspendido" Value="2" />
-                <asp:ListItem Text="Morosos" Value="3" />
-                <asp:ListItem Text="Más de 3 meses sin comprar" Value="4" />
-            </asp:DropDownList>
-        </div>
-    </asp:Panel>
-    <asp:Panel ID="PnlTabla" runat="server">
-        <div class="card card-shadow p-4 mb-4">
-            <div style="overflow-x: auto; width: 100%;">
-                <asp:GridView ID="gvClientes" runat="server"
-                    CssClass="table table-hover align-middle"
-                    AutoGenerateColumns="False"
-                    OnRowCommand="gvClientes_RowCommand"
-                    HeaderStyle-CssClass="table-light"
-                    DataKeyNames="ClienteId"
-                    AllowPaging="True"
-                    PageSize="10"
-                    OnPageIndexChanging="gvClientes_PageIndexChanging">
-                    <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
-                    <Columns>
-                        <asp:BoundField DataField="Clave" HeaderText="Clave" />
-                        <asp:BoundField DataField="estatus" HeaderText="Estatus" />
-                        <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
-                        <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
-                        <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
+    <%-- Encabezado y tabla juntos en una region AJAX: el buscador filtra conforme
+         se escribe y solo se repinta el listado. Van juntos porque su Visible
+         cambia en bloque al abrir el formulario. --%>
+    <asp:UpdatePanel ID="UpListado" runat="server" UpdateMode="Always">
+        <ContentTemplate>
+            <asp:Panel ID="PnlEncabezado" runat="server">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Cliente</h2>
+                    <asp:Button ID="btnAgregarCliente" runat="server" CssClass="btn btn-primary btn-add"
+                        Text="Agregar Cliente" OnClick="btnAgregarCliente_Click" />
+                </div>
+                <div class="mb-4">
+                    <asp:TextBox ID="txtBuscarCliente" runat="server" CssClass="form-control"
+                        placeholder="🔍 Buscar clientes..." AutoPostBack="true" OnTextChanged="txtBuscarCliente_TextChanged"></asp:TextBox>
+                </div>
+                <div class="d-flex justify-content-left mb-4">
+                    <label for="ddlTipoEstatusCliente" class="form-label visually-hidden">Filtrar</label>
+                    <asp:DropDownList ID="ddlTipoEstatusCliente" runat="server" CssClass="form-select form-select-sm filtro-estilo w-auto" AutoPostBack="true" OnSelectedIndexChanged="ddlTipoEstatusCliente_SelectedIndexChanged">
+                        <asp:ListItem Text="-- Todos --" Value="0" />
+                        <asp:ListItem Text="Activo" Value="1" />
+                        <asp:ListItem Text="Suspendido" Value="2" />
+                        <asp:ListItem Text="Morosos" Value="3" />
+                        <asp:ListItem Text="Más de 3 meses sin comprar" Value="4" />
+                    </asp:DropDownList>
+                </div>
+            </asp:Panel>
+            <asp:Panel ID="PnlTabla" runat="server">
+                <div class="card card-shadow p-4 mb-4">
+                    <div style="overflow-x: auto; width: 100%;">
+                        <asp:GridView ID="gvClientes" runat="server"
+                            CssClass="table table-hover align-middle"
+                            AutoGenerateColumns="False"
+                            OnRowCommand="gvClientes_RowCommand"
+                            HeaderStyle-CssClass="table-light"
+                            DataKeyNames="ClienteId"
+                            AllowPaging="True"
+                            PageSize="10"
+                            OnPageIndexChanging="gvClientes_PageIndexChanging"
+                            OnRowDataBound="gvClientes_RowDataBound">
+                            <PagerStyle CssClass="gvPager" HorizontalAlign="Center" />
+                            <Columns>
+                                <asp:BoundField DataField="Clave" HeaderText="Clave" />
+                                <asp:BoundField DataField="estatus" HeaderText="Estatus" />
+                                <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" />
+                                <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
+                                <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha Registro" DataFormatString="{0:dd/MM/yyyy}" />
 
-                        <asp:TemplateField HeaderText="Acciones">
-                            <ItemTemplate>
-                                <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ClienteId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Editar">
+                                <asp:TemplateField HeaderText="Acciones">
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ClienteId") %>'
+                                            CssClass="icon-btn action-icon" ToolTip="Editar">
                          <i class="bi bi-pencil"></i>
-                                </asp:LinkButton>
+                                        </asp:LinkButton>
 
-                                <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("ClienteId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Eliminar"
-                                    OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
+                                        <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("ClienteId") %>'
+                                            CssClass="icon-btn action-icon" ToolTip="Eliminar"
+                                            OnClientClick="return confirm('¿Seguro que deseas eliminar este vendedor?');">
                          <i class="bi bi-trash"></i>
-                                </asp:LinkButton>
+                                        </asp:LinkButton>
 
-                                <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("ClienteId") %>'
-                                    CssClass="icon-btn" ToolTip="Enviar correo">
+                                        <asp:LinkButton ID="lnkCorreo" runat="server" CommandName="Correo" CommandArgument='<%# Eval("ClienteId") %>'
+                                            CssClass="icon-btn" ToolTip="Enviar correo">
                          <i class="bi bi-envelope"></i>
-                                </asp:LinkButton>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
-            </div>
-        </div>
-    </asp:Panel>
+                                        </asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                            <EmptyDataTemplate>
+                                <div class="text-muted py-3">No se encontraron clientes con ese criterio.</div>
+                            </EmptyDataTemplate>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+    <%-- Envio de correo: control compartido con los demas modulos. --%>
+    <uc:EnvioCorreo ID="ucCorreo" runat="server" Visible="false"
+        OnCancelado="ucCorreo_Cancelado" OnEnviado="ucCorreo_Enviado" />
+        </ContentTemplate>
+        <Triggers>
+            <%-- Agregar muestra pnlFormularioCliente y pnlTabs, que viven FUERA de
+                 este UpdatePanel: con postback parcial esos cambios no llegarian al
+                 navegador y la pantalla quedaria en blanco. Los botones de la tabla
+                 se registran en gvClientes_RowDataBound por lo mismo. --%>
+            <asp:PostBackTrigger ControlID="btnAgregarCliente" />
+        </Triggers>
+    </asp:UpdatePanel>
     <asp:Panel ID="pnlTabs" runat="server">
         <ul class="nav nav-tabs mb-4 justify-content-center" id="clienteTabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -213,7 +235,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label">Teléfono</label>
-                        <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control required"></asp:TextBox>
+                        <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control required" onkeyup="formatPhone(this)"></asp:TextBox>
                     </div>
 
                     <div class="col-md-4">
@@ -272,14 +294,15 @@
                     </div>
 
                     <div class="col-md-4">
+                        <label class="form-label">Número Ext.</label>
+                        <asp:TextBox ID="txtNumeroExterior" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+
+                    <div class="col-md-4">
                         <label class="form-label">Número Int.</label>
                         <asp:TextBox ID="txtNumeroInterior" runat="server" CssClass="form-control"></asp:TextBox>
                     </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label">Número Ext.</label>
-                        <asp:TextBox ID="txtNumeroExterior" runat="server" CssClass="form-control"></asp:TextBox>
-                    </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Población</label>
@@ -340,23 +363,37 @@
                                 <h6>Cuota Aplicable</h6>
                                 <div class="row mb-3">
                                     <div class="col col-md-6">
+                                        <label class="form-label">Nacional (%)</label>
                                         <asp:TextBox ID="txtCuotaNacional" runat="server" CssClass="form-control"
                                             placeholder="Nacional (%)" data-format="percent"></asp:TextBox>
                                     </div>
                                     <div class="col-md-6">
+                                        <label class="form-label">Internacional (%)</label>
                                         <asp:TextBox ID="txtCuotaInternacional" runat="server" CssClass="form-control"
                                             placeholder="Internacional (%)" data-format="percent"></asp:TextBox>
                                     </div>
                                 </div>
-                                <h6>Cuota Mínima</h6>
                                 <div class="row mb-3">
-                                    <div class="col col-md-6">
-                                        <asp:TextBox ID="txtMinimoNacional" runat="server" CssClass="form-control"
-                                            placeholder="Nacional $0.00" data-format="money-mn"></asp:TextBox>
+                                    <h6>Cuota Mínima</h6>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nacional</label>
+                                        <div class="input-group">
+                                            <asp:TextBox ID="txtMinimoNacional" runat="server" data-format="money-simple" CssClass="form-control"
+                                                placeholder="0.00"></asp:TextBox>
+
+                                            <asp:DropDownList ID="ddlMonedaNacional" runat="server" CssClass="form-select">
+                                            </asp:DropDownList>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <asp:TextBox ID="txtMinimoInternacional" runat="server" CssClass="form-control"
-                                            placeholder="Internacional $0.00" data-format="money-usd"></asp:TextBox>
+                                        <label class="form-label">Internacional</label>
+                                        <div class="input-group">
+                                            <asp:TextBox ID="txtMinimoInternacional" runat="server" data-format="money-simple" CssClass="form-control"
+                                                placeholder="0.00"></asp:TextBox>
+
+                                            <asp:DropDownList ID="ddlMonedaInternacional" runat="server" CssClass="form-select">
+                                            </asp:DropDownList>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -892,16 +929,32 @@
     <script>
         function formatPercent(value) {
             if (!value) return '';
+
             let num = parseFloat(value.replace(/[^0-9.-]/g, ''));
             if (isNaN(num)) return '';
-            return num.toFixed(2) + '%';
+
+            let decimals = Math.max(2, Math.min(6, (value.split('.')[1] || '').length));
+
+            return num.toFixed(decimals) + '%';
         }
 
         function formatMoney(value, currency) {
             if (!value) return '';
-            let num = parseFloat(value.replace(/[^0-9.-]/g, ''));
+            let num = parseFloat(value.toString().replace(/[^0-9.-]/g, ''));
             if (isNaN(num)) return '';
-            return '$' + num.toFixed(2) + ' ' + currency.toUpperCase();
+
+            let decimalesOriginales = (value.toString().split('.')[1] || '').length;
+
+            let minDec = 2;
+            let maxDec = 6;
+            let decimales = Math.max(minDec, Math.min(maxDec, decimalesOriginales));
+
+            let formatted = num.toLocaleString('en-US', {
+                minimumFractionDigits: minDec,
+                maximumFractionDigits: decimales
+            });
+
+            return '$' + formatted + (currency ? ' ' + currency.toUpperCase() : '');
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -926,7 +979,9 @@
                     if (format === 'money-usd') {
                         input.value = formatMoney(val, 'USD');
                     }
-
+                    if (format === 'money-simple') {
+                        input.value = formatMoneySimple(val);
+                    }
                 });
 
                 input.addEventListener('focus', function () {
@@ -942,6 +997,51 @@
             });
 
         });
+
+        function aplicarFormatoInicial() {
+            document.querySelectorAll('input[data-format]').forEach(function (input) {
+                let format = input.getAttribute('data-format');
+                let val = input.value.trim();
+
+                if (!val) return;
+
+                if (format === 'percent') {
+                    input.value = formatPercent(val);
+                }
+
+                if (format === 'money-mn') {
+                    input.value = formatMoney(val, 'MN');
+                }
+
+                if (format === 'money-usd') {
+                    input.value = formatMoney(val, 'USD');
+                }
+                if (format === 'money-simple') {
+                    input.value = formatMoneySimple(val);
+                }
+            });
+        }
+    </script>
+    <script>
+        function formatMoneySimple(value) {
+            if (!value) return '';
+
+            let num = parseFloat(value.toString().replace(/[^0-9.-]/g, ''));
+            if (isNaN(num)) return '';
+
+            let decimalesOriginales = (value.toString().split('.')[1] || '').length;
+
+            let minDec = 2;
+            let maxDec = 6;
+            let decimales = Math.max(minDec, Math.min(maxDec, decimalesOriginales));
+
+            let formatted = num.toLocaleString('en-US', {
+                minimumFractionDigits: minDec,
+                maximumFractionDigits: decimales
+            });
+
+            return '$' + formatted;
+        }
     </script>
     <script>
         window.onload = function () {
@@ -987,6 +1087,29 @@
 
             });
 
+        });
+    </script>
+    <script type="text/javascript">
+        function formatPhone(input) {
+            var num = input.value.replace(/\D/g, '');
+            if (num.length > 0) {
+                if (num.length <= 2) {
+                    input.value = '(' + num;
+                } else if (num.length <= 4) {
+                    input.value = '(' + num.substring(0, 2) + ') ' + num.substring(2);
+                } else if (num.length <= 6) {
+                    input.value = '(' + num.substring(0, 2) + ') ' + num.substring(2, 4) + ' ' + num.substring(4);
+                } else if (num.length <= 8) {
+                    input.value = '(' + num.substring(0, 2) + ') ' + num.substring(2, 4) + ' ' + num.substring(4, 6) + ' ' + num.substring(6);
+                } else {
+                    input.value = '(' + num.substring(0, 2) + ') ' + num.substring(2, 4) + ' ' + num.substring(4, 6) + ' ' + num.substring(6, 8) + ' ' + num.substring(8, 10);
+                }
+            }
+        }
+
+        // Buscador incremental. El helper vive en Default.Master.
+        document.addEventListener('DOMContentLoaded', function () {
+            msBuscadorIncremental('<%= txtBuscarCliente.ClientID %>', '<%= txtBuscarCliente.UniqueID %>', 400);
         });
     </script>
 </asp:Content>

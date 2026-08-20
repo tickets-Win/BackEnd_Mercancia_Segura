@@ -50,6 +50,17 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
         [Column("Indemnizacion_Otros", TypeName = "nvarchar(max)")]
         public string? IndemnizacionOtros { get; set; }
 
+        // Texto libre: no se calcula ni se cataloga, solo se imprime al
+        // generar la poliza.
+        [Column("Especiales", TypeName = "nvarchar(max)")]
+        public string? Especiales { get; set; }
+
+        [Column("Exclusiones_Particulares", TypeName = "nvarchar(max)")]
+        public string? ExclusionesParticulares { get; set; }
+
+        [Column("Medidas_De_Seguridad", TypeName = "nvarchar(max)")]
+        public string? MedidasDeSeguridad { get; set; }
+
         [Column("Medicamentos", TypeName = "decimal(18,6)")]
         public decimal? Medicamentos { get; set; }
 
@@ -64,6 +75,12 @@ namespace MercanciaSegura.DOM.Modelos.Poliza
 
         [Column("Cuota_General_Poliza", TypeName = "decimal(18,6)")]
         public decimal? CuotaGeneralPoliza { get; set; }
+
+        // Las cuatro cuotas de arriba solo aplican para GMX. Antes esto se
+        // deducia de que las cuatro estuvieran vacias, y no dejaba distinguir
+        // "no aplican" de "aplican pero todavia no las capturo".
+        [Column("No_Aplica_Cuotas_Especiales")]
+        public bool? NoAplicaCuotasEspeciales { get; set; }
 
         [Column("Prima_Neta", TypeName = "decimal(18,6)")]
         public decimal? PrimaNeta { get; set; }

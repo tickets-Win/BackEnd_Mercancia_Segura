@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="2" virtualPath="/C:/Program Files/Git/Handlers/AdjuntosCorreo.ashx" hash="ffffffffe8a46cbe" filehash="424cef938f3a" flags="130000" assembly="WebAdmin" type="WebAdmin.AdjuntosCorreo">
+    <filedeps>
+        <filedep name="/C:/Program Files/Git/Handlers/AdjuntosCorreo.ashx" />
+    </filedeps>
+</preserve>

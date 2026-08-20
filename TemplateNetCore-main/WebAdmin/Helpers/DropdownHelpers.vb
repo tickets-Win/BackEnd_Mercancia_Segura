@@ -2,10 +2,37 @@
 Imports WebAdmin.MercanciaSegura.DOM.Modelos
 Module DropdownHelpers
 
+    ''' <summary>
+    ''' Deserializa la respuesta de un catálogo sin confiar en ella.
+    '''
+    ''' ConsumoApi devuelve la cadena "ERROR: ..." cuando el API no contesta, y
+    ''' eso no es JSON: al intentar parsearlo se caía la página entera con un
+    ''' error amarillo. Aquí un catálogo que falla deja su combo vacío, pero la
+    ''' pantalla sigue en pie.
+    ''' </summary>
+    Private Function ListaSegura(Of T)(json As String) As List(Of T)
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then Return New List(Of T)
+
+        Try
+            Dim lista As List(Of T) = JsonConvert.DeserializeObject(Of List(Of T))(json)
+
+            If lista Is Nothing Then Return New List(Of T)
+
+            Return lista
+
+        Catch
+            ' Respuesta con una forma inesperada: mismo criterio, no romper.
+            Return New List(Of T)
+        End Try
+    End Function
+
     Public Sub CargarTipoPersona(ddlTipoPersona As DropDownList)
         Dim api As New ConsumoApi()
         Dim tipoPersona As String = api.GetTipoPersona()
-        Dim listaTipoPersona As List(Of TipoPersona) = JsonConvert.DeserializeObject(Of List(Of TipoPersona))(tipoPersona)
+        Dim listaTipoPersona As List(Of TipoPersona) = ListaSegura(Of TipoPersona)(tipoPersona)
 
         ddlTipoPersona.DataSource = listaTipoPersona
         ddlTipoPersona.DataTextField = "Tipo"
@@ -19,7 +46,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoEstatus As String = api.GetTipoEstatus()
 
-        Dim listaTipoEstatus As List(Of TipoEstatus) = JsonConvert.DeserializeObject(Of List(Of TipoEstatus))(tipoEstatus)
+        Dim listaTipoEstatus As List(Of TipoEstatus) = ListaSegura(Of TipoEstatus)(tipoEstatus)
 
         ddlEstatus.DataSource = listaTipoEstatus
         ddlEstatus.DataTextField = "Tipo"
@@ -27,12 +54,24 @@ Module DropdownHelpers
         ddlEstatus.DataBind()
 
     End Sub
+    Public Sub CargarTipoEstatusPoliza(ddlEstatusPoliza As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim tipoEstatusPoliza As String = api.GetEstatusPoliza()
+
+        Dim listaTipoEstatusPoliza As List(Of EstatusPoliza) = ListaSegura(Of EstatusPoliza)(tipoEstatusPoliza)
+
+        ddlEstatusPoliza.DataSource = listaTipoEstatusPoliza
+        ddlEstatusPoliza.DataTextField = "Tipo"
+        ddlEstatusPoliza.DataValueField = "EstatusPolizaId"
+        ddlEstatusPoliza.DataBind()
+
+    End Sub
 
     Public Sub CargarTipoSeguro(ddlSeguroContrata As DropDownList)
         Dim api As New ConsumoApi()
         Dim tipoSeguro As String = api.GetTipoSeguro()
 
-        Dim listaTipoSeguro As List(Of TipoSeguro) = JsonConvert.DeserializeObject(Of List(Of TipoSeguro))(tipoSeguro)
+        Dim listaTipoSeguro As List(Of TipoSeguro) = ListaSegura(Of TipoSeguro)(tipoSeguro)
 
         ddlSeguroContrata.DataSource = listaTipoSeguro
         ddlSeguroContrata.DataTextField = "Tipo"
@@ -46,7 +85,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoCuenta As String = api.GetTipoCuenta()
 
-        Dim listaTipoCuenta As List(Of TipoCuenta) = JsonConvert.DeserializeObject(Of List(Of TipoCuenta))(tipoCuenta)
+        Dim listaTipoCuenta As List(Of TipoCuenta) = ListaSegura(Of TipoCuenta)(tipoCuenta)
 
         ddlTipoCuenta.DataSource = listaTipoCuenta
         ddlTipoCuenta.DataTextField = "Tipo"
@@ -60,7 +99,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim origenCliente As String = api.GetOrigenCliente()
 
-        Dim listaorigenCliente As List(Of OrigenCliente) = JsonConvert.DeserializeObject(Of List(Of OrigenCliente))(origenCliente)
+        Dim listaorigenCliente As List(Of OrigenCliente) = ListaSegura(Of OrigenCliente)(origenCliente)
 
         ddlOrigenCliente.DataSource = listaorigenCliente
         ddlOrigenCliente.DataTextField = "Tipo"
@@ -74,7 +113,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoSector As String = api.GetTipoSector()
 
-        Dim listaTipoSector As List(Of TipoSector) = JsonConvert.DeserializeObject(Of List(Of TipoSector))(tipoSector)
+        Dim listaTipoSector As List(Of TipoSector) = ListaSegura(Of TipoSector)(tipoSector)
 
         ddlSector.DataSource = listaTipoSector
         ddlSector.DataTextField = "Tipo"
@@ -88,7 +127,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim regimenFiscal As String = api.GetRegimenFiscal()
 
-        Dim listaRegimenFiscal As List(Of RegimenFiscal) = JsonConvert.DeserializeObject(Of List(Of RegimenFiscal))(regimenFiscal)
+        Dim listaRegimenFiscal As List(Of RegimenFiscal) = ListaSegura(Of RegimenFiscal)(regimenFiscal)
 
         Dim listaFiltrada As List(Of RegimenFiscal)
 
@@ -110,7 +149,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim rfcGenerico As String = api.GetRFCGenerico()
 
-        Dim listaRFCGenerico As List(Of rfcGenerico) = JsonConvert.DeserializeObject(Of List(Of rfcGenerico))(rfcGenerico)
+        Dim listaRFCGenerico As List(Of rfcGenerico) = ListaSegura(Of rfcGenerico)(rfcGenerico)
 
         HttpContext.Current.Session("ListaRFCGenericos") = listaRFCGenerico
 
@@ -127,7 +166,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoVendedor As String = api.GetTipoVendedor()
 
-        Dim listaTipoVendedor As List(Of TipoVendedor) = JsonConvert.DeserializeObject(Of List(Of TipoVendedor))(tipoVendedor)
+        Dim listaTipoVendedor As List(Of TipoVendedor) = ListaSegura(Of TipoVendedor)(tipoVendedor)
 
         ddlTipoVendedor.DataSource = listaTipoVendedor
         ddlTipoVendedor.DataTextField = "Tipo"
@@ -140,7 +179,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoCorreo As String = api.GetTipoCorreo()
 
-        Dim listaTipoCorreo As List(Of TipoCorreo) = JsonConvert.DeserializeObject(Of List(Of TipoCorreo))(tipoCorreo)
+        Dim listaTipoCorreo As List(Of TipoCorreo) = ListaSegura(Of TipoCorreo)(tipoCorreo)
 
         ddlTipoCorreo.DataSource = listaTipoCorreo
         ddlTipoCorreo.DataTextField = "Tipo"
@@ -153,7 +192,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoAseguradora As String = api.GetTipoAseguradora()
 
-        Dim listaTipoAseguradora As List(Of Aseguradora) = JsonConvert.DeserializeObject(Of List(Of Aseguradora))(tipoAseguradora)
+        Dim listaTipoAseguradora As List(Of Aseguradora) = ListaSegura(Of Aseguradora)(tipoAseguradora)
 
         ddlTipoAseguradora.DataSource = listaTipoAseguradora
         ddlTipoAseguradora.DataTextField = "Nombre"
@@ -166,7 +205,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoContratante As String = api.GetTipoContratante()
 
-        Dim listaTipoContratante As List(Of Contratante) = JsonConvert.DeserializeObject(Of List(Of Contratante))(tipoContratante)
+        Dim listaTipoContratante As List(Of Contratante) = ListaSegura(Of Contratante)(tipoContratante)
 
         ddlTipoContratante.DataSource = listaTipoContratante
         ddlTipoContratante.DataTextField = "Nombre"
@@ -179,7 +218,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim formaPago As String = api.GetFormaPago()
 
-        Dim listaFormaPago As List(Of FormaPago) = JsonConvert.DeserializeObject(Of List(Of FormaPago))(formaPago)
+        Dim listaFormaPago As List(Of FormaPago) = ListaSegura(Of FormaPago)(formaPago)
 
         ddlFormaPago.DataSource = listaFormaPago
         ddlFormaPago.DataTextField = "Nombre"
@@ -192,7 +231,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoMoneda As String = api.GetMoneda()
 
-        Dim listaTipoMoneda As List(Of Moneda) = JsonConvert.DeserializeObject(Of List(Of Moneda))(tipoMoneda)
+        Dim listaTipoMoneda As List(Of Moneda) = ListaSegura(Of Moneda)(tipoMoneda)
 
         ddlTipoMoneda.DataSource = listaTipoMoneda
         ddlTipoMoneda.DataTextField = "Nombre"
@@ -205,7 +244,7 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoSubRamo As String = api.GetSubRamo()
 
-        Dim listaTipoSubRamo As List(Of SubRamo) = JsonConvert.DeserializeObject(Of List(Of SubRamo))(tipoSubRamo)
+        Dim listaTipoSubRamo As List(Of SubRamo) = ListaSegura(Of SubRamo)(tipoSubRamo)
 
         ddlTipoSubRamo.DataSource = listaTipoSubRamo
         ddlTipoSubRamo.DataTextField = "Nombre"
@@ -218,18 +257,44 @@ Module DropdownHelpers
         Dim api As New ConsumoApi()
         Dim tipoProducto As String = api.GetProducto()
 
-        Dim listaProducto As List(Of Producto) = JsonConvert.DeserializeObject(Of List(Of Producto))(tipoProducto)
+        Dim listaProducto As List(Of Producto) = ListaSegura(Of Producto)(tipoProducto)
 
         ddlProducto.DataSource = listaProducto
         ddlProducto.DataTextField = "Nombre"
         ddlProducto.DataValueField = "ProductoId"
         ddlProducto.DataBind()
     End Sub
+    Public Sub CargarClasificacion(ddlClasificacion As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim clasificacion As String = api.GetClasificacion()
+
+        Dim listaClasificacion As List(Of Clasificacion) = ListaSegura(Of Clasificacion)(clasificacion)
+
+        ddlClasificacion.DataSource = listaClasificacion
+        ddlClasificacion.DataTextField = "Nombre"
+        ddlClasificacion.DataValueField = "ClasificacionId"
+        ddlClasificacion.DataBind()
+        ddlClasificacion.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
+    End Sub
+    Public Sub CargarTransito(ddlTransito As DropDownList)
+        Dim api As New ConsumoApi()
+        Dim transito As String = api.GetTransito()
+
+        Dim listaTransito As List(Of Transito) = ListaSegura(Of Transito)(transito)
+
+        ddlTransito.DataSource = listaTransito
+        ddlTransito.DataTextField = "Nombre"
+        ddlTransito.DataValueField = "TransitoId"
+        ddlTransito.DataBind()
+        ddlTransito.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
+
+    End Sub
     Public Sub CargarBeneficiario(ddlBeneficiario As DropDownList)
         Dim api As New ConsumoApi()
         Dim beneficiarios As String = api.GetCargarBeneficiarios()
 
-        Dim lstBeneficiarios As List(Of BeneficiarioPreferente) = JsonConvert.DeserializeObject(Of List(Of BeneficiarioPreferente))(beneficiarios)
+        Dim lstBeneficiarios As List(Of BeneficiarioPreferente) = ListaSegura(Of BeneficiarioPreferente)(beneficiarios)
 
         ddlBeneficiario.DataSource = lstBeneficiarios
         ddlBeneficiario.DataTextField = "NombreCompleto"
@@ -241,7 +306,7 @@ Module DropdownHelpers
     Public Sub CargarTipoTarifa(ParamArray ddls() As DropDownList)
         Dim api As New ConsumoApi()
         Dim tipoTarifaJson As String = api.GetTipoTarifa()
-        Dim listaTipoTarifa As List(Of TipoTarifa) = JsonConvert.DeserializeObject(Of List(Of TipoTarifa))(tipoTarifaJson)
+        Dim listaTipoTarifa As List(Of TipoTarifa) = ListaSegura(Of TipoTarifa)(tipoTarifaJson)
 
         For Each ddl As DropDownList In ddls
             ddl.DataSource = listaTipoTarifa

@@ -44,10 +44,20 @@ Public Class AdminVendedor
 
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
 
+        ' El marcado .required lo revisa JavaScript. Si el JS no corrio, o el
+        ' catalogo llego vacio y el combo quedo sin opciones, esto es lo unico
+        ' que impide seguir con datos incompletos.
+        Dim falta As String = ValidarVendedor()
+
+        If falta <> "" Then
+            Avisar(falta, "danger")
+            Exit Sub
+        End If
+
         Dim api As New ConsumoApi()
 
-        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
-        Dim tipoVendedorId As Integer = Convert.ToInt32(ddlTipoVendedor.SelectedValue)
+        Dim tipoPersonaId As Integer = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0)
+        Dim tipoVendedorId As Integer = Convertir.EnteroO(ddlTipoVendedor.SelectedValue, 0)
 
         Dim comisionValue As Decimal = 0
         Dim texto As String = txtComision.Text.Replace("%", "").Trim()
@@ -100,7 +110,7 @@ Public Class AdminVendedor
         If String.IsNullOrEmpty(hfVendedorId.Value) Then
             respuesta = api.PostVendedor(json)
         Else
-            Dim vendedorId As Integer = Convert.ToInt32(hfVendedorId.Value)
+            Dim vendedorId As Integer = Convertir.EnteroO(hfVendedorId.Value, 0)
             respuesta = api.PutEditarVendedores(vendedorId, json)
         End If
 
@@ -130,11 +140,52 @@ Public Class AdminVendedor
         Dim api As New ConsumoApi()
         Dim cargarVendedores As String = api.GetCargarVendedores()
 
-        Dim listavendedores As List(Of Vendedor) = JsonConvert.DeserializeObject(Of List(Of Vendedor))(cargarVendedores)
+        Dim listavendedores As New List(Of Vendedor)
+
+        If Not String.IsNullOrWhiteSpace(cargarVendedores) AndAlso
+           cargarVendedores <> "null" AndAlso
+           Not cargarVendedores.StartsWith("ERROR") Then
+
+            listavendedores = JsonConvert.DeserializeObject(Of List(Of Vendedor))(cargarVendedores)
+            If listavendedores Is Nothing Then listavendedores = New List(Of Vendedor)
+        End If
+
+        ' El filtro vive aquí y no en el TextChanged, para que la paginación no
+        ' pierda la búsqueda al cambiar de página.
+        Dim busqueda As String = txtBuscarVendedor.Text.Trim()
+
+        If busqueda.Length > 0 Then
+            listavendedores = listavendedores.
+                Where(Function(v) Contiene(v.NombreCompleto, busqueda) OrElse
+                                  Contiene(v.Rfc, busqueda) OrElse
+                                  Contiene(v.Clave, busqueda)).
+                ToList()
+        End If
+
+        Dim ultimaPagina As Integer = 0
+
+        If listavendedores.Count > 0 Then
+            ultimaPagina = CInt(Math.Ceiling(listavendedores.Count / CDbl(gvVendedores.PageSize))) - 1
+        End If
+
+        If gvVendedores.PageIndex > ultimaPagina Then
+            gvVendedores.PageIndex = ultimaPagina
+        End If
 
         gvVendedores.DataSource = listavendedores
         gvVendedores.DataBind()
     End Sub
+
+    ''' <summary>
+    ''' Búsqueda parcial que ignora mayúsculas y acentos, y tolera nulos.
+    ''' </summary>
+    Private Function Contiene(valor As String, busqueda As String) As Boolean
+        If String.IsNullOrEmpty(valor) Then Return False
+
+        Return Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(
+            valor, busqueda,
+            Globalization.CompareOptions.IgnoreCase Or Globalization.CompareOptions.IgnoreNonSpace) >= 0
+    End Function
 
     Protected Sub gvVendedores_PageIndexChanging(sender As Object, e As GridViewPageEventArgs)
         gvVendedores.PageIndex = e.NewPageIndex
@@ -170,8 +221,13 @@ Public Class AdminVendedor
     End Sub
 
     Protected Sub gvVendedores_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        If e.CommandName = "Correo" Then
+            AbrirCorreo(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
+            Exit Sub
+        End If
+
         If e.CommandName = "Editar" Then
-            Dim vendedorId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim vendedorId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             pnlFormularioVendedor.Visible = True
             PnlTabla.Visible = False
             PnlEncabezado.Visible = False
@@ -182,7 +238,7 @@ Public Class AdminVendedor
 
         If e.CommandName = "Eliminar" Then
             Dim api As New ConsumoApi()
-            Dim vendedorId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim vendedorId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
 
             Dim eliminado As String = api.DeleteVendedores(vendedorId)
 
@@ -234,7 +290,7 @@ Public Class AdminVendedor
         txtTelefono.Text = vendedor.Telefono
         txtCorreo.Text = vendedor.CorreoElectronico
         txtObservaciones.Text = vendedor.Observaciones
-        txtComision.Text = Convert.ToDecimal(vendedor.Comision).ToString("0.00") & "%"
+        txtComision.Text = Convertir.NumeroO(Convert.ToString(vendedor.Comision), 0).ToString("0.00") & "%"
         ddlEstatus.SelectedValue = If(vendedor.Estatus, "1", "0")
         ddlEstatus.Enabled = True
         ddlTipoPersona.Enabled = False
@@ -260,20 +316,35 @@ Public Class AdminVendedor
     End Sub
 
     Protected Sub txtBuscarVendedor_TextChanged(sender As Object, e As EventArgs)
-        Dim api As New ConsumoApi()
-        Dim json As String = api.GetCargarVendedores()
+        ' Una búsqueda nueva siempre arranca en la primera página.
+        gvVendedores.PageIndex = 0
 
-        Dim lista As List(Of Vendedor) =
-        JsonConvert.DeserializeObject(Of List(Of Vendedor))(json)
+        CargarVendedores()
+    End Sub
 
-        Dim texto As String = txtBuscarVendedor.Text.Trim().ToLower()
+    Protected Sub gvVendedores_RowDataBound(sender As Object, e As GridViewRowEventArgs)
+        If e.Row.RowType <> DataControlRowType.DataRow Then Exit Sub
 
-        Dim filtrados = lista.Where(Function(v) _
-            v.NombreCompleto.ToLower().Contains(texto) OrElse
-            v.Rfc.ToLower().Contains(texto)).ToList()
+        RegistrarPostbackCompleto(e.Row)
+    End Sub
 
-        gvVendedores.DataSource = filtrados
-        gvVendedores.DataBind()
+    ''' <summary>
+    ''' Los botones de la tabla muestran pnlFormularioVendedor, que vive fuera del
+    ''' UpdatePanel del listado. Con un postback parcial esos cambios de visibilidad
+    ''' no llegan al navegador y la pantalla queda en blanco, así que se fuerzan a
+    ''' postback completo. Al estar dentro de una plantilla del GridView no se
+    ''' pueden declarar como PostBackTrigger por ID.
+    ''' </summary>
+    Private Sub RegistrarPostbackCompleto(contenedor As Control)
+        Dim sm As ScriptManager = ScriptManager.GetCurrent(Page)
+
+        If sm Is Nothing Then Exit Sub
+
+        For Each ctl As Control In contenedor.Controls
+            If TypeOf ctl Is IButtonControl Then sm.RegisterPostBackControl(ctl)
+
+            If ctl.HasControls() Then RegistrarPostbackCompleto(ctl)
+        Next
     End Sub
 
     Protected Sub ddlTipoEstatusCliente_SelectedIndexChanged(sender As Object, e As EventArgs)
@@ -300,4 +371,114 @@ Public Class AdminVendedor
         gvVendedores.DataSource = lista
         gvVendedores.DataBind()
     End Sub
+
+    ''' <summary>
+    ''' Abre el control de envio de correo. Es el mismo control que usan los demas
+    ''' modulos: aqui solo se le pasan el destinatario y los datos del registro.
+    ''' </summary>
+    Private Sub AbrirCorreo(registroId As Integer)
+
+        ucCorreo.Abrir(DestinatariosDe(registroId), ValoresDe(registroId))
+
+        PnlEncabezado.Visible = False
+        PnlTabla.Visible = False
+        pnlFormularioVendedor.Visible = False
+    End Sub
+
+    Protected Sub ucCorreo_Cancelado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Protected Sub ucCorreo_Enviado(sender As Object, e As EventArgs)
+        VolverDelCorreo()
+    End Sub
+
+    Private Sub VolverDelCorreo()
+        PnlEncabezado.Visible = True
+        PnlTabla.Visible = True
+        pnlFormularioVendedor.Visible = False
+    End Sub
+
+    Private Function DestinatariosDe(registroId As Integer) As String
+
+        Dim v = VendedorDe(registroId)
+
+        If v Is Nothing Then Return String.Empty
+
+        Return If(v.CorreoElectronico, String.Empty)
+    End Function
+
+    Private Function ValoresDe(registroId As Integer) As Dictionary(Of String, String)
+
+        Dim valores As New Dictionary(Of String, String)
+
+        Dim v = VendedorDe(registroId)
+        If v Is Nothing Then Return valores
+
+        If Not String.IsNullOrWhiteSpace(v.NombreCompleto) Then
+            valores("Nombre Completo") = v.NombreCompleto
+            valores("Nombre") = v.NombreCompleto.Split(" "c)(0)
+            valores("Vendedor") = v.NombreCompleto
+        End If
+
+        If Not String.IsNullOrWhiteSpace(v.Rfc) Then valores("RFC") = v.Rfc
+        If Not String.IsNullOrWhiteSpace(v.CorreoElectronico) Then valores("Correo") = v.CorreoElectronico
+
+        Return valores
+    End Function
+
+    Private Function VendedorDe(registroId As Integer) As Vendedor
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetVendedorId(registroId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse json.StartsWith("ERROR") Then Return Nothing
+
+        Return JsonConvert.DeserializeObject(Of Vendedor)(json)
+    End Function
+
+#Region "Validación"
+
+    ''' <summary>
+    ''' Devuelve el primer faltante, o cadena vacía si todo esta completo.
+    ''' </summary>
+    Private Function ValidarVendedor() As String
+
+        If Convertir.SinElegir(ddlTipoPersona) Then Return "Elige el tipo de persona."
+        If Convertir.SinElegir(ddlTipoVendedor) Then Return "Elige el tipo de vendedor."
+
+        Dim esFisica As Boolean = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0) = 1
+
+        If esFisica Then
+            If txtNombre.Text.Trim() = "" Then Return "Captura el nombre."
+            If txtApellidoP.Text.Trim() = "" Then Return "Captura el apellido paterno."
+        ElseIf txtRazonSocial.Text.Trim() = "" Then
+            Return "Captura la razón social."
+        End If
+
+        If txtClave.Text.Trim() = "" Then Return "Captura la clave."
+        If txtRFC.Text.Trim() = "" Then Return "Captura el RFC."
+
+        If Not Convertir.Fecha(txtFechaRegistro.Text).HasValue Then
+            Return "Captura la fecha de registro."
+        End If
+
+        Dim correo As String = txtCorreo.Text.Trim()
+
+        If correo <> "" AndAlso Not correo.Contains("@") Then
+            Return "El correo no tiene un formato válido."
+        End If
+
+        Return ""
+    End Function
+
+    ''' <summary>Mismo toast que ya usa el resto de la pantalla.</summary>
+    Private Sub Avisar(mensaje As String, tipo As String)
+
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "avisoVendedor",
+            "showToast('" & mensaje.Replace("'", "\'") & "', '" & tipo & "');", True)
+    End Sub
+
+#End Region
+
 End Class

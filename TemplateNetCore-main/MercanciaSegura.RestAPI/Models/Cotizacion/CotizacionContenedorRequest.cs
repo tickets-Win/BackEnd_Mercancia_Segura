@@ -6,7 +6,7 @@
 
         public int? TipoContenedorId { get; set; }
 
-        public int? NumeroContenedor { get; set; }
+        public string? NumeroContenedor { get; set; }
 
         public decimal? Cuota { get; set; }
 
