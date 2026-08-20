@@ -19,12 +19,20 @@
         Public Property EmbarqueFiliales As String
         Public Property IndemnizacionOtros As String
 
+        ' Texto libre que solo se imprime al generar la poliza.
+        Public Property Especiales As String
+        Public Property ExclusionesParticulares As String
+        Public Property MedidasDeSeguridad As String
+
         Public Property Medicamentos As Decimal?
         Public Property CobreAluminioAcero As Decimal?
         Public Property MedicamentosControlados As Decimal?
         Public Property EqContratistas As Decimal?
 
         Public Property CuotaGeneralPoliza As Decimal?
+
+        ' Las cuatro cuotas especiales solo aplican para GMX.
+        Public Property NoAplicaCuotasEspeciales As Boolean?
 
         Public Property PrimaNeta As Decimal?
         Public Property DerechoPoliza As Decimal?

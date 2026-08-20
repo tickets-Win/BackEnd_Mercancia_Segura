@@ -126,18 +126,32 @@
                             AutoPostBack="true" OnSelectedIndexChanged="ddlPolizaMaestra_SelectedIndexChanged"></asp:DropDownList>
                     </div>
                     <div class="col-md-4">
+                        <label class="form-label">Aseguradora</label>
+                        <asp:TextBox ID="txtAseguradora" runat="server" CssClass="form-control bg-light"
+                            ReadOnly="True"></asp:TextBox>
+                        <small class="text-muted">viene de la póliza maestra</small>
+                    </div>
+
+                    <div class="col-md-4">
                         <label class="form-label">N° de Certificado</label>
                         <asp:DropDownList ID="ddlNumeroCertificado" runat="server" CssClass="form-select"
                             AutoPostBack="true" OnSelectedIndexChanged="ddlNumeroCertificado_SelectedIndexChanged"></asp:DropDownList>
                     </div>
 
                     <div class="col-md-4">
+                        <label class="form-label">Tipo de evento</label>
+                        <asp:DropDownList ID="ddlTipoEvento" runat="server" CssClass="form-select"></asp:DropDownList>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label">Tipo siniestro</label>
                         <asp:DropDownList ID="ddlTipoSiniestro" runat="server" CssClass="form-select"></asp:DropDownList>
                     </div>
+
                     <div class="col-md-4">
-                        <label class="form-label">Mercancía</label>
-                        <asp:TextBox ID="txtMercancia" runat="server" CssClass="form-control"></asp:TextBox>
+                        <label class="form-label">Descripción de mercancía</label>
+                        <asp:TextBox ID="txtMercancia" runat="server" CssClass="form-control bg-light"
+                            ReadOnly="True" TextMode="MultiLine" Rows="2"></asp:TextBox>
+                        <small class="text-muted">viene del certificado</small>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Lugar de siniestro</label>

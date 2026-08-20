@@ -17,19 +17,25 @@ Public Class EnvioCorreoControl
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
-        ' Un FileUpload no manda el archivo en un postback asincrono, y la pagina
-        ' no puede poner un PostBackTrigger sobre un control que vive aqui dentro:
-        ' se registra desde el propio control.
-        Dim gestor As ScriptManager = ScriptManager.GetCurrent(Page)
+        ' El aviso se apaga al empezar cada petición: Page_Load corre antes que
+        ' los eventos, así que un Avisar() de este mismo clic sí se ve.
+        pnlAviso.Visible = False
 
-        If gestor IsNot Nothing Then gestor.RegisterPostBackControl(lnkAdjuntar)
-
-        ' El <form> necesita multipart para que suban los adjuntos. ASP.NET solo
-        ' lo pone si ve un FileUpload al renderizar, y este control nace oculto;
-        ' cuando se muestra ya es por postback parcial y la etiqueta <form> vive
-        ' fuera del UpdatePanel, asi que nunca se vuelve a dibujar.
-        If Page.Form IsNot Nothing Then Page.Form.Enctype = "multipart/form-data"
+        ' Los adjuntos suben contra el handler, no por postback, asi que ya no
+        ' hace falta ni RegisterPostBackControl ni el enctype del formulario.
+        ' El script necesita saber en que llave de Session guardarlos.
+        hfLlaveAdjuntos.Value = LlaveAdjuntos
     End Sub
+
+    ''' <summary>
+    ''' Llave de Session donde viven los adjuntos. Incluye el id del control para
+    ''' que dos pantallas no se pisen.
+    ''' </summary>
+    Private ReadOnly Property LlaveAdjuntos As String
+        Get
+            Return "AdjuntosCorreo_" & UniqueID
+        End Get
+    End Property
 
 #Region "Estado"
 
@@ -58,26 +64,10 @@ Public Class EnvioCorreoControl
     ''' </summary>
     Private Property Cuerpo As String
         Get
-            If String.IsNullOrWhiteSpace(hfHtml.Value) Then Return String.Empty
-
-            Try
-                Return Text.Encoding.UTF8.GetString(Convert.FromBase64String(hfHtml.Value))
-            Catch
-                Return hfHtml.Value
-            End Try
+            Return edCuerpo.Html
         End Get
         Set(value As String)
-            ' Se escribe en los dos lados: el hidden es lo que viaja al postear,
-            ' y el literal es lo que se ve de inmediato en el área editable sin
-            ' depender de que el script alcance a inyectarlo.
-            litCuerpo.Text = If(value, String.Empty)
-
-            If String.IsNullOrEmpty(value) Then
-                hfHtml.Value = String.Empty
-                Exit Property
-            End If
-
-            hfHtml.Value = Convert.ToBase64String(Text.Encoding.UTF8.GetBytes(value))
+            edCuerpo.Html = value
         End Set
     End Property
 
@@ -88,13 +78,11 @@ Public Class EnvioCorreoControl
     ''' </summary>
     Private ReadOnly Property Adjuntos As List(Of ArchivoAdjunto)
         Get
-            Dim llave As String = "AdjuntosCorreo_" & UniqueID
-
-            If Session(llave) Is Nothing Then
-                Session(llave) = New List(Of ArchivoAdjunto)
+            If Session(LlaveAdjuntos) Is Nothing Then
+                Session(LlaveAdjuntos) = New List(Of ArchivoAdjunto)
             End If
 
-            Return DirectCast(Session(llave), List(Of ArchivoAdjunto))
+            Return DirectCast(Session(LlaveAdjuntos), List(Of ArchivoAdjunto))
         End Get
     End Property
 
@@ -119,7 +107,6 @@ Public Class EnvioCorreoControl
         ValoresCampos = valores
 
         Adjuntos.Clear()
-        CargarAdjuntos()
 
         Dim plantillas = PlantillasCorreo.Todas()
 
@@ -160,8 +147,6 @@ Public Class EnvioCorreoControl
 
         If Not EnvioCorreo.EstaConfigurado() Then
             Avisar("Puedes preparar el correo, pero falta configurar el servidor SMTP en el Web.config para poder enviarlo.", "warning")
-        Else
-            pnlAviso.Visible = False
         End If
 
         Me.Visible = True
@@ -197,53 +182,9 @@ Public Class EnvioCorreoControl
 
 #Region "Adjuntos"
 
-    Private Sub CargarAdjuntos()
-        rptAdjuntos.DataSource = Adjuntos
-        rptAdjuntos.DataBind()
-    End Sub
-
-    Protected Sub lnkAdjuntar_Click(sender As Object, e As EventArgs)
-
-        If Not fuAdjunto.HasFiles Then
-            Avisar("Elige al menos un archivo antes de adjuntar.", "warning")
-            Exit Sub
-        End If
-
-        Const maximoMB As Integer = 10
-
-        For Each archivo As HttpPostedFile In fuAdjunto.PostedFiles
-
-            If archivo Is Nothing OrElse archivo.ContentLength = 0 Then Continue For
-
-            If archivo.ContentLength > maximoMB * 1024 * 1024 Then
-                Avisar("El archivo " & archivo.FileName & " pasa de " & maximoMB & " MB y no se adjuntó.", "warning")
-                Continue For
-            End If
-
-            Dim contenido(archivo.ContentLength - 1) As Byte
-            archivo.InputStream.Read(contenido, 0, archivo.ContentLength)
-
-            Adjuntos.Add(New ArchivoAdjunto With {
-                .Nombre = IO.Path.GetFileName(archivo.FileName),
-                .TipoMime = archivo.ContentType,
-                .Contenido = contenido
-            })
-        Next
-
-        CargarAdjuntos()
-    End Sub
-
-    Protected Sub rptAdjuntos_ItemCommand(source As Object, e As RepeaterCommandEventArgs)
-
-        If e.CommandName <> "Quitar" Then Exit Sub
-
-        Dim indice As Integer
-        If Not Integer.TryParse(Convert.ToString(e.CommandArgument), indice) Then Exit Sub
-
-        If indice >= 0 AndAlso indice < Adjuntos.Count Then Adjuntos.RemoveAt(indice)
-
-        CargarAdjuntos()
-    End Sub
+    ' La carga y el borrado de adjuntos los atiende Handlers/AdjuntosCorreo.ashx
+    ' contra la misma llave de Session, sin postback. Aqui solo se limpian al
+    ' abrir y al enviar.
 
 #End Region
 

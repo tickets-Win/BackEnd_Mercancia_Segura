@@ -41,13 +41,6 @@
                 Return "Mercancia Segura"
             End Get
         End Property
-
-        ''' <summary>Todavía no hay adjuntos por plantilla.</summary>
-        Public ReadOnly Property Adjuntos As Integer
-            Get
-                Return 0
-            End Get
-        End Property
     End Class
 
     Public Class CategoriaPlantilla

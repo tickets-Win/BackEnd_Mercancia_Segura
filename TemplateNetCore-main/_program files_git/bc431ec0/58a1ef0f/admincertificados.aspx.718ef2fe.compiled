@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/C:/Program Files/Git/Views/General/AdminCertificados.aspx" hash="fffffffcb3b9a8ea" filehash="5b39c05cd7cf17a4" flags="110000" assembly="App_Web_qghajcz4" type="ASP.views_general_admincertificados_aspx">
+    <filedeps>
+        <filedep name="/C:/Program Files/Git/Controles/EditorHtml.ascx" />
+        <filedep name="/C:/Program Files/Git/Controles/EnvioCorreo.ascx" />
+        <filedep name="/C:/Program Files/Git/Default.Master" />
+        <filedep name="/C:/Program Files/Git/Views/General/AdminCertificados.aspx" />
+    </filedeps>
+</preserve>

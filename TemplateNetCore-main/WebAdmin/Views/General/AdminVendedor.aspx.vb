@@ -44,10 +44,20 @@ Public Class AdminVendedor
 
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
 
+        ' El marcado .required lo revisa JavaScript. Si el JS no corrio, o el
+        ' catalogo llego vacio y el combo quedo sin opciones, esto es lo unico
+        ' que impide seguir con datos incompletos.
+        Dim falta As String = ValidarVendedor()
+
+        If falta <> "" Then
+            Avisar(falta, "danger")
+            Exit Sub
+        End If
+
         Dim api As New ConsumoApi()
 
-        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
-        Dim tipoVendedorId As Integer = Convert.ToInt32(ddlTipoVendedor.SelectedValue)
+        Dim tipoPersonaId As Integer = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0)
+        Dim tipoVendedorId As Integer = Convertir.EnteroO(ddlTipoVendedor.SelectedValue, 0)
 
         Dim comisionValue As Decimal = 0
         Dim texto As String = txtComision.Text.Replace("%", "").Trim()
@@ -100,7 +110,7 @@ Public Class AdminVendedor
         If String.IsNullOrEmpty(hfVendedorId.Value) Then
             respuesta = api.PostVendedor(json)
         Else
-            Dim vendedorId As Integer = Convert.ToInt32(hfVendedorId.Value)
+            Dim vendedorId As Integer = Convertir.EnteroO(hfVendedorId.Value, 0)
             respuesta = api.PutEditarVendedores(vendedorId, json)
         End If
 
@@ -212,12 +222,12 @@ Public Class AdminVendedor
 
     Protected Sub gvVendedores_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Correo" Then
-            AbrirCorreo(Convert.ToInt32(e.CommandArgument))
+            AbrirCorreo(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
             Exit Sub
         End If
 
         If e.CommandName = "Editar" Then
-            Dim vendedorId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim vendedorId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             pnlFormularioVendedor.Visible = True
             PnlTabla.Visible = False
             PnlEncabezado.Visible = False
@@ -228,7 +238,7 @@ Public Class AdminVendedor
 
         If e.CommandName = "Eliminar" Then
             Dim api As New ConsumoApi()
-            Dim vendedorId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim vendedorId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
 
             Dim eliminado As String = api.DeleteVendedores(vendedorId)
 
@@ -280,7 +290,7 @@ Public Class AdminVendedor
         txtTelefono.Text = vendedor.Telefono
         txtCorreo.Text = vendedor.CorreoElectronico
         txtObservaciones.Text = vendedor.Observaciones
-        txtComision.Text = Convert.ToDecimal(vendedor.Comision).ToString("0.00") & "%"
+        txtComision.Text = Convertir.NumeroO(Convert.ToString(vendedor.Comision), 0).ToString("0.00") & "%"
         ddlEstatus.SelectedValue = If(vendedor.Estatus, "1", "0")
         ddlEstatus.Enabled = True
         ddlTipoPersona.Enabled = False
@@ -426,5 +436,49 @@ Public Class AdminVendedor
 
         Return JsonConvert.DeserializeObject(Of Vendedor)(json)
     End Function
+
+#Region "Validación"
+
+    ''' <summary>
+    ''' Devuelve el primer faltante, o cadena vacía si todo esta completo.
+    ''' </summary>
+    Private Function ValidarVendedor() As String
+
+        If Convertir.SinElegir(ddlTipoPersona) Then Return "Elige el tipo de persona."
+        If Convertir.SinElegir(ddlTipoVendedor) Then Return "Elige el tipo de vendedor."
+
+        Dim esFisica As Boolean = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0) = 1
+
+        If esFisica Then
+            If txtNombre.Text.Trim() = "" Then Return "Captura el nombre."
+            If txtApellidoP.Text.Trim() = "" Then Return "Captura el apellido paterno."
+        ElseIf txtRazonSocial.Text.Trim() = "" Then
+            Return "Captura la razón social."
+        End If
+
+        If txtClave.Text.Trim() = "" Then Return "Captura la clave."
+        If txtRFC.Text.Trim() = "" Then Return "Captura el RFC."
+
+        If Not Convertir.Fecha(txtFechaRegistro.Text).HasValue Then
+            Return "Captura la fecha de registro."
+        End If
+
+        Dim correo As String = txtCorreo.Text.Trim()
+
+        If correo <> "" AndAlso Not correo.Contains("@") Then
+            Return "El correo no tiene un formato válido."
+        End If
+
+        Return ""
+    End Function
+
+    ''' <summary>Mismo toast que ya usa el resto de la pantalla.</summary>
+    Private Sub Avisar(mensaje As String, tipo As String)
+
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "avisoVendedor",
+            "showToast('" & mensaje.Replace("'", "\'") & "', '" & tipo & "');", True)
+    End Sub
+
+#End Region
 
 End Class

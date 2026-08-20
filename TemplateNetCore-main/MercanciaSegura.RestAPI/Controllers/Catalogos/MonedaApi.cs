@@ -21,5 +21,17 @@ namespace MercanciaSegura.RestAPI.Controllers.Catalogos
         [SwaggerResponse(statusCode: 404, type: typeof(InlineResponse400))]
         public abstract Task<IActionResult> GetMonedaApiAsync(
             [FromRoute][Required] string version);
+
+        [HttpPut]
+        [Route("/{version:apiVersion}/moneda/{idMoneda}/tipoCambio")]
+        [ValidateModelState]
+        [SwaggerOperation("UpdateTipoCambio")]
+        [SwaggerResponse(statusCode: 200, description: "OK")]
+        [SwaggerResponse(statusCode: 400, type: typeof(InlineResponse400))]
+        [SwaggerResponse(statusCode: 404, type: typeof(InlineResponse400))]
+        public abstract Task<IActionResult> UpdateTipoCambioAsync(
+            [FromRoute][Required] string version,
+            [FromRoute][Required] int idMoneda,
+            [FromBody] TipoCambioRequest body);
     }
 }

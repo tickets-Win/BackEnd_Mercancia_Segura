@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminCertificados.aspx.vb" Inherits="WebAdmin.AdminCertificados" %>
+<%@ Register TagPrefix="uc" TagName="EnvioCorreo" Src="~/Controles/EnvioCorreo.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -333,6 +334,12 @@
                     </div>
                 </div>
             </asp:Panel>
+
+            <%-- Envio de correo: mismo control que cotizaciones, clientes,
+                 vendedores, beneficiarios y polizas. Va dentro de este
+                 UpdatePanel para mostrarse sin recargar la pagina. --%>
+            <uc:EnvioCorreo ID="ucCorreo" runat="server" Visible="false"
+                OnCancelado="ucCorreo_Cancelado" OnEnviado="ucCorreo_Enviado" />
 
         </ContentTemplate>
     </asp:UpdatePanel>

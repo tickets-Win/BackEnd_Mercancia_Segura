@@ -78,30 +78,10 @@ Partial Public Class EnvioCorreoControl
     '''</summary>
     Protected WithEvents chkFirma As Global.System.Web.UI.HtmlControls.HtmlInputCheckBox
 
-    '''<summary>
-    '''Control fuAdjunto.
-    '''</summary>
-    Protected WithEvents fuAdjunto As Global.System.Web.UI.WebControls.FileUpload
 
-    '''<summary>
-    '''Control lnkAdjuntar.
-    '''</summary>
-    Protected WithEvents lnkAdjuntar As Global.System.Web.UI.WebControls.LinkButton
 
-    '''<summary>
-    '''Control rptAdjuntos.
-    '''</summary>
-    Protected WithEvents rptAdjuntos As Global.System.Web.UI.WebControls.Repeater
 
-    '''<summary>
-    '''Control litCuerpo.
-    '''</summary>
-    Protected WithEvents litCuerpo As Global.System.Web.UI.WebControls.Literal
 
-    '''<summary>
-    '''Control hfHtml.
-    '''</summary>
-    Protected WithEvents hfHtml As Global.System.Web.UI.HtmlControls.HtmlInputHidden
 
     '''<summary>
     '''Control hfCampos.
@@ -122,4 +102,14 @@ Partial Public Class EnvioCorreoControl
     '''Control rptBiblioteca.
     '''</summary>
     Protected WithEvents rptBiblioteca As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
+    '''Control hfLlaveAdjuntos.
+    '''</summary>
+    Protected WithEvents hfLlaveAdjuntos As Global.System.Web.UI.HtmlControls.HtmlInputHidden
+
+    '''<summary>
+    '''Control edCuerpo.
+    '''</summary>
+    Protected WithEvents edCuerpo As Global.WebAdmin.EditorHtml
 End Class

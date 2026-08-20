@@ -97,7 +97,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\site.css" />
+    <Content Include="Controles\EditorHtml.ascx" />
     <Content Include="Controles\EnvioCorreo.ascx" />
+    <Content Include="Handlers\AdjuntosCorreo.ashx" />
     <Content Include="Global.asax" />
     <Content Include="Resources\Image\logo_MS.png" />
     <Content Include="Views\Account\login.aspx" />
@@ -117,6 +119,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controladores\ConsumoApi.vb" />
+    <Compile Include="Controles\EditorHtml.ascx.designer.vb">
+      <DependentUpon>EditorHtml.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controles\EditorHtml.ascx.vb">
+      <DependentUpon>EditorHtml.ascx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="Controles\EnvioCorreo.ascx.designer.vb">
       <DependentUpon>EnvioCorreo.ascx</DependentUpon>
     </Compile>
@@ -134,6 +143,11 @@
     <Compile Include="Global.asax.vb">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Handlers\AdjuntosCorreo.ashx.vb">
+      <DependentUpon>AdjuntosCorreo.ashx</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Helpers\Convertir.vb" />
     <Compile Include="Helpers\DropdownHelpers.vb" />
     <Compile Include="Helpers\EnvioCorreo.vb" />
     <Compile Include="Helpers\PlantillasCorreo.vb" />
@@ -157,6 +171,7 @@
     <Compile Include="Modelos\CotizacionContenedor.vb" />
     <Compile Include="Modelos\CotizacionMercancia.vb" />
     <Compile Include="Modelos\Cuota.vb" />
+    <Compile Include="Modelos\Endoso.vb" />
     <Compile Include="Modelos\EstatusPoliza.vb" />
     <Compile Include="Modelos\FormaPago.vb" />
     <Compile Include="Modelos\Moneda.vb" />
@@ -176,6 +191,7 @@
     <Compile Include="Modelos\TipoCorreo.vb" />
     <Compile Include="Modelos\TipoCuenta.vb" />
     <Compile Include="Modelos\TipoEstatus.vb" />
+    <Compile Include="Modelos\TipoEvento.vb" />
     <Compile Include="Modelos\TipoPersona.vb" />
     <Compile Include="Modelos\TipoSector.vb" />
     <Compile Include="Modelos\TipoSeguro.vb" />

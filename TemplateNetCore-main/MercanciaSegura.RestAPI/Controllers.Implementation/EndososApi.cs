@@ -32,18 +32,24 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 Oficina = e.Oficina,
                 BeneficiarioPreferente = e.BeneficiarioPreferente,
                 MonedaId = e.MonedaId,
+                VigenciaDel = e.VigenciaDel,
+                VigenciaHasta = e.VigenciaHasta,
+                SumaAsegurada = e.SumaAsegurada,
+                PrimaServicioDeAseguramiento = e.PrimaServicioDeAseguramiento,
                 IVA = e.IVA,
                 TotalAPagar = e.TotalAPagar,
                 Descripcion = e.Descripcion,
 
-                // 🔹 Datos enriquecidos
-                NombreTipoEndoso = e.TipoEndoso != null
-                    ? e.TipoEndoso.Tipo // ⚠️ ajusta si el campo se llama diferente
-                    : null,
+                // Datos que la pantalla muestra pero no guarda.
+                NombreTipoEndoso = e.TipoEndoso?.Tipo,
 
-                NumeroCertificado = e.Certificado != null
-                    ? e.Certificado.CertificadoId.ToString() // ⚠️ cambia si tienes folio real
-                    : null,
+                // La clave es lo que ve el usuario; el id queda de respaldo
+                // para los certificados viejos que aun no la tienen.
+                NumeroCertificado = e.Certificado == null
+                    ? null
+                    : string.IsNullOrWhiteSpace(e.Certificado.ClaveCertificado)
+                        ? e.Certificado.CertificadoId.ToString()
+                        : e.Certificado.ClaveCertificado,
             };
         }
 
@@ -64,6 +70,10 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             endosos.Oficina = body.Oficina;
             endosos.BeneficiarioPreferente = body.BeneficiarioPreferente;
             endosos.MonedaId = body.MonedaId;
+            endosos.VigenciaDel = body.VigenciaDel;
+            endosos.VigenciaHasta = body.VigenciaHasta;
+            endosos.SumaAsegurada = body.SumaAsegurada;
+            endosos.PrimaServicioDeAseguramiento = body.PrimaServicioDeAseguramiento;
             endosos.IVA = body.IVA;
             endosos.TotalAPagar = body.TotalAPagar;
             endosos.Descripcion = body.Descripcion;

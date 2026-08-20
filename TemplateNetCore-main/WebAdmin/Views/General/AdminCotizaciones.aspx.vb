@@ -242,6 +242,8 @@ Public Class AdminCotizaciones
         ' Medidas de seguridad
         txtMedidasSeguridad.Text = String.Empty
         txtDeducibles.Text = String.Empty
+        txtCondicionesEspeciales.Text = String.Empty
+        txtExclusiones.Text = String.Empty
 
         ' Cuota aplicable / mínima
         chkCuotaAplicableN.Checked = False
@@ -610,6 +612,43 @@ Public Class AdminCotizaciones
         Return "Aceptar cotización y generar certificado"
     End Function
 
+
+    ''' <summary>
+    ''' Editar y cancelar se apagan por la misma razón que la palomita: una vez
+    ''' que la cotización tiene certificado, ese certificado ya guardó copia del
+    ''' asegurado, la vigencia y la suma asegurada, y de él cuelgan siniestros y
+    ''' endosos. Tocar la cotización después dejaría esos números sin coincidir.
+    ''' </summary>
+    Protected Function IconoBloqueable(valor As Object) As String
+        If YaAceptada(valor) Then Return "icon-btn action-icon text-muted"
+
+        Return "icon-btn action-icon"
+    End Function
+
+    Protected Function TituloEditar(valor As Object) As String
+        If YaAceptada(valor) Then Return "Ya tiene certificado: no se puede editar"
+
+        Return "Editar"
+    End Function
+
+    Protected Function TituloEliminar(valor As Object) As String
+        If YaAceptada(valor) Then Return "Ya tiene certificado: no se puede cancelar"
+
+        Return "Eliminar"
+    End Function
+
+    Protected Function ConfirmacionEditar(valor As Object) As String
+        If YaAceptada(valor) Then Return "return false;"
+
+        Return String.Empty
+    End Function
+
+    Protected Function ConfirmacionEliminar(valor As Object) As String
+        If YaAceptada(valor) Then Return "return false;"
+
+        Return "return confirm('¿Seguro que deseas cancelar esta cotización?');"
+    End Function
+
     Private Function YaAceptada(valor As Object) As Boolean
         If CotizacionesAceptadas Is Nothing Then Return False
 
@@ -655,6 +694,13 @@ Public Class AdminCotizaciones
     ''' </summary>
     Private Sub CancelarCotizacion(cotizacionId As Integer)
 
+        If CotizacionesAceptadas Is Nothing Then CargarCotizacionesAceptadas()
+
+        If CotizacionesAceptadas.Contains(cotizacionId) Then
+            Avisar("Esta cotización ya tiene certificado: elimina primero el certificado.", "warning")
+            Exit Sub
+        End If
+
         Dim api As New ConsumoApi()
         Dim respuesta As String = api.DeleteCotizacion(cotizacionId)
 
@@ -677,6 +723,15 @@ Public Class AdminCotizaciones
     ''' Trae la cotización del API y abre el formulario con sus datos.
     ''' </summary>
     Private Sub EditarCotizacion(cotizacionId As Integer)
+
+        ' Red de seguridad: el icono ya viene apagado, pero un postback armado a
+        ' mano llegaria aqui igual. El API tambien lo rechaza.
+        If CotizacionesAceptadas Is Nothing Then CargarCotizacionesAceptadas()
+
+        If CotizacionesAceptadas.Contains(cotizacionId) Then
+            Avisar("Esta cotización ya tiene certificado, por lo que no se puede editar.", "warning")
+            Exit Sub
+        End If
 
         Dim api As New ConsumoApi()
         Dim json As String = api.GetCotizacionId(cotizacionId)
@@ -776,6 +831,18 @@ Public Class AdminCotizaciones
         txtObservaciones.Text = m.Observaciones
         txtMedidasSeguridad.Text = m.MedidasDeSeguridadAdicionales
         txtDeducibles.Text = m.Deducibles
+
+        ' Lo que se le cotizo al cliente manda sobre lo que diga hoy la poliza.
+        ' CargarDesdePolizaId ya escribio los textos vivos; aqui se sustituyen
+        ' por la copia que quedo guardada. Las cotizaciones anteriores a estas
+        ' columnas no traen copia, y para esas se deja lo de la poliza.
+        If Not String.IsNullOrWhiteSpace(m.CondicionesEspeciales) Then
+            txtCondicionesEspeciales.Text = m.CondicionesEspeciales
+        End If
+
+        If Not String.IsNullOrWhiteSpace(m.Exclusiones) Then
+            txtExclusiones.Text = m.Exclusiones
+        End If
         txtSumaAsegurada.Text = TextoMonto(m.SumaAsegurada)
         txtCuotaAplicable.Text = TextoMonto(m.CuotaAplicable)
         txtCuotaMinima.Text = TextoMonto(m.CuotaMinima)
@@ -1265,6 +1332,10 @@ Public Class AdminCotizaciones
             If mercancia Is Nothing Then mercancia = poliza.PolizaMercancia.First()
 
             txtDeducibles.Text = mercancia.Deducibles
+
+            ' Solo de lectura: son de la poliza y viajan tal cual al formato.
+            txtCondicionesEspeciales.Text = mercancia.Especiales
+            txtExclusiones.Text = mercancia.ExclusionesParticulares
         End If
 
         ' Los bienes registrados en la póliza alimentan dos combos: Subclasificación
@@ -1319,16 +1390,46 @@ Public Class AdminCotizaciones
 
         End If
 
+        ' Los riesgos cubiertos son los de la poliza: se copian todos al elegirla
+        ' en vez de pedir que se agreguen uno por uno. El combo se queda para
+        ' volver a agregar alguno que se haya quitado.
+        CopiarCoberturasDePoliza()
+
         If ddlCoberturas.Items.Count > 0 Then
             ddlCoberturas.Items.Insert(0, New ListItem("-- Selecciona --", "0"))
         End If
 
+    End Sub
+
+    ''' <summary>
+    ''' Pasa al grid todo lo que quedo en el combo. Se llama antes de meter el
+    ''' "-- Selecciona --", asi que todos los items son coberturas reales.
+    ''' </summary>
+    Private Sub CopiarCoberturasDePoliza()
+
+        For Each item As ListItem In ddlCoberturas.Items
+
+            Dim coberturaId As Integer
+
+            If Not Integer.TryParse(item.Value, coberturaId) OrElse coberturaId = 0 Then Continue For
+
+            If CoberturasCotizacion.Any(Function(c) c.CoberturaId = coberturaId) Then Continue For
+
+            CoberturasCotizacion.Add(New Cobertura With {
+                .CoberturaId = coberturaId,
+                .Nombre = item.Text
+            })
+        Next
+
+        CargarGridCoberturas()
     End Sub
     Private Sub LimpiarDatosPoliza()
         ddlMoneda.ClearSelection()
         txtVigenciaDel.Text = String.Empty
         txtVigenciaHasta.Text = String.Empty
         txtDeducibles.Text = String.Empty
+        txtCondicionesEspeciales.Text = String.Empty
+        txtExclusiones.Text = String.Empty
         ddlSubclasificación.Items.Clear()
         ddlCoberturas.Items.Clear()
         ddlbienesasegurados.Items.Clear()
@@ -1647,6 +1748,8 @@ Public Class AdminCotizaciones
             .Observaciones = txtObservaciones.Text,
             .MedidasDeSeguridadAdicionales = txtMedidasSeguridad.Text,
             .Deducibles = txtDeducibles.Text,
+            .CondicionesEspeciales = txtCondicionesEspeciales.Text,
+            .Exclusiones = txtExclusiones.Text,
             .SumaAsegurada = MontoDe(txtSumaAsegurada),
             .CuotaAplicable = MontoDe(txtCuotaAplicable),
             .CuotaMinima = MontoDe(txtCuotaMinima),

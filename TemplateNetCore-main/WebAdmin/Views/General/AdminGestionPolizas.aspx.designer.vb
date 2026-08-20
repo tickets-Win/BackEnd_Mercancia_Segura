@@ -554,6 +554,21 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtDeducibles1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control txtEspeciales1.
+    '''</summary>
+    Protected WithEvents txtEspeciales1 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtExclusionesParticulares1.
+    '''</summary>
+    Protected WithEvents txtExclusionesParticulares1 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtMedidasSeguridad1.
+    '''</summary>
+    Protected WithEvents txtMedidasSeguridad1 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control txtCompras1.
     '''</summary>
     '''<remarks>
@@ -968,6 +983,21 @@ Partial Public Class AdminGestionPolizas
     Protected WithEvents txtDeducibles2 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control txtEspeciales2.
+    '''</summary>
+    Protected WithEvents txtEspeciales2 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtExclusionesParticulares2.
+    '''</summary>
+    Protected WithEvents txtExclusionesParticulares2 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtMedidasSeguridad2.
+    '''</summary>
+    Protected WithEvents txtMedidasSeguridad2 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control txtCompras2.
     '''</summary>
     '''<remarks>
@@ -1380,6 +1410,21 @@ Partial Public Class AdminGestionPolizas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents txtDeducibles3 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtEspeciales3.
+    '''</summary>
+    Protected WithEvents txtEspeciales3 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtExclusionesParticulares3.
+    '''</summary>
+    Protected WithEvents txtExclusionesParticulares3 As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtMedidasSeguridad3.
+    '''</summary>
+    Protected WithEvents txtMedidasSeguridad3 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control txtCompras3.

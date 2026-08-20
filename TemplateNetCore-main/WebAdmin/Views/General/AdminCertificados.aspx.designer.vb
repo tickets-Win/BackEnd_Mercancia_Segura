@@ -267,4 +267,9 @@ Partial Public Class AdminCertificados
     '''Control txtTotal.
     '''</summary>
     Protected WithEvents txtTotal As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control ucCorreo.
+    '''</summary>
+    Protected WithEvents ucCorreo As Global.WebAdmin.EnvioCorreoControl
 End Class

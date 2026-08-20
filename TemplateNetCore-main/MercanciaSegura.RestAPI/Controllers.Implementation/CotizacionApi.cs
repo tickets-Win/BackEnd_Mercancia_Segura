@@ -21,6 +21,19 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
         /// Mismo criterio para mercancía y contenedor, y el mismo que usa el
         /// formulario de WebAdmin para mostrar los importes en pantalla.
         /// </summary>
+        /// <summary>
+        /// Una cotizacion con certificado ya quedo emitida: el certificado guardo
+        /// copia del asegurado, la vigencia y la suma asegurada, y de el cuelgan
+        /// siniestros y endosos. Si se pudiera seguir editando o cancelando, esos
+        /// datos dejarian de coincidir sin que nadie se entere.
+        /// </summary>
+        private async Task<bool> TieneCertificadoAsync(int idCotizacion)
+        {
+            return await _context.Certificado
+                .AsNoTracking()
+                .AnyAsync(c => c.CotizacionId == idCotizacion);
+        }
+
         private static void CalcularImportes(Cotizacion cotizacion)
         {
             var subtotal = (cotizacion.PrimaServicioDeAseguramiento ?? 0)
@@ -114,6 +127,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                 Observaciones = m.Observaciones,
                 MedidasDeSeguridadAdicionales = m.MedidasDeSeguridadAdicionales,
                 Deducibles = m.Deducibles,
+                CondicionesEspeciales = m.CondicionesEspeciales,
+                Exclusiones = m.Exclusiones,
 
                 MonedaCuotaAplicableId = m.MonedaCuotaAplicableId,
                 CuotaAplicable = m.CuotaAplicable,
@@ -212,6 +227,8 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             entity.MedidasDeSeguridadAdicionales = body.MedidasDeSeguridadAdicionales;
 
             entity.Deducibles = body.Deducibles;
+            entity.CondicionesEspeciales = body.CondicionesEspeciales;
+            entity.Exclusiones = body.Exclusiones;
 
             entity.MonedaCuotaAplicableId = body.MonedaCuotaAplicableId;
             entity.CuotaAplicable = body.CuotaAplicable;
@@ -438,6 +455,9 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             if (body.CotizacionMercancia == null && !(body.CotizacionContenedor?.Any() == true))
                 return BadRequest("Debe enviar mercancía o contenedor");
 
+            if (await TieneCertificadoAsync(idCotizacion))
+                return BadRequest(new { message = "Esta cotización ya fue confirmada y tiene certificado, por lo que no se puede modificar" });
+
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
@@ -598,6 +618,9 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
 
             if (cotizacion.FechaCancelacion != null)
                 return BadRequest(new { message = "La cotización ya está cancelada" });
+
+            if (await TieneCertificadoAsync(idCotizacion))
+                return BadRequest(new { message = "Esta cotización ya tiene certificado: elimina primero el certificado" });
 
             await using var transaction = await _context.Database.BeginTransactionAsync();
 

@@ -235,12 +235,12 @@ Public Class AdminGestionPolizas
     End Sub
     Protected Sub gvPolizas_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Correo" Then
-            AbrirCorreo(Convert.ToInt32(e.CommandArgument))
+            AbrirCorreo(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
             Exit Sub
         End If
 
         If e.CommandName = "Editar" Then
-            Dim polizaId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim polizaId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             pnlFormularioPolizas.Visible = True
             PnlTabla.Visible = False
             pnlEncabezado.Visible = False
@@ -251,7 +251,7 @@ Public Class AdminGestionPolizas
 
         If e.CommandName = "Eliminar" Then
             Dim api As New ConsumoApi()
-            Dim polizaId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim polizaId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
 
             Dim eliminado As String = api.DeletePoliza(polizaId)
 
@@ -285,21 +285,31 @@ Public Class AdminGestionPolizas
     End Function
 
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
+
+        ' Misma razon que en vendedores: el .required es solo del lado del
+        ' navegador, aqui se revisa de verdad antes de mandar nada al API.
+        Dim falta As String = ValidarPoliza()
+
+        If falta <> "" Then
+            AvisarPoliza(falta, "danger")
+            Exit Sub
+        End If
+
         Dim api As New ConsumoApi()
-        Dim ProductoId As Integer = Convert.ToInt32(ddlProducto.SelectedValue)
+        Dim ProductoId As Integer = Convertir.EnteroO(ddlProducto.SelectedValue, 0)
 
         Dim poliza As New Poliza With {
             .ProductoId = ProductoId,
             .TipoPoliza = txtTipoPoliza.Text,
             .NumeroPoliza = txtNumeroPoliza.Text,
-            .ContratanteId = ddlContratante.SelectedValue,
-            .AseguradoraId = ddlAseguradora.SelectedValue,
-            .SubRamoId = ddlSubRamo.SelectedValue,
-            .VigenciaDel = If(String.IsNullOrEmpty(txtVigenciaDel.Text), CType(Nothing, DateTime?), Convert.ToDateTime(txtVigenciaDel.Text)),
-            .VigenciaHasta = If(String.IsNullOrEmpty(txtVigenciaHasta.Text), CType(Nothing, DateTime?), Convert.ToDateTime(txtVigenciaHasta.Text)),
-            .EstatusPolizaId = Convert.ToInt32(ddlEstatusPoliza.SelectedValue),
-            .FormaPagoId = ddlFormaPago.SelectedValue,
-            .MonedaId = ddlMoneda.SelectedValue,
+            .ContratanteId = Convertir.Entero(ddlContratante.SelectedValue),
+            .AseguradoraId = Convertir.Entero(ddlAseguradora.SelectedValue),
+            .SubRamoId = Convertir.Entero(ddlSubRamo.SelectedValue),
+            .VigenciaDel = Convertir.Fecha(txtVigenciaDel.Text),
+            .VigenciaHasta = Convertir.Fecha(txtVigenciaHasta.Text),
+            .EstatusPolizaId = Convertir.EnteroO(ddlEstatusPoliza.SelectedValue, 0),
+            .FormaPagoId = Convertir.Entero(ddlFormaPago.SelectedValue),
+            .MonedaId = Convertir.Entero(ddlMoneda.SelectedValue),
             .ClaveAgente = txtClaveAgente.Text,
             .FolioPoliza = txtFolioPoliza.Text
             }
@@ -311,9 +321,9 @@ Public Class AdminGestionPolizas
                 polizaMercanciaList.Add(New PolizaMercancia With {
             .AdministracionBienId = 1,
             .NombreInternoPoliza = txtNombreInternoPoliza1.Text,
-            .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo1.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo1.Text)),
-            .Maritimo = If(String.IsNullOrWhiteSpace(txtMaritimo1.Text), Nothing, Convert.ToDecimal(txtMaritimo1.Text)),
-            .PaqueteriaMensajeria = If(String.IsNullOrWhiteSpace(txtPaqueteria1.Text), Nothing, Convert.ToDecimal(txtPaqueteria1.Text)),
+            .TerrestreAereo = Convertir.Numero(txtTerrestreAereo1.Text),
+            .Maritimo = Convertir.Numero(txtMaritimo1.Text),
+            .PaqueteriaMensajeria = Convertir.Numero(txtPaqueteria1.Text),
             .Deducibles = txtDeducibles1.Text,
             .Compras = txtCompras1.Text,
             .Ventas = txtVentas1.Text,
@@ -321,16 +331,20 @@ Public Class AdminGestionPolizas
             .BienesUsados = txtBienesUsados1.Text,
             .EmbarqueFiliales = txtEmbarquesEntreFiliales1.Text,
             .IndemnizacionOtros = txtOtrosBasesIndemnizacion1.Text,
-            .CuotaGeneralPoliza = If(String.IsNullOrWhiteSpace(txtCuotaGeneralPoliza1.Text), Nothing, Convert.ToDecimal(txtCuotaGeneralPoliza1.Text)),
-            .Medicamentos = If(String.IsNullOrWhiteSpace(txtMedicamentos1.Text), Nothing, Convert.ToDecimal(txtMedicamentos1.Text)),
-            .CobreAluminioAcero = If(String.IsNullOrWhiteSpace(txtCobreAluminioAcero1.Text), Nothing, Convert.ToDecimal(txtCobreAluminioAcero1.Text)),
-            .MedicamentosControlados = If(String.IsNullOrWhiteSpace(txtMedicamentosControlados1.Text), Nothing, Convert.ToDecimal(txtMedicamentosControlados1.Text)),
-            .EqContratistas = If(String.IsNullOrWhiteSpace(txtEQ1.Text), Nothing, Convert.ToDecimal(txtEQ1.Text)),
-            .PrimaNeta = If(String.IsNullOrWhiteSpace(txtPrimaNetaMercancia1.Text), Nothing, Convert.ToDecimal(txtPrimaNetaMercancia1.Text)),
-            .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia1.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia1.Text)),
-            .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia1.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia1.Text)),
-            .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia1.Text), Nothing, Convert.ToDecimal(txtIVAMercancia1.Text)),
-            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia1.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia1.Text)),
+            .Especiales = txtEspeciales1.Text,
+            .ExclusionesParticulares = txtExclusionesParticulares1.Text,
+            .MedidasDeSeguridad = txtMedidasSeguridad1.Text,
+            .CuotaGeneralPoliza = Convertir.Numero(txtCuotaGeneralPoliza1.Text),
+            .NoAplicaCuotasEspeciales = chkEQAplica.Checked,
+            .Medicamentos = CuotaEspecial(chkEQAplica, txtMedicamentos1),
+            .CobreAluminioAcero = CuotaEspecial(chkEQAplica, txtCobreAluminioAcero1),
+            .MedicamentosControlados = CuotaEspecial(chkEQAplica, txtMedicamentosControlados1),
+            .EqContratistas = CuotaEspecial(chkEQAplica, txtEQ1),
+            .PrimaNeta = Convertir.Numero(txtPrimaNetaMercancia1.Text),
+            .DerechoPoliza = Convertir.Numero(txtDerechoPolizaMercancia1.Text),
+            .OtroPrima = Convertir.Numero(txtOtrosMercancia1.Text),
+            .IVA = Convertir.Numero(txtIVAMercancia1.Text),
+            .PrimaTotal = Convertir.Numero(txtPrimaTotalMercancia1.Text),
             .RiesgoCubierto = RiesgosSession.
     Where(Function(r) r.AdministracionBienId = 1).
     ToList()
@@ -340,9 +354,9 @@ Public Class AdminGestionPolizas
                 polizaMercanciaList.Add(New PolizaMercancia With {
             .AdministracionBienId = 2,
             .NombreInternoPoliza = txtNombreInternoPoliza2.Text,
-            .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo2.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo2.Text)),
-            .Maritimo = If(String.IsNullOrWhiteSpace(txtMaritimo2.Text), Nothing, Convert.ToDecimal(txtMaritimo2.Text)),
-            .PaqueteriaMensajeria = If(String.IsNullOrWhiteSpace(txtPaqueteria2.Text), Nothing, Convert.ToDecimal(txtPaqueteria2.Text)),
+            .TerrestreAereo = Convertir.Numero(txtTerrestreAereo2.Text),
+            .Maritimo = Convertir.Numero(txtMaritimo2.Text),
+            .PaqueteriaMensajeria = Convertir.Numero(txtPaqueteria2.Text),
             .Deducibles = txtDeducibles2.Text,
             .Compras = txtCompras2.Text,
             .Ventas = txtVentas2.Text,
@@ -350,16 +364,20 @@ Public Class AdminGestionPolizas
             .BienesUsados = txtBienesUsados2.Text,
             .EmbarqueFiliales = txtEmbarquesEntreFiliales2.Text,
             .IndemnizacionOtros = txtOtrosBasesIndemnizacion2.Text,
-            .CuotaGeneralPoliza = If(String.IsNullOrWhiteSpace(txtCuotaGeneralPoliza2.Text), Nothing, Convert.ToDecimal(txtCuotaGeneralPoliza2.Text)),
-            .Medicamentos = If(String.IsNullOrWhiteSpace(txtMedicamentos2.Text), Nothing, Convert.ToDecimal(txtMedicamentos2.Text)),
-            .CobreAluminioAcero = If(String.IsNullOrWhiteSpace(txtCobreAluminioAcero2.Text), Nothing, Convert.ToDecimal(txtCobreAluminioAcero2.Text)),
-            .MedicamentosControlados = If(String.IsNullOrWhiteSpace(txtMedicamentosControlados2.Text), Nothing, Convert.ToDecimal(txtMedicamentosControlados2.Text)),
-            .EqContratistas = If(String.IsNullOrWhiteSpace(txtEQ2.Text), Nothing, Convert.ToDecimal(txtEQ2.Text)),
-            .PrimaNeta = If(String.IsNullOrWhiteSpace(txtPrimaNetaMercancia2.Text), Nothing, Convert.ToDecimal(txtPrimaNetaMercancia2.Text)),
-            .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia2.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia2.Text)),
-            .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia2.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia2.Text)),
-            .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia2.Text), Nothing, Convert.ToDecimal(txtIVAMercancia2.Text)),
-            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia2.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia2.Text)),
+            .Especiales = txtEspeciales2.Text,
+            .ExclusionesParticulares = txtExclusionesParticulares2.Text,
+            .MedidasDeSeguridad = txtMedidasSeguridad2.Text,
+            .CuotaGeneralPoliza = Convertir.Numero(txtCuotaGeneralPoliza2.Text),
+            .NoAplicaCuotasEspeciales = chkEQAplica2.Checked,
+            .Medicamentos = CuotaEspecial(chkEQAplica2, txtMedicamentos2),
+            .CobreAluminioAcero = CuotaEspecial(chkEQAplica2, txtCobreAluminioAcero2),
+            .MedicamentosControlados = CuotaEspecial(chkEQAplica2, txtMedicamentosControlados2),
+            .EqContratistas = CuotaEspecial(chkEQAplica2, txtEQ2),
+            .PrimaNeta = Convertir.Numero(txtPrimaNetaMercancia2.Text),
+            .DerechoPoliza = Convertir.Numero(txtDerechoPolizaMercancia2.Text),
+            .OtroPrima = Convertir.Numero(txtOtrosMercancia2.Text),
+            .IVA = Convertir.Numero(txtIVAMercancia2.Text),
+            .PrimaTotal = Convertir.Numero(txtPrimaTotalMercancia2.Text),
             .RiesgoCubierto = RiesgosSession.
 Where(Function(r) r.AdministracionBienId = 2).
 ToList()
@@ -370,9 +388,9 @@ ToList()
                 polizaMercanciaList.Add(New PolizaMercancia With {
             .AdministracionBienId = 3,
             .NombreInternoPoliza = txtNombreInternoPoliza3.Text,
-            .TerrestreAereo = If(String.IsNullOrWhiteSpace(txtTerrestreAereo3.Text), Nothing, Convert.ToDecimal(txtTerrestreAereo3.Text)),
-            .Maritimo = If(String.IsNullOrWhiteSpace(txtMaritimo3.Text), Nothing, Convert.ToDecimal(txtMaritimo3.Text)),
-            .PaqueteriaMensajeria = If(String.IsNullOrWhiteSpace(txtPaqueteria3.Text), Nothing, Convert.ToDecimal(txtPaqueteria3.Text)),
+            .TerrestreAereo = Convertir.Numero(txtTerrestreAereo3.Text),
+            .Maritimo = Convertir.Numero(txtMaritimo3.Text),
+            .PaqueteriaMensajeria = Convertir.Numero(txtPaqueteria3.Text),
             .Deducibles = txtDeducibles3.Text,
             .Compras = txtCompras3.Text,
             .Ventas = txtVentas3.Text,
@@ -380,16 +398,20 @@ ToList()
             .BienesUsados = txtBienesUsados3.Text,
             .EmbarqueFiliales = txtEmbarquesEntreFiliales3.Text,
             .IndemnizacionOtros = txtOtrosBasesIndemnizacion3.Text,
-            .CuotaGeneralPoliza = If(String.IsNullOrWhiteSpace(txtCuotaGeneralPoliza3.Text), Nothing, Convert.ToDecimal(txtCuotaGeneralPoliza3.Text)),
-            .Medicamentos = If(String.IsNullOrWhiteSpace(txtMedicamentos3.Text), Nothing, Convert.ToDecimal(txtMedicamentos3.Text)),
-            .CobreAluminioAcero = If(String.IsNullOrWhiteSpace(txtCobreAluminioAcero3.Text), Nothing, Convert.ToDecimal(txtCobreAluminioAcero3.Text)),
-            .MedicamentosControlados = If(String.IsNullOrWhiteSpace(txtMedicamentosControlados3.Text), Nothing, Convert.ToDecimal(txtMedicamentosControlados3.Text)),
-            .EqContratistas = If(String.IsNullOrWhiteSpace(txtEQ3.Text), Nothing, Convert.ToDecimal(txtEQ3.Text)),
-            .PrimaNeta = If(String.IsNullOrWhiteSpace(txtPrimaNetaMercancia3.Text), Nothing, Convert.ToDecimal(txtPrimaNetaMercancia3.Text)),
-            .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaMercancia3.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaMercancia3.Text)),
-            .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMercancia3.Text), Nothing, Convert.ToDecimal(txtOtrosMercancia3.Text)),
-            .IVA = If(String.IsNullOrWhiteSpace(txtIVAMercancia3.Text), Nothing, Convert.ToDecimal(txtIVAMercancia3.Text)),
-            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtPrimaTotalMercancia3.Text), Nothing, Convert.ToDecimal(txtPrimaTotalMercancia3.Text)),
+            .Especiales = txtEspeciales3.Text,
+            .ExclusionesParticulares = txtExclusionesParticulares3.Text,
+            .MedidasDeSeguridad = txtMedidasSeguridad3.Text,
+            .CuotaGeneralPoliza = Convertir.Numero(txtCuotaGeneralPoliza3.Text),
+            .NoAplicaCuotasEspeciales = chkEQAplica3.Checked,
+            .Medicamentos = CuotaEspecial(chkEQAplica3, txtMedicamentos3),
+            .CobreAluminioAcero = CuotaEspecial(chkEQAplica3, txtCobreAluminioAcero3),
+            .MedicamentosControlados = CuotaEspecial(chkEQAplica3, txtMedicamentosControlados3),
+            .EqContratistas = CuotaEspecial(chkEQAplica3, txtEQ3),
+            .PrimaNeta = Convertir.Numero(txtPrimaNetaMercancia3.Text),
+            .DerechoPoliza = Convertir.Numero(txtDerechoPolizaMercancia3.Text),
+            .OtroPrima = Convertir.Numero(txtOtrosMercancia3.Text),
+            .IVA = Convertir.Numero(txtIVAMercancia3.Text),
+            .PrimaTotal = Convertir.Numero(txtPrimaTotalMercancia3.Text),
 .RiesgoCubierto = RiesgosSession.
 Where(Function(r) r.AdministracionBienId = 3).
 ToList()})
@@ -442,20 +464,20 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
             .NombreInternoPoliza = txtNombreInternoPolizaContenedor.Text,
             .TrayectosAsegurados = txtTrayectosAsegurados.Text,
             .MedioTransporte = txtMedioTransporte.Text,
-            .PorContenedor = If(String.IsNullOrWhiteSpace(txtPorContenedor.Text), Nothing, Convert.ToDecimal(txtPorContenedor.Text)),
-            .Ferrocarril = If(String.IsNullOrWhiteSpace(txtFerrocarril.Text), Nothing, Convert.ToDecimal(txtFerrocarril.Text)),
-            .Terrestre = If(String.IsNullOrWhiteSpace(txtTerrestreMontosPoliza.Text), Nothing, Convert.ToDecimal(txtTerrestreMontosPoliza.Text)),
-            .CuotaAplicable = If(String.IsNullOrWhiteSpace(txtCuotaAplicable.Text), Nothing, Convert.ToDecimal(txtCuotaAplicable.Text)),
-            .ManiobrasRescate = If(String.IsNullOrWhiteSpace(txtManiobrasRescateContenedor.Text), Nothing, Convert.ToDecimal(txtManiobrasRescateContenedor.Text)),
-            .DanioMaterial = If(String.IsNullOrWhiteSpace(txtDañoMaterial.Text), Nothing, Convert.ToDecimal(txtDañoMaterial.Text)),
-            .Robo = If(String.IsNullOrWhiteSpace(txtRobo.Text), Nothing, Convert.ToDecimal(txtRobo.Text)),
-            .PerdidaTotal = If(String.IsNullOrWhiteSpace(txtPerdidaTotal.Text), Nothing, Convert.ToDecimal(txtPerdidaTotal.Text)),
-            .PerdidaParcial = If(String.IsNullOrWhiteSpace(txtPerdidaParcial.Text), Nothing, Convert.ToDecimal(txtPerdidaParcial.Text)),
-            .PrimaNeta = If(String.IsNullOrWhiteSpace(txtPrimaNetaC.Text), Nothing, Convert.ToDecimal(txtPrimaNetaC.Text)),
-            .OtroPrima = If(String.IsNullOrWhiteSpace(txtOtrosMontosPolizaC.Text), Nothing, Convert.ToDecimal(txtOtrosMontosPolizaC.Text)),
-            .DerechoPoliza = If(String.IsNullOrWhiteSpace(txtDerechoPolizaC.Text), Nothing, Convert.ToDecimal(txtDerechoPolizaC.Text)),
-            .IVA = If(String.IsNullOrWhiteSpace(txtIVAC.Text), Nothing, Convert.ToDecimal(txtIVAC.Text)),
-            .PrimaTotal = If(String.IsNullOrWhiteSpace(txtTotalC.Text), Nothing, Convert.ToDecimal(txtTotalC.Text)),
+            .PorContenedor = Convertir.Numero(txtPorContenedor.Text),
+            .Ferrocarril = Convertir.Numero(txtFerrocarril.Text),
+            .Terrestre = Convertir.Numero(txtTerrestreMontosPoliza.Text),
+            .CuotaAplicable = Convertir.Numero(txtCuotaAplicable.Text),
+            .ManiobrasRescate = Convertir.Numero(txtManiobrasRescateContenedor.Text),
+            .DanioMaterial = Convertir.Numero(txtDañoMaterial.Text),
+            .Robo = Convertir.Numero(txtRobo.Text),
+            .PerdidaTotal = Convertir.Numero(txtPerdidaTotal.Text),
+            .PerdidaParcial = Convertir.Numero(txtPerdidaParcial.Text),
+            .PrimaNeta = Convertir.Numero(txtPrimaNetaC.Text),
+            .OtroPrima = Convertir.Numero(txtOtrosMontosPolizaC.Text),
+            .DerechoPoliza = Convertir.Numero(txtDerechoPolizaC.Text),
+            .IVA = Convertir.Numero(txtIVAC.Text),
+            .PrimaTotal = Convertir.Numero(txtTotalC.Text),
             .Cobertura = CoberturasSession.ToList()
         }
 
@@ -471,7 +493,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
         System.Diagnostics.Debug.WriteLine("JSON enviado a API:" & json)
 
         If Not String.IsNullOrEmpty(hfPolizaId.Value) Then
-            Dim polizaId As Integer = Convert.ToInt32(hfPolizaId.Value)
+            Dim polizaId As Integer = Convertir.EnteroO(hfPolizaId.Value, 0)
             respuesta = api.PutEditarPoliza(polizaId, json)
             If respuesta.Contains("error") Then
                 mensajeToast = "No se edito la poliza"
@@ -623,11 +645,15 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
                     txtBienesUsados1.Text = pm.BienesUsados
                     txtEmbarquesEntreFiliales1.Text = pm.EmbarqueFiliales
                     txtOtrosBasesIndemnizacion1.Text = pm.IndemnizacionOtros
+                    txtEspeciales1.Text = pm.Especiales
+                    txtExclusionesParticulares1.Text = pm.ExclusionesParticulares
+                    txtMedidasSeguridad1.Text = pm.MedidasDeSeguridad
                     txtCuotaGeneralPoliza1.Text = pm.CuotaGeneralPoliza
                     txtMedicamentos1.Text = pm.Medicamentos
                     txtCobreAluminioAcero1.Text = pm.CobreAluminioAcero
                     txtMedicamentosControlados1.Text = pm.MedicamentosControlados
                     txtEQ1.Text = pm.EqContratistas
+                    chkEQAplica.Checked = NoAplica(pm)
                     txtPrimaNetaMercancia1.Text = pm.PrimaNeta
                     txtDerechoPolizaMercancia1.Text = pm.DerechoPoliza
                     txtOtrosMercancia1.Text = pm.OtroPrima
@@ -646,11 +672,15 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
                     txtBienesUsados2.Text = pm.BienesUsados
                     txtEmbarquesEntreFiliales2.Text = pm.EmbarqueFiliales
                     txtOtrosBasesIndemnizacion2.Text = pm.IndemnizacionOtros
+                    txtEspeciales2.Text = pm.Especiales
+                    txtExclusionesParticulares2.Text = pm.ExclusionesParticulares
+                    txtMedidasSeguridad2.Text = pm.MedidasDeSeguridad
                     txtCuotaGeneralPoliza2.Text = pm.CuotaGeneralPoliza
                     txtMedicamentos2.Text = pm.Medicamentos
                     txtCobreAluminioAcero2.Text = pm.CobreAluminioAcero
                     txtMedicamentosControlados2.Text = pm.MedicamentosControlados
                     txtEQ2.Text = pm.EqContratistas
+                    chkEQAplica2.Checked = NoAplica(pm)
                     txtPrimaNetaMercancia2.Text = pm.PrimaNeta
                     txtDerechoPolizaMercancia2.Text = pm.DerechoPoliza
                     txtOtrosMercancia2.Text = pm.OtroPrima
@@ -669,11 +699,15 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
                     txtBienesUsados3.Text = pm.BienesUsados
                     txtEmbarquesEntreFiliales3.Text = pm.EmbarqueFiliales
                     txtOtrosBasesIndemnizacion3.Text = pm.IndemnizacionOtros
+                    txtEspeciales3.Text = pm.Especiales
+                    txtExclusionesParticulares3.Text = pm.ExclusionesParticulares
+                    txtMedidasSeguridad3.Text = pm.MedidasDeSeguridad
                     txtCuotaGeneralPoliza3.Text = pm.CuotaGeneralPoliza
                     txtMedicamentos3.Text = pm.Medicamentos
                     txtCobreAluminioAcero3.Text = pm.CobreAluminioAcero
                     txtMedicamentosControlados3.Text = pm.MedicamentosControlados
                     txtEQ3.Text = pm.EqContratistas
+                    chkEQAplica3.Checked = NoAplica(pm)
                     txtPrimaNetaMercancia3.Text = pm.PrimaNeta
                     txtDerechoPolizaMercancia3.Text = pm.DerechoPoliza
                     txtOtrosMercancia3.Text = pm.OtroPrima
@@ -770,19 +804,19 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
     End Sub
     Protected Sub GvBienes_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            EliminarBien(Convert.ToInt32(e.CommandArgument))
+            EliminarBien(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
         End If
     End Sub
 
     Protected Sub GvBienes2_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            EliminarBien(Convert.ToInt32(e.CommandArgument))
+            EliminarBien(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
         End If
     End Sub
 
     Protected Sub GvBienes3_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            EliminarBien(Convert.ToInt32(e.CommandArgument))
+            EliminarBien(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
         End If
     End Sub
     Protected Sub btnAgregaBienAsegurado_Click(sender As Object, e As EventArgs)
@@ -827,7 +861,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvBienesExcluidos1_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            EliminarBien(Convert.ToInt32(e.CommandArgument))
+            EliminarBien(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
         End If
     End Sub
 
@@ -842,7 +876,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvBienesExcluidos2_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            EliminarBien(Convert.ToInt32(e.CommandArgument))
+            EliminarBien(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
         End If
     End Sub
 
@@ -857,7 +891,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvBienesExcluidos3_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            EliminarBien(Convert.ToInt32(e.CommandArgument))
+            EliminarBien(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
         End If
     End Sub
 
@@ -931,6 +965,20 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
         txtEQ2.Text = ""
         txtEQ3.Text = ""
 
+        chkEQAplica.Checked = False
+        chkEQAplica2.Checked = False
+        chkEQAplica3.Checked = False
+
+        txtEspeciales1.Text = ""
+        txtEspeciales2.Text = ""
+        txtEspeciales3.Text = ""
+        txtExclusionesParticulares1.Text = ""
+        txtExclusionesParticulares2.Text = ""
+        txtExclusionesParticulares3.Text = ""
+        txtMedidasSeguridad1.Text = ""
+        txtMedidasSeguridad2.Text = ""
+        txtMedidasSeguridad3.Text = ""
+
         txtTrayectosAsegurados.Text = ""
         txtMedioTransporte.Text = ""
         txtPorContenedor.Text = ""
@@ -966,7 +1014,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvBienesSujetosConsulta_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            EliminarBien(Convert.ToInt32(e.CommandArgument))
+            EliminarBien(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
         End If
     End Sub
 
@@ -981,7 +1029,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvBienesSujetosConsulta2_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            EliminarBien(Convert.ToInt32(e.CommandArgument))
+            EliminarBien(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
         End If
     End Sub
 
@@ -996,7 +1044,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvBienesSujetosConsulta3_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            EliminarBien(Convert.ToInt32(e.CommandArgument))
+            EliminarBien(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
         End If
     End Sub
 
@@ -1011,7 +1059,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvBienContenedor_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            EliminarBien(Convert.ToInt32(e.CommandArgument))
+            EliminarBien(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
         End If
     End Sub
 
@@ -1026,7 +1074,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvCoberturasContenedor_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim id As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             Dim coberturaEliminar = CoberturasSession.FirstOrDefault(Function(c) c.CoberturaId = id)
             If coberturaEliminar IsNot Nothing Then
                 CoberturasSession.Remove(coberturaEliminar)
@@ -1111,7 +1159,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
     End Sub
     Protected Sub GvViajeCompleto_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim id As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             EliminarRiesgo(id)
         End If
     End Sub
@@ -1134,7 +1182,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvViajeCompleto2_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim id As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             EliminarRiesgo(id)
         End If
     End Sub
@@ -1150,7 +1198,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvViajeCompleto3_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim id As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             EliminarRiesgo(id)
         End If
     End Sub
@@ -1166,7 +1214,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvContinuacionViaje_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim id As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             EliminarRiesgo(id)
         End If
     End Sub
@@ -1190,7 +1238,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvContinuacionViaje2_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim id As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             EliminarRiesgo(id)
         End If
     End Sub
@@ -1206,7 +1254,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvContinuacionViaje3_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim id As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             EliminarRiesgo(id)
         End If
     End Sub
@@ -1223,7 +1271,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvCoberturasAdicionales_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim id As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             EliminarRiesgo(id)
         End If
     End Sub
@@ -1240,7 +1288,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvCoberturasAdicionales2_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim id As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             EliminarRiesgo(id)
         End If
     End Sub
@@ -1256,7 +1304,7 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
     Protected Sub GvCoberturasAdicionales3_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Eliminar" Then
-            Dim id As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim id As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             EliminarRiesgo(id)
         End If
     End Sub
@@ -1323,5 +1371,101 @@ Where(Function(b) b.TipoBienId = 1 OrElse b.TipoBienId = 0).Select(Function(b)
 
         Return valores
     End Function
+
+#Region "Cuotas de mercancías especiales"
+
+    ''' <summary>
+    ''' Estas cuatro cuotas sólo aplican para las polizas de GMX. En las demás
+    ''' se marca "No aplica" y se guardan nulas.
+    '''
+    ''' Se lee del checkbox y no del TextBox a propósito: el navegador
+    ''' deshabilita esos campos al marcar la casilla, y un input deshabilitado no
+    ''' se postea, así que el valor viejo seguiría vivo en el ViewState y se
+    ''' volvería a guardar como si nada.
+    ''' </summary>
+    Private Function CuotaEspecial(chk As HtmlInputCheckBox, txt As TextBox) As Decimal?
+
+        If chk IsNot Nothing AndAlso chk.Checked Then Return Nothing
+
+        If txt Is Nothing OrElse String.IsNullOrWhiteSpace(txt.Text) Then Return Nothing
+
+        Dim valor As Decimal
+
+        If Not Decimal.TryParse(txt.Text.Replace("%", "").Trim(), valor) Then Return Nothing
+
+        Return valor
+    End Function
+
+    ''' <summary>
+    ''' La tabla no tiene columna para el "No aplica", así que el estado se
+    ''' deduce: si las cuatro cuotas vienen vacías es que no aplicaban.
+    ''' </summary>
+    ''' <summary>
+    ''' Estado de la casilla "No aplica". Ya viene guardado; la deduccion solo
+    ''' entra para las polizas que se guardaron antes de que existiera la
+    ''' columna, donde el dato es nulo.
+    ''' </summary>
+    Private Function NoAplica(pm As PolizaMercancia) As Boolean
+
+        If pm Is Nothing Then Return False
+
+        If pm.NoAplicaCuotasEspeciales.HasValue Then Return pm.NoAplicaCuotasEspeciales.Value
+
+        Return SinCuotasEspeciales(pm)
+    End Function
+
+    Private Function SinCuotasEspeciales(pm As PolizaMercancia) As Boolean
+
+        If pm Is Nothing Then Return False
+
+        Return Not pm.Medicamentos.HasValue AndAlso
+               Not pm.CobreAluminioAcero.HasValue AndAlso
+               Not pm.MedicamentosControlados.HasValue AndAlso
+               Not pm.EqContratistas.HasValue
+    End Function
+
+#End Region
+
+#Region "Validación"
+
+    ''' <summary>
+    ''' Devuelve el primer faltante, o cadena vacía si todo esta completo. Los
+    ''' mismos campos que el markup marca con .required, pero revisados aquí:
+    ''' si el JS no corrió o un catalogo llego vacio, esto es lo único que evita
+    ''' guardar una póliza a medias.
+    ''' </summary>
+    Private Function ValidarPoliza() As String
+
+        If txtTipoPoliza.Text.Trim() = "" Then Return "Captura el tipo de póliza."
+        If txtNumeroPoliza.Text.Trim() = "" Then Return "Captura el número de póliza."
+        If txtFolioPoliza.Text.Trim() = "" Then Return "Captura el folio de póliza."
+
+        If Convertir.SinElegir(ddlContratante) Then Return "Elige el contratante."
+        If Convertir.SinElegir(ddlAseguradora) Then Return "Elige la aseguradora."
+        If Convertir.SinElegir(ddlSubRamo) Then Return "Elige el sub ramo."
+        If Convertir.SinElegir(ddlFormaPago) Then Return "Elige la forma de pago."
+        If Convertir.SinElegir(ddlMoneda) Then Return "Elige la moneda."
+
+        Dim desde = Convertir.Fecha(txtVigenciaDel.Text)
+        Dim hasta = Convertir.Fecha(txtVigenciaHasta.Text)
+
+        If Not desde.HasValue Then Return "Captura la vigencia inicial."
+        If Not hasta.HasValue Then Return "Captura la vigencia final."
+
+        If hasta.Value < desde.Value Then
+            Return "La vigencia final no puede ser anterior a la inicial."
+        End If
+
+        Return ""
+    End Function
+
+    ''' <summary>Mismo toast que ya usa el resto de la pantalla.</summary>
+    Private Sub AvisarPoliza(mensaje As String, tipo As String)
+
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "avisoPoliza",
+            "showToast('" & mensaje.Replace("'", "\'") & "', '" & tipo & "');", True)
+    End Sub
+
+#End Region
 
 End Class

@@ -18,6 +18,18 @@ Public Class AdminCertificados
     End Class
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
+        ' El aviso se apaga al empezar cada petición. Page_Load corre antes que
+        ' los eventos, así que un Avisar() de este mismo clic sí se alcanza a ver;
+        ' lo que ya no se queda pegado es el del clic anterior.
+        pnlAviso.Visible = False
+
+        ' Necesario para que suban los adjuntos del correo. ASP.NET solo pone
+        ' este atributo si ve un FileUpload al renderizar, y el panel del correo
+        ' nace oculto; cuando se muestra ya es por postback parcial y la
+        ' etiqueta <form> vive fuera del UpdatePanel, asi que no se redibuja.
+        Me.Form.Enctype = "multipart/form-data"
+
         If Not IsPostBack Then
             CargarCertificados()
         End If
@@ -165,7 +177,7 @@ Public Class AdminCertificados
             Case "Detalle"
                 VerDetalle(certificadoId)
             Case "Correo"
-                Avisar("El envío de correo todavía no está conectado.", "warning")
+                AbrirCorreo(certificadoId)
             Case "Eliminar"
                 EliminarCertificado(certificadoId)
         End Select
@@ -372,11 +384,190 @@ Public Class AdminCertificados
         Return valor.Value.ToString("C2")
     End Function
 
-    Protected Sub lnkVolver_Click(sender As Object, e As EventArgs)
+#Region "Envio de correo"
+
+    ''' <summary>
+    ''' Abre el control de correo con los datos de ese certificado: los
+    ''' destinatarios del cliente y los valores con los que se resuelven los
+    ''' {{campos}} de la plantilla.
+    ''' </summary>
+    Private Sub AbrirCorreo(certificadoId As Integer)
+
+        Dim cert As Certificado = TraerCertificado(certificadoId)
+
+        If cert Is Nothing Then
+            Avisar("No se pudo consultar el certificado.", "danger")
+            Exit Sub
+        End If
+
+        ' La cotizacion es la que trae al cliente: el certificado solo guarda su
+        ' id, y de ahi cuelgan correo, RFC y telefono.
+        Dim clienteId As Integer = ClienteDelCertificado(cert)
+
+        ucCorreo.Abrir(String.Join("; ", ListaDeCorreos(clienteId)),
+                       ValoresDeCampos(cert, clienteId))
+
+        pnlListado.Visible = False
+        pnlDetalle.Visible = False
+    End Sub
+
+    Protected Sub ucCorreo_Cancelado(sender As Object, e As EventArgs)
+        VolverAlListado()
+    End Sub
+
+    Protected Sub ucCorreo_Enviado(sender As Object, e As EventArgs)
+        Avisar("Correo enviado correctamente.", "success")
+
+        VolverAlListado()
+    End Sub
+
+    Private Sub VolverAlListado()
+
         pnlDetalle.Visible = False
         pnlListado.Visible = True
 
         CargarCertificados()
+    End Sub
+
+    Private Function TraerCertificado(certificadoId As Integer) As Certificado
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCertificadoId(certificadoId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then Return Nothing
+
+        Try
+            Return JsonConvert.DeserializeObject(Of Certificado)(json)
+        Catch
+            Return Nothing
+        End Try
+    End Function
+
+    Private Function ClienteDelCertificado(cert As Certificado) As Integer
+
+        If cert.CotizacionId <= 0 Then Return 0
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCotizacionId(cert.CotizacionId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then Return 0
+
+        Try
+            Dim cot As Cotizacion = JsonConvert.DeserializeObject(Of Cotizacion)(json)
+
+            If cot Is Nothing Then Return 0
+
+            Return cot.ClienteId
+        Catch
+            Return 0
+        End Try
+    End Function
+
+    ''' <summary>
+    ''' Valores conocidos para los {{campos}}. Lo que no se puede resolver se
+    ''' deja fuera a proposito: el campo se queda visible en el texto y el
+    ''' control avisa antes de enviar.
+    ''' </summary>
+    Private Function ValoresDeCampos(cert As Certificado, clienteId As Integer) As Dictionary(Of String, String)
+
+        Dim valores As New Dictionary(Of String, String) From {
+            {"FechaActual", Date.Today.ToString("dd/MM/yyyy")}
+        }
+
+        Agregar(valores, "Certificado", ClaveDe(cert))
+        Agregar(valores, "Póliza", cert.NumeroPoliza)
+
+        ' El asegurado es el nombre que quedo impreso en el certificado; si
+        ' viniera vacio se cae al nombre del cliente del listado.
+        Dim nombre As String = If(String.IsNullOrWhiteSpace(cert.Asegurado),
+                                  cert.NombreCliente, cert.Asegurado)
+
+        If Not String.IsNullOrWhiteSpace(nombre) Then
+            valores("Nombre Completo") = nombre
+            valores("Nombre") = nombre.Trim().Split(" "c)(0)
+        End If
+
+        Dim cliente As Cliente = TraerCliente(clienteId)
+
+        If cliente IsNot Nothing Then
+            Agregar(valores, "RFC", cliente.Rfc)
+            Agregar(valores, "Teléfono", cliente.Telefono)
+        End If
+
+        Dim correos = ListaDeCorreos(clienteId)
+
+        If correos.Count > 0 Then valores("Correo") = correos(0)
+
+        Return valores
+    End Function
+
+    Private Sub Agregar(valores As Dictionary(Of String, String), campo As String, valor As String)
+
+        If String.IsNullOrWhiteSpace(valor) Then Exit Sub
+
+        valores(campo) = valor.Trim()
+    End Sub
+
+    Private Function TraerCliente(clienteId As Integer) As Cliente
+
+        If clienteId <= 0 Then Return Nothing
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetClienteId(clienteId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then Return Nothing
+
+        Try
+            Return JsonConvert.DeserializeObject(Of Cliente)(json)
+        Catch
+            Return Nothing
+        End Try
+    End Function
+
+    ''' <summary>Correos del cliente, sin repetidos.</summary>
+    Private Function ListaDeCorreos(clienteId As Integer) As List(Of String)
+
+        Dim correos As New List(Of String)
+
+        If clienteId <= 0 Then Return correos
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCorreosCliente(clienteId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then Return correos
+
+        Try
+            For Each item As Newtonsoft.Json.Linq.JObject In Newtonsoft.Json.Linq.JArray.Parse(json)
+
+                Dim valor = item.GetValue("correo", StringComparison.OrdinalIgnoreCase)
+
+                If valor Is Nothing Then Continue For
+
+                Dim direccion As String = valor.ToString().Trim()
+
+                If direccion.Length > 0 AndAlso Not correos.Contains(direccion) Then
+                    correos.Add(direccion)
+                End If
+            Next
+        Catch
+            ' Si el catalogo no viene como se espera, se deja vacio el destinatario.
+        End Try
+
+        Return correos
+    End Function
+
+#End Region
+
+    Protected Sub lnkVolver_Click(sender As Object, e As EventArgs)
+        VolverAlListado()
     End Sub
 
     ''' <summary>

@@ -60,17 +60,25 @@
         <div class="container-fluid" style="max-width: 400px; margin-left: 0; padding: 20px;">
             <h4 class="mb-3" style="color: #000; font-weight: bold;">Tipo de cambio</h4>
 
+            <asp:Panel ID="pnlAvisoCambio" runat="server" Visible="false">
+                <asp:Label ID="lblAvisoCambio" runat="server"></asp:Label>
+            </asp:Panel>
+
             <div class="mb-3 d-flex align-items-center">
                 <label for="usd" class="form-label me-2" style="width: 90px;">USD D.O.F:</label>
-                <input type="text" id="usd" class="form-control" placeholder="$ 0.00">
+                <asp:TextBox ID="txtUsdDof" runat="server" ClientIDMode="Static"
+                    CssClass="form-control" placeholder="$ 0.00"></asp:TextBox>
             </div>
 
             <div class="mb-3 d-flex align-items-center">
                 <label for="ventanilla" class="form-label me-2" style="width: 90px;">USD Bancario:</label>
-                <input type="text" id="ventanilla" class="form-control" placeholder="$ 0.00">
+                <asp:TextBox ID="txtUsdBancario" runat="server" ClientIDMode="Static"
+                    CssClass="form-control" placeholder="$ 0.00"></asp:TextBox>
             </div>
 
-            <button type="button" class="btn" style="background-color: #93C248; color: white; font-weight: bold;">Actualizar</button>
+            <asp:Button ID="btnActualizarCambio" runat="server" Text="Actualizar"
+                CssClass="btn" BackColor="#93C248" ForeColor="White" Font-Bold="true"
+                OnClick="btnActualizarCambio_Click" />
         </div>
     </div>
 </asp:Content>

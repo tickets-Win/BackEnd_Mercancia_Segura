@@ -62,6 +62,15 @@ namespace MercanciaSegura.DOM.Modelos.Cotizacion
         [Column("Deducibles")]
         public string? Deducibles { get; set; }
 
+        // Copia congelada de lo que decia la poliza al cotizar. Se prellena de
+        // ella pero se guarda aqui: si la poliza cambia despues, la cotizacion
+        // debe seguir mostrando lo que se le ofrecio al cliente.
+        [Column("Condiciones_Especiales", TypeName = "nvarchar(max)")]
+        public string? CondicionesEspeciales { get; set; }
+
+        [Column("Exclusiones", TypeName = "nvarchar(max)")]
+        public string? Exclusiones { get; set; }
+
         [Column("Moneda_Cuota_Aplicable_ID")]
         public int? MonedaCuotaAplicableId { get; set; }
 

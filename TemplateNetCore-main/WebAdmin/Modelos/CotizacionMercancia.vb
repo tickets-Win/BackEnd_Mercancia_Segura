@@ -15,6 +15,10 @@
         Public Property Observaciones As String
         Public Property MedidasDeSeguridadAdicionales As String
         Public Property Deducibles As String
+
+        ' Copia congelada de lo que decia la poliza al cotizar.
+        Public Property CondicionesEspeciales As String
+        Public Property Exclusiones As String
         Public Property MonedaCuotaAplicableId As Integer?
         Public Property CuotaAplicable As Decimal?
         Public Property MonedaCuotaMinimaId As Integer?

@@ -32,4 +32,19 @@ Partial Public Class Inicio
     '''Control pnlRecibosPendiente.
     '''</summary>
     Protected WithEvents pnlRecibosPendiente As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>Control pnlAvisoCambio.</summary>
+    Protected WithEvents pnlAvisoCambio As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>Control lblAvisoCambio.</summary>
+    Protected WithEvents lblAvisoCambio As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>Control txtUsdDof.</summary>
+    Protected WithEvents txtUsdDof As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>Control txtUsdBancario.</summary>
+    Protected WithEvents txtUsdBancario As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>Control btnActualizarCambio.</summary>
+    Protected WithEvents btnActualizarCambio As Global.System.Web.UI.WebControls.Button
 End Class

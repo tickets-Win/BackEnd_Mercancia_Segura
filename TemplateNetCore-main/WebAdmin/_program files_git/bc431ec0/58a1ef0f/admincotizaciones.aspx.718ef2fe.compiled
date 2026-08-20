@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/C:/Program Files/Git/Views/General/AdminCotizaciones.aspx" hash="fffffffcb3b9a8ea" filehash="a4c662b8d99ffe4d" flags="110000" assembly="App_Web_xyyournw" type="ASP.views_general_admincotizaciones_aspx">
+    <filedeps>
+        <filedep name="/C:/Program Files/Git/Controles/EditorHtml.ascx" />
+        <filedep name="/C:/Program Files/Git/Controles/EnvioCorreo.ascx" />
+        <filedep name="/C:/Program Files/Git/Default.Master" />
+        <filedep name="/C:/Program Files/Git/Views/General/AdminCotizaciones.aspx" />
+    </filedeps>
+</preserve>

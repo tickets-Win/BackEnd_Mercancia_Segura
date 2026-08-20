@@ -73,6 +73,16 @@ Partial Public Class AdminSiniestros
     '''<summary>Control ddlTipoSiniestro.</summary>
     Protected WithEvents ddlTipoSiniestro As Global.System.Web.UI.WebControls.DropDownList
 
+    '''<summary>
+    '''Control ddlTipoEvento.
+    '''</summary>
+    Protected WithEvents ddlTipoEvento As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''Control txtAseguradora.
+    '''</summary>
+    Protected WithEvents txtAseguradora As Global.System.Web.UI.WebControls.TextBox
+
     '''<summary>Control txtMercancia.</summary>
     Protected WithEvents txtMercancia As Global.System.Web.UI.WebControls.TextBox
 

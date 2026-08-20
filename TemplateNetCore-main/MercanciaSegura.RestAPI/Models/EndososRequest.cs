@@ -22,6 +22,14 @@ namespace MercanciaSegura.RestAPI.Models
 
         public int? MonedaId { get; set; }
 
+        public DateTime? VigenciaDel { get; set; }
+
+        public DateTime? VigenciaHasta { get; set; }
+
+        public decimal? SumaAsegurada { get; set; }
+
+        public decimal? PrimaServicioDeAseguramiento { get; set; }
+
         public decimal? IVA { get; set; }
 
         public decimal? TotalAPagar { get; set; }

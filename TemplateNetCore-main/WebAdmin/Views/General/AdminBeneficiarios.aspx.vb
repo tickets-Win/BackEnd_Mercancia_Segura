@@ -53,7 +53,7 @@ Public Class AdminBeneficiarios
     End Sub
 
     Protected Sub ddlTipoPersona_SelectedIndexChanged(sender As Object, e As EventArgs)
-        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
+        Dim tipoPersonaId As Integer = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0)
         If ddlTipoPersona.SelectedValue = "1" Then
             pnlNombreCompleto.Visible = True
             pnlRazonSocial.Visible = False
@@ -68,12 +68,12 @@ Public Class AdminBeneficiarios
 
     Protected Sub gvBeneficiariosPreferentes_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         If e.CommandName = "Correo" Then
-            AbrirCorreo(Convert.ToInt32(e.CommandArgument))
+            AbrirCorreo(Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0))
             Exit Sub
         End If
 
         If e.CommandName = "Editar" Then
-            Dim beneficiarioId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim beneficiarioId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
             pnlFormularioBeneficiario.Visible = True
             PnlTabla.Visible = False
             PnlEncabezado.Visible = False
@@ -84,7 +84,7 @@ Public Class AdminBeneficiarios
 
         If e.CommandName = "Eliminar" Then
             Dim api As New ConsumoApi()
-            Dim beneficiarioId As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim beneficiarioId As Integer = Convertir.EnteroO(Convert.ToString(e.CommandArgument), 0)
 
             Dim eliminado As String = api.DeleteBeneficiario(beneficiarioId)
 
@@ -167,7 +167,7 @@ Public Class AdminBeneficiarios
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
         Dim api As New ConsumoApi()
 
-        Dim tipoPersonaId As Integer = Convert.ToInt32(ddlTipoPersona.SelectedValue)
+        Dim tipoPersonaId As Integer = Convertir.EnteroO(ddlTipoPersona.SelectedValue, 0)
 
         Dim nombreCompleto As String
         If tipoPersonaId = 1 Then
@@ -179,7 +179,7 @@ Public Class AdminBeneficiarios
         Dim rfcGenericoId As Integer? = Nothing
 
         If Not String.IsNullOrWhiteSpace(ddlRFCGenerico.SelectedValue) AndAlso ddlRFCGenerico.SelectedValue <> "0" Then
-            rfcGenericoId = Convert.ToInt32(ddlRFCGenerico.SelectedValue)
+            rfcGenericoId = Convertir.EnteroO(ddlRFCGenerico.SelectedValue, 0)
         End If
 
         Dim beneficiarios As New BeneficiarioPreferente With {
@@ -212,7 +212,7 @@ Public Class AdminBeneficiarios
         Dim mensajeToast As String = ""
 
         If Not String.IsNullOrEmpty(hfBeneficiarioId.Value) Then
-            Dim beneficiarioId As Integer = Convert.ToInt32(hfBeneficiarioId.Value)
+            Dim beneficiarioId As Integer = Convertir.EnteroO(hfBeneficiarioId.Value, 0)
             respuesta = api.PutEditarBeneficiario(beneficiarioId, json)
             mensajeToast = "Beneficiario editado correctamente"
         Else

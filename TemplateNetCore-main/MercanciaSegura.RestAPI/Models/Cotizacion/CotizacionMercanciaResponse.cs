@@ -34,6 +34,11 @@
 
         public string? Deducibles { get; set; }
 
+        // Copia congelada de lo que decia la poliza al cotizar.
+        public string? CondicionesEspeciales { get; set; }
+
+        public string? Exclusiones { get; set; }
+
         public int? MonedaCuotaAplicableId { get; set; }
 
         public decimal? CuotaAplicable { get; set; }

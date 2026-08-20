@@ -69,13 +69,18 @@
                                 </asp:LinkButton>
 
                                 <asp:LinkButton ID="lnkEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("CotizacionId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Editar">
+                                    CssClass='<%# IconoBloqueable(Eval("CotizacionId")) %>'
+                                    ToolTip='<%# TituloEditar(Eval("CotizacionId")) %>'
+                                    Enabled='<%# PuedeAceptar(Eval("CotizacionId")) %>'
+                                    OnClientClick='<%# ConfirmacionEditar(Eval("CotizacionId")) %>'>
                                 <i class="bi bi-pencil"></i>
                                 </asp:LinkButton>
 
                                 <asp:LinkButton ID="lnkEliminar" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("CotizacionId") %>'
-                                    CssClass="icon-btn action-icon" ToolTip="Eliminar"
-                                    OnClientClick="return confirm('¿Seguro que deseas cancelar esta cotización?');">
+                                    CssClass='<%# IconoBloqueable(Eval("CotizacionId")) %>'
+                                    ToolTip='<%# TituloEliminar(Eval("CotizacionId")) %>'
+                                    Enabled='<%# PuedeAceptar(Eval("CotizacionId")) %>'
+                                    OnClientClick='<%# ConfirmacionEliminar(Eval("CotizacionId")) %>'>
                                 <i class="bi bi-trash"></i>
                                 </asp:LinkButton>
 
@@ -329,6 +334,24 @@ Eliminar
                             <div class="col-md-6">
                                 <h6 class="titulo-cuota">Deducibles</h6>
                                 <asp:TextBox ID="txtDeducibles" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                            </div>
+                        </div>
+
+                        <%-- Estos dos no se capturan ni se guardan en la cotizacion:
+                             son de la poliza y solo van al formato impreso. Se
+                             muestran para que se vea con que se va a imprimir. --%>
+                        <div class="row mb-3">
+                            <div class="col col-md-6">
+                                <h6 class="titulo-cuota">Condiciones Especiales</h6>
+                                <asp:TextBox ID="txtCondicionesEspeciales" runat="server" CssClass="form-control bg-light"
+                                    TextMode="MultiLine" Rows="4" ReadOnly="True"></asp:TextBox>
+                                <small class="text-muted">viene de la póliza</small>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="titulo-cuota">Exclusiones</h6>
+                                <asp:TextBox ID="txtExclusiones" runat="server" CssClass="form-control bg-light"
+                                    TextMode="MultiLine" Rows="4" ReadOnly="True"></asp:TextBox>
+                                <small class="text-muted">viene de la póliza</small>
                             </div>
                         </div>
                     </asp:Panel>

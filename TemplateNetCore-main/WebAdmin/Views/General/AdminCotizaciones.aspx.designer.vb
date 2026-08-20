@@ -437,6 +437,16 @@ Partial Public Class AdminCotizaciones
     Protected WithEvents txtDeducibles As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''Control txtCondicionesEspeciales.
+    '''</summary>
+    Protected WithEvents txtCondicionesEspeciales As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''Control txtExclusiones.
+    '''</summary>
+    Protected WithEvents txtExclusiones As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''Control pnlCuotaAplicableMercancia.
     '''</summary>
     '''<remarks>

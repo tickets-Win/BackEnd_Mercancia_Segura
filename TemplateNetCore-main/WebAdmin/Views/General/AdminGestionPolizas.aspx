@@ -515,6 +515,18 @@ Eliminar
                                         <label class="form-label">Deducibles</label>
                                         <asp:TextBox ID="txtDeducibles1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                                     </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Especiales</label>
+                                        <asp:TextBox ID="txtEspeciales1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Exclusiones Particulares</label>
+                                        <asp:TextBox ID="txtExclusionesParticulares1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Medidas de Seguridad</label>
+                                        <asp:TextBox ID="txtMedidasSeguridad1" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
                                     <h5 class="border-bottom pb-2">Bases de Indemnización</h5>
                                     <div class="col-6">
                                         <label class="form-label">Compras</label>
@@ -958,6 +970,18 @@ Eliminar
                                         <label class="form-label">Deducibles</label>
                                         <asp:TextBox ID="txtDeducibles2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                                     </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Especiales</label>
+                                        <asp:TextBox ID="txtEspeciales2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Exclusiones Particulares</label>
+                                        <asp:TextBox ID="txtExclusionesParticulares2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Medidas de Seguridad</label>
+                                        <asp:TextBox ID="txtMedidasSeguridad2" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
 
                                     <h5 class="border-bottom pb-2">Bases de Indemnización</h5>
                                     <div class="col-6">
@@ -1393,6 +1417,18 @@ Eliminar
                                     <div class="col-12">
                                         <label class="form-label">Deducibles</label>
                                         <asp:TextBox ID="txtDeducibles3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Especiales</label>
+                                        <asp:TextBox ID="txtEspeciales3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Exclusiones Particulares</label>
+                                        <asp:TextBox ID="txtExclusionesParticulares3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Medidas de Seguridad</label>
+                                        <asp:TextBox ID="txtMedidasSeguridad3" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4"></asp:TextBox>
                                     </div>
 
                                     <h5 class="border-bottom pb-2">Bases de Indemnización</h5>
@@ -1974,33 +2010,6 @@ Eliminar
 
                 aplicarFormatoMoneda();
             }
-            const checkboxes = [
-    '<%= chkEQAplica.ClientID %>',
-    '<%= chkEQAplica2.ClientID %>',
-    '<%= chkEQAplica3.ClientID %>'
-            ];
-
-            checkboxes.forEach(id => {
-                const chk = document.getElementById(id);
-                if (!chk) return;
-
-                chk.addEventListener("change", function () {
-                    const card = chk.closest('.card');
-                    if (!card) return;
-
-                    const inputs = card.querySelectorAll('input[type="text"], input[data-format]');
-                    inputs.forEach(input => {
-                        if (chk.checked) {
-                            input.disabled = true;
-                            input.classList.add('campo-calculado');
-                            input.value = '';
-                        } else {
-                            input.disabled = false;
-                            input.classList.remove('campo-calculado');
-                        }
-                    });
-                });
-            });
         });
     </script>
     <script>
@@ -2094,30 +2103,64 @@ Eliminar
         document.addEventListener("DOMContentLoaded", function () {
 
             const checkboxes = [
-        "<%= chkEQAplica.ClientID %>",
-        "<%= chkEQAplica2.ClientID %>",
-        "<%= chkEQAplica3.ClientID %>"
+                "<%= chkEQAplica.ClientID %>",
+                "<%= chkEQAplica2.ClientID %>",
+                "<%= chkEQAplica3.ClientID %>"
             ];
+
+            function pintarCasilla(chk) {
+
+                const card = chk.closest('.card');
+                if (!card) return;
+
+                const inputs = card.querySelectorAll('input.form-control');
+
+                inputs.forEach(input => {
+                    input.disabled = chk.checked;
+                    input.classList.toggle('campo-calculado', chk.checked);
+                    if (chk.checked) input.value = '';
+                });
+            }
 
             checkboxes.forEach(id => {
 
                 const chk = document.getElementById(id);
                 if (!chk) return;
 
-                function toggleCard() {
+                chk.addEventListener("change", function () { pintarCasilla(chk); });
+                pintarCasilla(chk); // estado inicial
+            });
 
-                    const card = chk.closest('.card');
-                    const inputs = card.querySelectorAll('input.form-control');
+            // Las cuotas de mercancias especiales solo aplican para GMX. Al
+            // elegir otra aseguradora se marca "No aplica" solo, aunque se
+            // puede desmarcar a mano si algun caso lo amerita.
+            const ddlAseg = document.getElementById("<%= ddlAseguradora.ClientID %>");
 
-                    inputs.forEach(input => {
-                        input.disabled = chk.checked;
-                        if (chk.checked) input.value = '';
-                    });
+            if (ddlAseg) {
+
+                function esGmx() {
+
+                    const op = ddlAseg.options[ddlAseg.selectedIndex];
+                    if (!op) return false;
+
+                    const nombre = (op.text || '').toLowerCase();
+
+                    return nombre.indexOf('gmx') >= 0 || nombre.indexOf('grupo mexicano') >= 0;
                 }
 
-                chk.addEventListener("change", toggleCard);
-                toggleCard(); // estado inicial
-            });
+                ddlAseg.addEventListener("change", function () {
+
+                    const aplica = esGmx();
+
+                    checkboxes.forEach(id => {
+                        const chk = document.getElementById(id);
+                        if (!chk) return;
+
+                        chk.checked = !aplica;
+                        pintarCasilla(chk);
+                    });
+                });
+            }
 
         });
 

@@ -110,11 +110,16 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
                             EmbarqueFiliales = pm.EmbarqueFiliales,
                             IndemnizacionOtros = pm.IndemnizacionOtros,
 
+                            Especiales = pm.Especiales,
+                            ExclusionesParticulares = pm.ExclusionesParticulares,
+                            MedidasDeSeguridad = pm.MedidasDeSeguridad,
+
                             Medicamentos = pm.Medicamentos,
                             CobreAluminioAcero = pm.CobreAluminioAcero,
                             MedicamentosControlados = pm.MedicamentosControlados,
                             EqContratistas = pm.EqContratistas,
                             CuotaGeneralPoliza = pm.CuotaGeneralPoliza,
+                            NoAplicaCuotasEspeciales = pm.NoAplicaCuotasEspeciales,
 
                             PrimaNeta = pm.PrimaNeta,
                             DerechoPoliza = pm.DerechoPoliza,
@@ -222,6 +227,11 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             pm.EmbarqueFiliales = body.EmbarqueFiliales;
             pm.IndemnizacionOtros = body.IndemnizacionOtros;
 
+            // Texto libre: solo se imprime al generar la poliza.
+            pm.Especiales = body.Especiales;
+            pm.ExclusionesParticulares = body.ExclusionesParticulares;
+            pm.MedidasDeSeguridad = body.MedidasDeSeguridad;
+
             // 📌 Bienes especiales
             pm.BienesUsados = body.BienesUsados;
             pm.Medicamentos = body.Medicamentos;
@@ -232,6 +242,7 @@ namespace MercanciaSegura.RestAPI.Controllers.Implementation
             // 📌 Deducibles y cuota
             pm.Deducibles = body.Deducibles;
             pm.CuotaGeneralPoliza = body.CuotaGeneralPoliza;
+            pm.NoAplicaCuotasEspeciales = body.NoAplicaCuotasEspeciales;
 
             pm.PrimaNeta = body.PrimaNeta;
             pm.DerechoPoliza = body.DerechoPoliza;

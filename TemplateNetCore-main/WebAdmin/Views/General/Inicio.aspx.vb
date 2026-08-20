@@ -6,11 +6,123 @@ Public Class Inicio
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
+        ' El aviso se apaga al empezar cada petición: Page_Load corre antes que
+        ' los eventos, así que un AvisarCambio() de este mismo clic sí se ve.
+        pnlAvisoCambio.Visible = False
+
         If Not IsPostBack Then
             CargarIndicadores()
+            CargarTipoCambio()
         End If
 
     End Sub
+
+#Region "Tipo de cambio"
+
+    ''' <summary>
+    ''' El tipo de cambio vive en la moneda, no en una tabla aparte: son las
+    ''' columnas Tipo_Cambio y Tipo_Cambio_Ventanilla. Solo aplica al dólar.
+    ''' </summary>
+    Private Const MonedaDolar As Integer = 2
+
+    Private Sub CargarTipoCambio()
+
+        Dim dolar = MonedaDolares()
+
+        If dolar Is Nothing Then
+            AvisarCambio("No se pudo consultar el tipo de cambio.", "warning")
+            Exit Sub
+        End If
+
+        txtUsdDof.Text = Importe(dolar.TipoCambio)
+        txtUsdBancario.Text = Importe(dolar.TipoCambioVentanilla)
+    End Sub
+
+    Private Function MonedaDolares() As Moneda
+
+        Dim api As New ConsumoApi()
+
+        Dim monedas = Deserializar(Of Moneda)(api.GetMoneda())
+
+        If monedas Is Nothing Then Return Nothing
+
+        Return monedas.FirstOrDefault(Function(m) m.MonedaId = MonedaDolar)
+    End Function
+
+    Protected Sub btnActualizarCambio_Click(sender As Object, e As EventArgs)
+
+        Dim dof As Decimal? = MontoDe(txtUsdDof)
+        Dim bancario As Decimal? = MontoDe(txtUsdBancario)
+
+        If Not dof.HasValue AndAlso Not bancario.HasValue Then
+            AvisarCambio("Captura al menos uno de los dos tipos de cambio.", "warning")
+            Exit Sub
+        End If
+
+        If (dof.HasValue AndAlso dof.Value <= 0) OrElse
+           (bancario.HasValue AndAlso bancario.Value <= 0) Then
+
+            AvisarCambio("El tipo de cambio debe ser mayor a cero.", "warning")
+            Exit Sub
+        End If
+
+        Dim peticion = New With {
+            .tipoCambio = dof,
+            .tipoCambioVentanilla = bancario
+        }
+
+        Dim api As New ConsumoApi()
+        Dim respuesta As String = api.PutTipoCambio(MonedaDolar, JsonConvert.SerializeObject(peticion))
+
+        If String.IsNullOrWhiteSpace(respuesta) OrElse respuesta.StartsWith("ERROR") Then
+            AvisarCambio("No se pudo actualizar: " & DetalleDeError(respuesta), "danger")
+            Exit Sub
+        End If
+
+        AvisarCambio("Tipo de cambio actualizado.", "success")
+
+        CargarTipoCambio()
+    End Sub
+
+    ''' <summary>Deja el importe con dos decimales, sin símbolo, para poder editarlo.</summary>
+    Private Function Importe(valor As Decimal?) As String
+
+        If Not valor.HasValue OrElse valor.Value = 0 Then Return String.Empty
+
+        Return valor.Value.ToString("N4").TrimEnd("0"c).TrimEnd("."c)
+    End Function
+
+    Private Function MontoDe(txt As TextBox) As Decimal?
+
+        If txt Is Nothing OrElse String.IsNullOrWhiteSpace(txt.Text) Then Return Nothing
+
+        Dim limpio As String = Text.RegularExpressions.Regex.Replace(txt.Text, "[^0-9.\-]", "")
+
+        Dim valor As Decimal
+
+        If Not Decimal.TryParse(limpio, valor) Then Return Nothing
+
+        Return valor
+    End Function
+
+    Private Function DetalleDeError(respuesta As String) As String
+
+        If String.IsNullOrWhiteSpace(respuesta) Then Return "sin respuesta del servidor"
+
+        Dim separador As Integer = respuesta.IndexOf(":"c)
+
+        If separador < 0 Then Return respuesta.Trim()
+
+        Return respuesta.Substring(separador + 1).Trim()
+    End Function
+
+    Private Sub AvisarCambio(mensaje As String, tipo As String)
+        lblAvisoCambio.Text = mensaje
+        pnlAvisoCambio.CssClass = "alert alert-" & tipo & " py-2"
+        pnlAvisoCambio.Visible = True
+    End Sub
+
+#End Region
 
     Private Sub CargarIndicadores()
 

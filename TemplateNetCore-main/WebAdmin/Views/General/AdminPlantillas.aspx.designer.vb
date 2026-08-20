@@ -130,14 +130,6 @@ Partial Public Class AdminPlantillas
     '''</remarks>
     Protected WithEvents ddlEstiloTexto As Global.System.Web.UI.WebControls.DropDownList
 
-    '''<summary>
-    '''Control txtCuerpoCorreo.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtCuerpoCorreo As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''Control rptCampos.
@@ -201,4 +193,10 @@ Partial Public Class AdminPlantillas
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents lblSinPlantillas As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>Control edCuerpo.</summary>
+    Protected WithEvents edCuerpo As Global.WebAdmin.EditorHtml
+
+    '''<summary>Control hfCamposJson.</summary>
+    Protected WithEvents hfCamposJson As Global.System.Web.UI.HtmlControls.HtmlInputHidden
 End Class

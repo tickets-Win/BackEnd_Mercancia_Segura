@@ -1025,6 +1025,10 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Clasificacion_ID");
 
+                    b.Property<string>("CondicionesEspeciales")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Condiciones_Especiales");
+
                     b.Property<string>("CotizacionCliente")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
@@ -1053,6 +1057,10 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Property<string>("Destino")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Destino");
+
+                    b.Property<string>("Exclusiones")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Exclusiones");
 
                     b.Property<string>("MedidasDeSeguridadAdicionales")
                         .HasColumnType("nvarchar(max)")
@@ -1225,10 +1233,18 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("nvarchar(150)")
                         .HasColumnName("Oficina");
 
+                    b.Property<decimal?>("PrimaServicioDeAseguramiento")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("Prima_Servicio_De_Aseguramiento");
+
                     b.Property<string>("RFC")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("RFC");
+
+                    b.Property<decimal?>("SumaAsegurada")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("Suma_Asegurada");
 
                     b.Property<int>("TipoEndosoId")
                         .HasColumnType("int")
@@ -1237,6 +1253,14 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Property<decimal?>("TotalAPagar")
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("Total_a_pagar");
+
+                    b.Property<DateTime?>("VigenciaDel")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Vigencia_Del");
+
+                    b.Property<DateTime?>("VigenciaHasta")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Vigencia_Hasta");
 
                     b.HasKey("EndosoId");
 
@@ -1712,6 +1736,14 @@ namespace MercanciaSegura.DOM.Migrations
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("EQ_Contratistas");
 
+                    b.Property<string>("Especiales")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Especiales");
+
+                    b.Property<string>("ExclusionesParticulares")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Exclusiones_Particulares");
+
                     b.Property<decimal?>("IVA")
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("IVA");
@@ -1735,6 +1767,14 @@ namespace MercanciaSegura.DOM.Migrations
                     b.Property<decimal?>("MedicamentosControlados")
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("Medicamentos_Controlados");
+
+                    b.Property<string>("MedidasDeSeguridad")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Medidas_De_Seguridad");
+
+                    b.Property<bool?>("NoAplicaCuotasEspeciales")
+                        .HasColumnType("bit")
+                        .HasColumnName("No_Aplica_Cuotas_Especiales");
 
                     b.Property<string>("NombreInternoPoliza")
                         .HasMaxLength(80)

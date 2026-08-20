@@ -116,6 +116,185 @@
     </script>
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
+    <%-- Estilos del editor enriquecido y del envio de correo: los comparten
+         el control de correo y la captura de plantillas. --%>
+<style>
+    .cor-titulo {
+        color: #17406d;
+        font-weight: 700;
+    }
+
+    .cor-volver {
+        border: 1px solid #d7dee8;
+        background: #fff;
+        border-radius: .375rem;
+        padding: .25rem .6rem;
+        color: #17406d;
+        text-decoration: none !important;
+        line-height: 1.6;
+    }
+
+        .cor-volver:hover {
+            background: #f1f5f9;
+        }
+
+    .cor-panel {
+        background: #fff;
+        border: 1px solid #e3e8ef;
+        border-radius: .5rem;
+    }
+
+    .cor-panel-titulo {
+        font-size: .8125rem;
+        font-weight: 600;
+        color: #1f2937;
+        padding: .9rem .9rem .6rem;
+    }
+
+    .cor-label {
+        font-size: .8125rem;
+        color: #374151;
+        text-align: right;
+    }
+
+    .cor-opciones {
+        font-size: .75rem;
+        color: #4b5563;
+    }
+
+    .cor-editor-barra {
+        border: 1px solid #e3e8ef;
+        border-bottom: none;
+        background: #fff;
+        padding: .35rem .5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .15rem;
+        align-items: center;
+    }
+
+    .cor-herramienta {
+        border: none;
+        background: transparent;
+        border-radius: .25rem;
+        padding: .1rem .3rem;
+        font-size: .75rem;
+        color: #475569;
+        line-height: 1.5;
+        text-decoration: none !important;
+    }
+
+        .cor-herramienta:hover {
+            background: #eef2f7;
+        }
+
+    .cor-azul {
+        color: #2563eb;
+    }
+
+    .cor-rojo {
+        color: #dc2626;
+    }
+
+    .cor-verde {
+        color: #16a34a;
+    }
+
+    .cor-select-mini {
+        font-size: .6875rem;
+        padding: .1rem 1.2rem .1rem .35rem;
+        height: auto;
+        width: auto;
+        display: inline-block;
+    }
+
+    .cor-cuerpo {
+        border: 1px solid #e3e8ef;
+        border-radius: 0;
+        min-height: 240px;
+        resize: vertical;
+        font-size: .8125rem;
+    }
+
+    .cor-editable {
+        overflow-y: auto;
+        padding: .6rem .75rem;
+        background: #fff;
+    }
+
+        .cor-editable:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+    .cor-oculto {
+        display: none !important;
+    }
+
+    .cor-pestanas {
+        border: 1px solid #e3e8ef;
+        border-top: none;
+        display: flex;
+    }
+
+    .cor-pestana {
+        font-size: .75rem;
+        color: #374151;
+        padding: .45rem .9rem;
+        border-right: 1px solid #e3e8ef;
+        text-decoration: none !important;
+        cursor: pointer;
+    }
+
+        .cor-pestana:hover {
+            background: #f8fafc;
+        }
+
+    .cor-pestana-activa {
+        background: #f8fafc;
+        font-weight: 600;
+    }
+
+    .cor-enlace {
+        display: block;
+        padding: .55rem .9rem;
+        font-size: .8125rem;
+        color: #2563eb;
+        border-top: 1px solid #eef2f7;
+        text-decoration: none !important;
+        cursor: pointer;
+    }
+
+        .cor-enlace:hover {
+            background: #f8fafc;
+        }
+
+    .cor-archivo {
+        max-width: 320px;
+    }
+
+    .cor-adjuntos {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .4rem;
+    }
+
+    .cor-adjunto {
+        background: #f1f5f9;
+        border: 1px solid #e3e8ef;
+        border-radius: 1rem;
+        padding: .15rem .6rem;
+        font-size: .75rem;
+        color: #374151;
+    }
+
+    .cor-quitar {
+        color: #dc2626;
+        font-weight: 700;
+        margin-left: .35rem;
+        text-decoration: none !important;
+    }
+</style>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -211,6 +390,314 @@
                 <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
             </div>
         </div>
+    <%-- Script del editor enriquecido. Resuelve todo por clases dentro de
+         .cor-contenedor, nunca por id, asi que sirve para cualquier numero
+         de editores. Se registra una sola vez. --%>
+<script>
+    // Se registra una sola vez aunque el control se vuelva a pintar por un
+    // postback parcial. Todo se resuelve por clases dentro de .cor-contenedor,
+    // asi que no depende de ids y admite varias instancias.
+    (function () {
+        if (window.msCorreoRegistrado) { msCorreoPreparar(); return; }
+        window.msCorreoRegistrado = true;
+
+        function caja(el) { return el ? el.closest('.cor-contenedor') : null; }
+        function uno(c, sel) { return c ? c.querySelector(sel) : null; }
+
+        function codificar(s) {
+            try { return btoa(unescape(encodeURIComponent(s || ''))); } catch (e) { return ''; }
+        }
+        function decodificar(s) {
+            try { return decodeURIComponent(escape(atob(s || ''))); } catch (e) { return ''; }
+        }
+
+        function leerHtml(c) { var h = uno(c, '.cor-hidden'); return h ? decodificar(h.value) : ''; }
+        function escribirHtml(c, html) { var h = uno(c, '.cor-hidden'); if (h) { h.value = codificar(html); } }
+
+        function vistaActual(c) {
+            var h = uno(c, '.cor-hidden');
+            return (h && h.getAttribute('data-vista')) || 'disenio';
+        }
+
+        function sincronizar(c) {
+            if (!c) { return; }
+            if (vistaActual(c) === 'html') {
+                var src = uno(c, '.cor-html');
+                if (src) { escribirHtml(c, src.value); }
+            } else {
+                var ed = uno(c, '.cor-disenio');
+                if (ed) { escribirHtml(c, ed.innerHTML); }
+            }
+        }
+        window.msCorreoSincronizar = function () {
+            document.querySelectorAll('.cor-contenedor').forEach(sincronizar);
+        };
+
+        function cambiarVista(c, vista) {
+            sincronizar(c);
+
+            var html = leerHtml(c);
+            var ed = uno(c, '.cor-disenio'), src = uno(c, '.cor-html'), pv = uno(c, '.cor-preview');
+
+            [ed, src, pv].forEach(function (x) { if (x) { x.classList.add('cor-oculto'); } });
+            c.querySelectorAll('.cor-pestana').forEach(function (t) { t.classList.remove('cor-pestana-activa'); });
+
+            if (vista === 'html') { src.value = html; src.classList.remove('cor-oculto'); }
+            else if (vista === 'preview') { pv.innerHTML = html; pv.classList.remove('cor-oculto'); }
+            else { ed.innerHTML = html; ed.classList.remove('cor-oculto'); }
+
+            var tab = c.querySelector('.cor-pestana[data-cor-vista="' + vista + '"]');
+            if (tab) { tab.classList.add('cor-pestana-activa'); }
+
+            var h = uno(c, '.cor-hidden');
+            if (h) { h.setAttribute('data-vista', vista); }
+        }
+
+        function ejecutar(c, comando, valor) {
+            var ed = uno(c, '.cor-disenio');
+            if (ed) { ed.focus(); }
+            try { document.execCommand(comando, false, valor === undefined ? null : valor); } catch (e) { }
+            sincronizar(c);
+        }
+
+        // mousedown: con click el boton toma el foco y se pierde la seleccion.
+        document.addEventListener('mousedown', function (ev) {
+            var boton = ev.target.closest('[data-cor-cmd]');
+            if (!boton) { return; }
+
+            ev.preventDefault();
+
+            var c = caja(boton);
+            if (!c) { return; }
+
+            var comando = boton.getAttribute('data-cor-cmd');
+            var pide = boton.getAttribute('data-cor-pide');
+
+            if (!pide) { ejecutar(c, comando); return; }
+
+            if (pide === 'color') {
+                var color = prompt('Color (nombre o #RRGGBB):', '#000000');
+                if (color) { ejecutar(c, comando, color); }
+            } else if (pide === 'enlace') {
+                var url = prompt('Dirección del enlace:', 'https://');
+                if (url) { ejecutar(c, comando, url); }
+            } else if (pide === 'imagen') {
+                var img = prompt('Dirección de la imagen:', 'https://');
+                if (img) { ejecutar(c, comando, img); }
+            } else if (pide === 'simbolo') {
+                var s = prompt('Símbolo a insertar:', '©');
+                if (s) { ejecutar(c, 'insertHTML', s); }
+            } else if (pide === 'tabla') {
+                var filas = parseInt(prompt('Número de filas:', '2'), 10);
+                var cols = parseInt(prompt('Número de columnas:', '2'), 10);
+                if (!filas || !cols || filas < 1 || cols < 1) { return; }
+
+                var t = '<table border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse">';
+                for (var f = 0; f < filas; f++) {
+                    t += '<tr>';
+                    for (var k = 0; k < cols; k++) { t += '<td>&nbsp;</td>'; }
+                    t += '</tr>';
+                }
+                t += '</table><br />';
+                ejecutar(c, 'insertHTML', t);
+            }
+        });
+
+        document.addEventListener('change', function (ev) {
+            var sel = ev.target.closest('[data-cor-sel]');
+            if (!sel) { return; }
+            ejecutar(caja(sel), sel.getAttribute('data-cor-sel'), sel.value);
+        });
+
+        document.addEventListener('click', function (ev) {
+            var tab = ev.target.closest('.cor-pestana[data-cor-vista]');
+            if (tab) {
+                ev.preventDefault();
+                cambiarVista(caja(tab), tab.getAttribute('data-cor-vista'));
+                return;
+            }
+
+            var ins = ev.target.closest('[data-cor-insertar]');
+            if (!ins) { return; }
+
+            ev.preventDefault();
+
+            var c = caja(ins);
+            if (!c) { return; }
+
+            var origen = ins.getAttribute('data-cor-insertar');
+            var hf = uno(c, origen === 'campos' ? '.cor-json-campos' : '.cor-json-biblioteca');
+            if (!hf) { return; }
+
+            var lista;
+            try { lista = JSON.parse(hf.value || '[]'); } catch (e) { return; }
+
+            var i = parseInt(ins.getAttribute('data-cor-indice'), 10);
+            if (isNaN(i) || i < 0 || i >= lista.length) { return; }
+
+            var texto = lista[i];
+
+            if (vistaActual(c) === 'html') {
+                var src = uno(c, '.cor-html');
+                if (!src) { return; }
+
+                var ini = src.selectionStart, fin = src.selectionEnd;
+                if (ini === null || ini === undefined) { src.value += texto; }
+                else {
+                    src.value = src.value.substring(0, ini) + texto + src.value.substring(fin);
+                    src.selectionStart = src.selectionEnd = ini + texto.length;
+                }
+                src.focus();
+                sincronizar(c);
+            } else {
+                var html = texto
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/\r?\n/g, '<br />');
+                ejecutar(c, 'insertHTML', html);
+            }
+        });
+
+        // ---------------------------- Adjuntos ----------------------------
+        var RUTA_ADJUNTOS = '<%= ResolveUrl("~/Handlers/AdjuntosCorreo.ashx") %>';
+
+        function pintarAdjuntos(c, archivos) {
+
+            var lista = uno(c, '.cor-lista');
+            if (!lista) { return; }
+
+            lista.innerHTML = '';
+
+            (archivos || []).forEach(function (a, i) {
+                var chip = document.createElement('span');
+                chip.className = 'cor-adjunto';
+                chip.innerHTML = '<i class="bi bi-paperclip me-1"></i>' +
+                    a.nombre + ' <span class="text-muted ms-1">(' + a.tamanio + ')</span>';
+
+                var quitar = document.createElement('a');
+                quitar.className = 'cor-quitar';
+                quitar.href = 'javascript:void(0)';
+                quitar.title = 'Quitar';
+                quitar.innerHTML = '&times;';
+                quitar.onclick = function () { adjuntoQuitar(c, i); };
+
+                chip.appendChild(quitar);
+                lista.appendChild(chip);
+            });
+        }
+
+        function llaveDe(c) {
+            var h = uno(c, '.cor-llave');
+            return h ? h.value : '';
+        }
+
+        // La usa msCorreoPreparar para repintar la lista tras cada render.
+        window.msCorreoPintarAdjuntos = function (c, llave) {
+
+            var datos = new FormData();
+            datos.append('accion', 'listar');
+            datos.append('llave', llave);
+
+            fetch(RUTA_ADJUNTOS, { method: 'POST', body: datos, credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (d) { pintarAdjuntos(c, d.archivos); })
+                .catch(function () { });
+        };
+
+        function adjuntoQuitar(c, indice) {
+
+            var datos = new FormData();
+            datos.append('accion', 'quitar');
+            datos.append('llave', llaveDe(c));
+            datos.append('indice', indice);
+
+            fetch(RUTA_ADJUNTOS, { method: 'POST', body: datos, credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (d) { pintarAdjuntos(c, d.archivos); })
+                .catch(function () { });
+        }
+
+        document.addEventListener('click', function (ev) {
+
+            var boton = ev.target.closest('.cor-adjuntar');
+            if (!boton) { return; }
+
+            ev.preventDefault();
+
+            var c = caja(boton);
+            var campo = uno(c, '.cor-file');
+
+            if (!campo || !campo.files || campo.files.length === 0) {
+                alert('Elige al menos un archivo antes de adjuntar.');
+                return;
+            }
+
+            var datos = new FormData();
+            datos.append('accion', 'subir');
+            datos.append('llave', llaveDe(c));
+
+            for (var i = 0; i < campo.files.length; i++) {
+                datos.append('archivo' + i, campo.files[i]);
+            }
+
+            boton.classList.add('disabled');
+
+            fetch(RUTA_ADJUNTOS, { method: 'POST', body: datos, credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    pintarAdjuntos(c, d.archivos);
+                    campo.value = '';
+                    if (d.aviso) { alert(d.aviso); }
+                })
+                .catch(function () { alert('No se pudo adjuntar el archivo.'); })
+                .then(function () { boton.classList.remove('disabled'); });
+        });
+
+        // Antes de cualquier postback, lo que se ve es lo que se manda.
+        if (typeof Sys !== 'undefined' && Sys.WebForms) {
+            var prm = Sys.WebForms.PageRequestManager.getInstance();
+            prm.add_initializeRequest(function () { window.msCorreoSincronizar(); });
+            prm.add_endRequest(function () { msCorreoPreparar(); });
+        }
+
+        var f = document.forms[0];
+        if (f) { f.addEventListener('submit', function () { window.msCorreoSincronizar(); }); }
+
+        msCorreoPreparar();
+    })();
+
+    // Vuelca el hidden al editor. Corre en cada render del control.
+    function msCorreoPreparar() {
+        document.querySelectorAll('.cor-contenedor').forEach(function (c) {
+            var ed = c.querySelector('.cor-disenio'), h = c.querySelector('.cor-hidden');
+            if (!ed || !h) { return; }
+
+            var html = '';
+            try { html = decodeURIComponent(escape(atob(h.value || ''))); } catch (e) { html = ''; }
+
+            if (html) {
+                // El hidden manda: trae lo ultimo que se edito o lo que puso el
+                // servidor al cambiar de plantilla.
+                ed.innerHTML = html;
+            } else {
+                // Sin hidden util, se respeta lo que el servidor ya pinto en el
+                // area editable y se sube al hidden para que viaje al postear.
+                try { h.value = btoa(unescape(encodeURIComponent(ed.innerHTML))); } catch (e) { }
+            }
+
+            ed.oninput = function () { window.msCorreoSincronizar(); };
+
+            var src = c.querySelector('.cor-html');
+            if (src) { src.oninput = function () { window.msCorreoSincronizar(); }; }
+
+            // Los adjuntos viven en Session, no en el ViewState: se vuelven a
+            // pedir en cada render para que sobrevivan a los postbacks.
+            var h = c.querySelector('.cor-llave');
+            if (h && h.value && window.msCorreoPintarAdjuntos) {
+                window.msCorreoPintarAdjuntos(c, h.value);
+            }
+        });
+    }
+</script>
     </form>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

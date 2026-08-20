@@ -19,6 +19,11 @@ Public Class AdminSiniestros
     End Class
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
+        ' El aviso se apaga al empezar cada petición: Page_Load corre antes que
+        ' los eventos, así que un Avisar() de este mismo clic sí se ve.
+        pnlAviso.Visible = False
+
         If Not IsPostBack Then
             CargarSiniestros()
         End If
@@ -194,16 +199,23 @@ Public Class AdminSiniestros
     Protected Sub ddlCliente_SelectedIndexChanged(sender As Object, e As EventArgs)
         CargarPolizasDelCliente()
         CargarCertificados()
-        MostrarSumaAsegurada()
+        MostrarDerivados()
     End Sub
 
     Protected Sub ddlPolizaMaestra_SelectedIndexChanged(sender As Object, e As EventArgs)
         CargarCertificados()
-        MostrarSumaAsegurada()
+        MostrarDerivados()
     End Sub
 
     Protected Sub ddlNumeroCertificado_SelectedIndexChanged(sender As Object, e As EventArgs)
+        MostrarDerivados()
+    End Sub
+
+    ''' <summary>Campos que no se capturan sino que se siguen de la cascada.</summary>
+    Private Sub MostrarDerivados()
         MostrarSumaAsegurada()
+        MostrarAseguradora()
+        MostrarMercancia()
     End Sub
 
     ''' <summary>
@@ -256,6 +268,125 @@ Public Class AdminSiniestros
 
         Return valor.Value.ToString("C2")
     End Function
+
+    ''' <summary>
+    ''' Aseguradora y descripcion de mercancia no se capturan: se derivan de lo
+    ''' que ya quedo registrado arriba en la cadena. Se recalculan cada vez que
+    ''' cambia un eslabon de la cascada.
+    ''' </summary>
+    Private Sub MostrarAseguradora()
+
+        txtAseguradora.Text = String.Empty
+
+        Dim numero As String = ddlPolizaMaestra.SelectedValue
+
+        If String.IsNullOrWhiteSpace(numero) Then Exit Sub
+
+        Dim poliza = Polizas().FirstOrDefault(Function(p) p.NumeroPoliza = numero)
+
+        If poliza Is Nothing Then Exit Sub
+
+        txtAseguradora.Text = poliza.nombreAseguradora
+    End Sub
+
+    Private Sub MostrarMercancia()
+
+        txtMercancia.Text = DescripcionDelCertificado()
+    End Sub
+
+    ''' <summary>
+    ''' Polizas del catalogo, cacheadas por peticion: la aseguradora se pide
+    ''' cada vez que se mueve la cascada.
+    ''' </summary>
+    Private Function Polizas() As List(Of Poliza)
+
+        If Items("PolizasSiniestro") Is Nothing Then
+            Dim api As New ConsumoApi()
+
+            Items("PolizasSiniestro") = If(Deserializar(Of Poliza)(api.GetCargarPolizas()),
+                                           New List(Of Poliza))
+        End If
+
+        Return DirectCast(Items("PolizasSiniestro"), List(Of Poliza))
+    End Function
+
+    ''' <summary>
+    ''' Descripcion de la mercancia amparada por el certificado elegido. Sale de
+    ''' la cotizacion que lo origino: si fue de mercancia es su descripcion tal
+    ''' cual, y si fue de contenedor se arma con los numeros de contenedor,
+    ''' porque ese tipo de cotizacion no captura una descripcion.
+    ''' </summary>
+    Private Function DescripcionDelCertificado() As String
+
+        Dim cert = CertificadoElegido()
+
+        If cert Is Nothing OrElse cert.CotizacionId <= 0 Then Return String.Empty
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetCotizacionId(cert.CotizacionId)
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then Return String.Empty
+
+        Dim cot As Cotizacion
+
+        Try
+            cot = JsonConvert.DeserializeObject(Of Cotizacion)(json)
+        Catch
+            Return String.Empty
+        End Try
+
+        If cot Is Nothing Then Return String.Empty
+
+        If cot.CotizacionMercancia IsNot Nothing AndAlso
+           Not String.IsNullOrWhiteSpace(cot.CotizacionMercancia.DescripcionMercancia) Then
+
+            Return cot.CotizacionMercancia.DescripcionMercancia.Trim()
+        End If
+
+        If cot.CotizacionContenedor Is Nothing Then Return String.Empty
+
+        Dim numeros = cot.CotizacionContenedor.
+            Select(Function(c) c.NumeroContenedor).
+            Where(Function(n) Not String.IsNullOrWhiteSpace(n)).
+            ToList()
+
+        If numeros.Count = 0 Then Return String.Empty
+
+        Return "Contenedores: " & String.Join(", ", numeros)
+    End Function
+
+    Private Sub CargarTiposEvento()
+
+        ddlTipoEvento.Items.Clear()
+        ddlTipoEvento.Items.Add(New ListItem("-- Selecciona --", ""))
+
+        Dim api As New ConsumoApi()
+        Dim json As String = api.GetTipoEvento()
+
+        If String.IsNullOrWhiteSpace(json) OrElse
+           json = "null" OrElse
+           json.StartsWith("ERROR") Then
+
+            Avisar("No se pudo cargar el catálogo de tipos de evento. ¿Ya se publicó el API?", "warning")
+            Exit Sub
+        End If
+
+        Try
+            For Each item As Newtonsoft.Json.Linq.JObject In Newtonsoft.Json.Linq.JArray.Parse(json)
+
+                Dim id = item.GetValue("tipoEventoId", StringComparison.OrdinalIgnoreCase)
+                Dim tipo = item.GetValue("tipo", StringComparison.OrdinalIgnoreCase)
+
+                If id Is Nothing OrElse tipo Is Nothing Then Continue For
+
+                ddlTipoEvento.Items.Add(New ListItem(tipo.ToString(), id.ToString()))
+            Next
+        Catch
+            Avisar("El catálogo de tipos de evento no vino como se esperaba.", "warning")
+        End Try
+    End Sub
 
     Private Sub CargarTiposSiniestro()
 
@@ -338,6 +469,7 @@ Public Class AdminSiniestros
         txtFechaApertura.Text = Date.Today.ToString("yyyy-MM-dd")
         txtFechaCierre.Text = String.Empty
         txtMercancia.Text = String.Empty
+        txtAseguradora.Text = String.Empty
         txtLugarSiniestro.Text = String.Empty
         txtMontoReclamo.Text = String.Empty
         txtMontoIndemnizacion.Text = String.Empty
@@ -347,6 +479,7 @@ Public Class AdminSiniestros
         CargarPolizasDelCliente()
         CargarCertificados()
         CargarTiposSiniestro()
+        CargarTiposEvento()
     End Sub
 
     Private Sub EditarSiniestro(siniestroId As Integer)
@@ -373,7 +506,6 @@ Public Class AdminSiniestros
         txtFolio.Text = s.NReporte
         txtFechaApertura.Text = s.FechaApertura.ToString("yyyy-MM-dd")
         txtFechaCierre.Text = If(s.FechaCierre.HasValue, s.FechaCierre.Value.ToString("yyyy-MM-dd"), String.Empty)
-        txtMercancia.Text = s.Mercancia
         txtLugarSiniestro.Text = s.LugarDeSiniestro
         txtMontoReclamo.Text = Importe(s.MontoDeReclamo)
         txtMontoIndemnizacion.Text = Importe(s.MontoDeIndemnizacion)
@@ -395,6 +527,12 @@ Public Class AdminSiniestros
         If s.TipoSiniestroId.HasValue Then
             SeleccionarValor(ddlTipoSiniestro, s.TipoSiniestroId.Value.ToString())
         End If
+
+        SeleccionarValor(ddlTipoEvento, s.TipoDeEventoId)
+
+        ' Se recalculan del certificado en lugar de copiarse del registro: si el
+        ' certificado cambio, lo que vale es lo que dice hoy.
+        MostrarDerivados()
 
         AbrirFormulario("Editar siniestro")
     End Sub
@@ -450,7 +588,8 @@ Public Class AdminSiniestros
             .FechaApertura = apertura,
             .FechaCierre = cierre,
             .TipoSiniestroId = IdSeleccionado(ddlTipoSiniestro),
-            .Mercancia = txtMercancia.Text.Trim(),
+            .Mercancia = DescripcionDelCertificado(),
+            .TipoDeEventoId = If(ddlTipoEvento.SelectedValue = "", Nothing, ddlTipoEvento.SelectedValue),
             .LugarDeSiniestro = txtLugarSiniestro.Text.Trim(),
             .SumaAsegurada = SumaDelCertificado(),
             .MontoDeReclamo = MontoDe(txtMontoReclamo),

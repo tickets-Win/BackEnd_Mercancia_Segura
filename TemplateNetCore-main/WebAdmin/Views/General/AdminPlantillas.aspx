@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Default.Master" CodeBehind="AdminPlantillas.aspx.vb" Inherits="WebAdmin.AdminPlantillas" %>
+<%@ Register TagPrefix="uc" TagName="EditorHtml" Src="~/Controles/EditorHtml.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -127,11 +128,6 @@
         .plt-tarjeta-pie {
             border-top: 1px solid #eef2f7;
             padding: .6rem .9rem .9rem;
-        }
-
-        .plt-adjuntos {
-            font-size: .6875rem;
-            color: #9ca3af;
         }
 
         .plt-nombre {
@@ -315,7 +311,9 @@
                     </div>
                 </div>
 
-                <div class="row g-4">
+                <%-- cor-contenedor abarca editor y panel de campos: el script
+                     busca ambos dentro del mismo contenedor. --%>
+                <div class="row g-4 cor-contenedor">
 
                     <%-- ------------------- CATEGORIAS ------------------- --%>
                     <div class="col-md-3 col-lg-2">
@@ -366,9 +364,7 @@
                                         </div>
 
                                         <div class="plt-vista"><%# Eval("Vista") %></div>
-
                                         <div class="plt-tarjeta-pie">
-                                            <div class="plt-adjuntos"><%# Eval("Adjuntos") %> Archivos adjuntos</div>
                                             <div class="plt-nombre"><%# Eval("Nombre") %></div>
                                         </div>
 
@@ -410,7 +406,9 @@
                     </div>
                 </div>
 
-                <div class="row g-4">
+                <%-- cor-contenedor abarca editor y panel de campos: el script
+                     busca ambos dentro del mismo contenedor. --%>
+                <div class="row g-4 cor-contenedor">
 
                     <%-- ---------------- DATOS Y EDITOR ------------------ --%>
                     <div class="col-lg-8">
@@ -434,67 +432,12 @@
                                     placeholder="Asunto del correo"></asp:TextBox>
                             </div>
 
-                            <div class="text-end mt-3">
-                                <a href="javascript:void(0)" class="btn btn-sm btn-light border">
-                                    <i class="bi bi-paperclip me-1"></i>Adjuntar archivo
-                                </a>
-                            </div>
 
                             <%-- Barra de herramientas: por ahora es decorativa. --%>
-                            <div class="plt-editor-barra mt-3">
-                                <a href="javascript:void(0)" class="plt-herramienta plt-herramienta-azul" title="Deshacer"><i class="bi bi-arrow-counterclockwise"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta plt-herramienta-azul" title="Rehacer"><i class="bi bi-arrow-clockwise"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta plt-herramienta-rojo" title="Cortar"><i class="bi bi-scissors"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta plt-herramienta-rojo" title="Copiar"><i class="bi bi-clipboard"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Negrita"><i class="bi bi-type-bold"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Cursiva"><i class="bi bi-type-italic"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Subrayado"><i class="bi bi-type-underline"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Tachado"><i class="bi bi-type-strikethrough"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta plt-herramienta-azul" title="Color de texto"><i class="bi bi-palette-fill"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta plt-herramienta-rojo" title="Resaltar"><i class="bi bi-highlighter"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Alinear a la izquierda"><i class="bi bi-text-left"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Centrar"><i class="bi bi-text-center"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Alinear a la derecha"><i class="bi bi-text-right"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Justificar"><i class="bi bi-justify"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta plt-herramienta-verde" title="Insertar imagen"><i class="bi bi-image"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta plt-herramienta-azul" title="Insertar tabla"><i class="bi bi-table"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Lista con viñetas"><i class="bi bi-list-ul"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Lista numerada"><i class="bi bi-list-ol"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Insertar enlace"><i class="bi bi-link-45deg"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta" title="Símbolo"><i class="bi bi-omega"></i></a>
-                                <a href="javascript:void(0)" class="plt-herramienta plt-herramienta-azul" title="Buscar"><i class="bi bi-search"></i></a>
-                            </div>
-
-                            <div class="plt-editor-barra">
-                                <asp:DropDownList ID="ddlFuente" runat="server" CssClass="form-select form-select-sm plt-select-mini">
-                                    <asp:ListItem Text="Montserrat" Value="Montserrat" />
-                                    <asp:ListItem Text="Arial" Value="Arial" />
-                                    <asp:ListItem Text="Times New Roman" Value="Times New Roman" />
-                                </asp:DropDownList>
-                                <asp:DropDownList ID="ddlTamanioFuente" runat="server" CssClass="form-select form-select-sm plt-select-mini">
-                                    <asp:ListItem Text="12px" Value="12" />
-                                    <asp:ListItem Text="14px" Value="14" />
-                                    <asp:ListItem Text="16px" Value="16" Selected="True" />
-                                    <asp:ListItem Text="18px" Value="18" />
-                                </asp:DropDownList>
-                                <asp:DropDownList ID="ddlEstiloTexto" runat="server" CssClass="form-select form-select-sm plt-select-mini">
-                                    <asp:ListItem Text="Normal" Value="Normal" />
-                                    <asp:ListItem Text="Título 1" Value="H1" />
-                                    <asp:ListItem Text="Título 2" Value="H2" />
-                                </asp:DropDownList>
-                            </div>
-
-                            <asp:TextBox ID="txtCuerpoCorreo" runat="server" TextMode="MultiLine"
-                                CssClass="form-control plt-cuerpo"
-                                placeholder="Escribe el cuerpo del correo aquí..."></asp:TextBox>
-
-                            <div class="plt-pestanas">
-                                <a href="javascript:void(0)" class="plt-pestana plt-pestana-activa">
-                                    <i class="bi bi-palette-fill me-1" style="color: #e8963c"></i>Diseño
-                                </a>
-                                <a href="javascript:void(0)" class="plt-pestana">
-                                    <i class="bi bi-code-slash me-1"></i>HTML
-                                </a>
+                            <%-- Mismo editor que usa el envio de correo. El script
+                                 lo resuelve por la clase cor-contenedor. --%>
+                            <div class="mt-3">
+                                <uc:EditorHtml ID="edCuerpo" runat="server" />
                             </div>
 
                         </div>
@@ -503,11 +446,16 @@
                     <%-- ------------------ CAMPOS A INSERTAR -------------- --%>
                     <div class="col-lg-4">
                         <div class="plt-panel">
+                            <input type="hidden" runat="server" id="hfCamposJson" class="cor-json-campos" value="[]" />
                             <div class="plt-campos-titulo">Incluir campos:</div>
 
+                            <%-- El nombre del campo viaja en data-campo; el script
+                                 lo inserta con sus llaves en la posicion del cursor. --%>
                             <asp:Repeater ID="rptCampos" runat="server">
                                 <ItemTemplate>
-                                    <a href="javascript:void(0)" class="plt-campo"><%# Container.DataItem %></a>
+                                    <a class="plt-campo" data-cor-insertar="campos"
+                                        data-cor-indice='<%# Container.ItemIndex %>'
+                                        data-campo='<%# Container.DataItem %>'><%# Container.DataItem %></a>
                                 </ItemTemplate>
                             </asp:Repeater>
                         </div>
@@ -518,5 +466,6 @@
 
         </ContentTemplate>
     </asp:UpdatePanel>
+
 
 </asp:Content>

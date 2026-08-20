@@ -27,6 +27,10 @@ Public Class AdminPlantillas
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
+        ' El aviso se apaga al empezar cada petición: Page_Load corre antes que
+        ' los eventos, así que un Avisar() de este mismo clic sí se ve.
+        pnlAviso.Visible = False
+
         If Not IsPostBack Then
             CargarCategorias()
             CargarPlantillas()
@@ -122,6 +126,10 @@ Public Class AdminPlantillas
         rptCampos.DataSource = PlantillasCorreo.Campos
         rptCampos.DataBind()
 
+        ' El script inserta por índice contra este JSON, igual que en el envío.
+        hfCamposJson.Value = JsonConvert.SerializeObject(
+            PlantillasCorreo.Campos.Select(Function(c) "{{" & c & "}}").ToList())
+
         pnlListado.Visible = False
         pnlFormulario.Visible = True
     End Sub
@@ -145,7 +153,7 @@ Public Class AdminPlantillas
 
         txtNombrePlantilla.Text = String.Empty
         txtAsunto.Text = String.Empty
-        txtCuerpoCorreo.Text = String.Empty
+        edCuerpo.Html = String.Empty
 
         CargarComboCategorias()
 
@@ -187,7 +195,7 @@ Public Class AdminPlantillas
 
         txtNombrePlantilla.Text = p.Nombre
         txtAsunto.Text = p.Asunto
-        txtCuerpoCorreo.Text = p.CuerpoHtml
+        edCuerpo.Html = p.CuerpoHtml
 
         SeleccionarValor(ddlCategoriaPlantilla, p.CategoriaPlantillaId.ToString())
 
@@ -212,7 +220,7 @@ Public Class AdminPlantillas
         ' Sin id: al guardar se crea una nueva.
         txtNombrePlantilla.Text = p.Nombre & " (copia)"
         txtAsunto.Text = p.Asunto
-        txtCuerpoCorreo.Text = p.CuerpoHtml
+        edCuerpo.Html = p.CuerpoHtml
 
         SeleccionarValor(ddlCategoriaPlantilla, p.CategoriaPlantillaId.ToString())
 
@@ -237,7 +245,7 @@ Public Class AdminPlantillas
             .categoriaPlantillaId = categoriaId,
             .nombre = txtNombrePlantilla.Text.Trim(),
             .asunto = txtAsunto.Text.Trim(),
-            .cuerpoHtml = txtCuerpoCorreo.Text,
+            .cuerpoHtml = edCuerpo.Html,
             .activa = True
         }
 

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/C:/Program Files/Git/Views/General/AdminEndosos.aspx" hash="fffffffcb3b9a8ea" filehash="df3c735af440548c" flags="110000" assembly="App_Web_qghajcz4" type="ASP.views_general_adminendosos_aspx">
+    <filedeps>
+        <filedep name="/C:/Program Files/Git/Default.Master" />
+        <filedep name="/C:/Program Files/Git/Views/General/AdminEndosos.aspx" />
+    </filedeps>
+</preserve>
